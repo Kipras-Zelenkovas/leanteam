@@ -1,6 +1,6 @@
 import { AnimatePresence } from "framer-motion";
 import { Routes, Route, useLocation } from "react-router-dom";
-import { PrivateRoute } from "../../../../PrivateRoute.jsx";
+import { PrivateRoute } from "./PrivateRoute.jsx";
 import { routes } from "./routes";
 import { Navigation } from "../components/Navigation.jsx";
 
