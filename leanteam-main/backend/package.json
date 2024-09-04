@@ -15,11 +15,11 @@
     },
     "name": "backend",
     "version": "1.0.0",
-    "main": "index.js",
+    "main": "mainIndex.js",
     "type": "module",
     "scripts": {
-        "start": "node --watch-path=./ index.js",
-        "production": "node index.js",
+        "start": "node --watch-path=./ mainIndex.js",
+        "production": "node mainIndex.js",
         "test": "node tests.js",
         "certificate": "node ./dev-utils/certificates/dev-certificate.js",
         "defaults": "node defaults.js"
