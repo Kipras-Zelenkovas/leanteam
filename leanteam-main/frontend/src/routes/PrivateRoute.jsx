@@ -33,10 +33,10 @@ export const PrivateRoute = ({ Component, accessLevel }) => {
                     }
                 } else if (res.status === 401 || res.status === 403) {
                     setCookieExist(false);
-                    window.location.href = "http://localhost:5173/";
+                    window.location.href = "/";
                     return null;
                 } else {
-                    window.location.href = "http://localhost:5173/500";
+                    window.location.href = "/500";
                     return null;
                 }
             })
@@ -47,7 +47,7 @@ export const PrivateRoute = ({ Component, accessLevel }) => {
                 ) {
                     setCookieExist(false);
                 } else {
-                    window.location.href = "http://localhost:5173/500";
+                    window.location.href = "/500";
                     return null;
                 }
             });
@@ -70,12 +70,12 @@ export const PrivateRoute = ({ Component, accessLevel }) => {
 
         return navigate("/");
     } else if (access === false) {
-        window.location.href = "http://localhost:5173/403";
+        window.location.href = "/403";
         return null;
     } else if (access) {
         return <Component />;
     } else {
-        window.location.href = "http://localhost:5173/500";
+        window.location.href = "/500";
         return null;
     }
 };

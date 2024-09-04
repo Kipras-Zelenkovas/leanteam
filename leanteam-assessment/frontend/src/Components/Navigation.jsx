@@ -133,13 +133,13 @@ export const Navigation = () => {
                         <li className="w-full border-b-2 border-text p-[0.2rem]">
                             <Link
                                 title="Assessments"
-                                to="/administrator/assessments"
+                                to="/assessments"
                                 className="hidden sm:flex w-full justify-center"
                             >
                                 <svg
                                     className={`w-10 h-10 rounded-md transition-all duration-[800ms] ease-in-out ${
                                         window.location.pathname ===
-                                        "/administrator/assessments"
+                                        "/assessments"
                                             ? "bg-gradient-to-br from-primary to-text text-white p-1"
                                             : "text-primary p-0 bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white hover:p-1"
                                     }`}
@@ -155,6 +155,34 @@ export const Navigation = () => {
                                         <path d="M14.172 21H7c-1.886 0-2.828 0-3.414-.586S3 18.886 3 17V7c0-1.886 0-2.828.586-3.414S5.114 3 7 3h10c1.886 0 2.828 0 3.414.586S21 5.114 21 7v7.172c0 .408 0 .613-.076.797c-.076.183-.22.328-.51.617l-4.828 4.828c-.29.29-.434.434-.617.51c-.184.076-.389.076-.797.076Z"></path>
                                         <path d="M14 21v-4.667c0-1.1 0-1.65.342-1.991c.341-.342.891-.342 1.991-.342H21"></path>
                                     </g>
+                                </svg>
+                            </Link>
+                        </li>
+                        <li className="w-full border-b-2 border-text p-[0.2rem]">
+                            <Link
+                                title="Questionaire"
+                                to="/administrator/questionaire2"
+                                className="hidden sm:flex w-full justify-center"
+                            >
+                                <svg
+                                    className={`w-10 h-10 rounded-md transition-all duration-[800ms] ease-in-out ${
+                                        window.location.pathname ===
+                                        "/administrator/questionaire2"
+                                            ? "bg-gradient-to-br from-primary to-text text-white p-1"
+                                            : "text-primary p-0 bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white hover:p-1"
+                                    }`}
+                                    width={24}
+                                    height={24}
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M4 5a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0M4 12a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0M4 19a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0"
+                                    ></path>
                                 </svg>
                             </Link>
                         </li>
@@ -347,11 +375,11 @@ export const Navigation = () => {
                                         <Link
                                             className={`flex flex-wrap sm:hidden items-center text-md font-semibold gap-2 rounded-md transition-all duration-[800ms] ease-in-out pl-1 ${
                                                 window.location.pathname ===
-                                                "/administrator/assessments"
+                                                "/assessments"
                                                     ? "bg-gradient-to-br from-primary to-text text-white"
                                                     : "text-primary bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white"
                                             }`}
-                                            to="/administrator/assessments"
+                                            to="/assessments"
                                         >
                                             <svg
                                                 className="w-10 h-10 rounded-md "
@@ -369,6 +397,34 @@ export const Navigation = () => {
                                                 </g>
                                             </svg>
                                             Assessments
+                                        </Link>
+                                    </li>
+                                    <li className="w-full border-b-2 border-text p-[0.2rem]">
+                                        <Link
+                                            className={`flex flex-wrap sm:hidden items-center text-md font-semibold gap-2 rounded-md transition-all duration-[800ms] ease-in-out pl-1 ${
+                                                window.location.pathname ===
+                                                "/administrator/questionaire"
+                                                    ? "bg-gradient-to-br from-primary to-text text-white"
+                                                    : "text-primary bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white"
+                                            }`}
+                                            to="/administrator/questionaire"
+                                        >
+                                            <svg
+                                                className="w-10 h-10 rounded-md "
+                                                width={24}
+                                                height={24}
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M4 5a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0M4 12a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0M4 19a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0"
+                                                ></path>
+                                            </svg>
+                                            Questionaire
                                         </Link>
                                     </li>
 

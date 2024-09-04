@@ -7,9 +7,11 @@ import https from "https";
 
 import { router as factoryRouter } from "./controllers/factory.js";
 import { router as assessmentRouter } from "./controllers/assessment.js";
+import { router as questionaireRouter } from "./controllers/questionaire.js";
 import { router as criteriaRouter } from "./controllers/criteria.js";
 import { router as questionRouter } from "./controllers/question.js";
 import { router as possibilityRouter } from "./controllers/possibility.js";
+import { router as answerRouter } from "./controllers/answers.js";
 
 DotenvFlow.config();
 
@@ -31,6 +33,8 @@ app.use("/v1/assessment/", [
     criteriaRouter,
     questionRouter,
     possibilityRouter,
+    questionaireRouter,
+    answerRouter,
 ]);
 
 const server = https.createServer(

@@ -5,6 +5,7 @@ import fs from "fs";
 import { checkForLogged, checkForUser } from "../../../middleware.js";
 import jwt from "jsonwebtoken";
 import { User } from "../database/models/User.js";
+import { randomInt } from "crypto";
 
 export const router = Router();
 const storage = multer.diskStorage({
@@ -12,7 +13,10 @@ const storage = multer.diskStorage({
         cb(null, "./public/profile_pictures");
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
+        cb(
+            null,
+            Date.now() + randomInt(1000000) + path.extname(file.originalname)
+        );
     },
 });
 

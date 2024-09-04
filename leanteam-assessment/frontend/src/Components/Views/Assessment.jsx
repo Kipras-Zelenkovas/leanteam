@@ -1,1085 +1,732 @@
-import { useEffect, useState } from "react";
-import {
-    cuAssessment,
-    deleteAssessment,
-    getAssessments,
-} from "../../controllers/assessment";
-import { Loader } from "../Loader";
-import { Dialog } from "primereact/dialog";
 import { ErrorMessage, Field, Form, Formik } from "formik";
+import { Loader } from "../Loader.jsx";
+import { useEffect, useState } from "react";
 import { getFactoriesAssessment } from "../../controllers/factories";
-import {
-    cuCriteria,
-    deleteCriteria,
-    getCriterias,
-} from "../../controllers/criteria";
-import {
-    cuQuestion,
-    deleteQuestion,
-    getQuestions,
-} from "../../controllers/question";
-import {
-    cuPosibility,
-    deletePosibility,
-    getPosibility,
-} from "../../controllers/possibility";
+import { getAssessment } from "../../controllers/assessment.js";
+import { getAnswers, saveAnswer } from "../../controllers/answers.js";
 
 export const Assessment = () => {
-    const [assessments, setAssessments] = useState(null);
-    const [criterias, setCriterias] = useState([]);
-    const [questions, setQuestions] = useState([]);
-    const [possibilities, setPossibilities] = useState([]);
-
     const [factories, setFactories] = useState(null);
-
-    const [aUpdate, setAUpdate] = useState(false);
-    const [cUpdate, setCUpdate] = useState(false);
-    const [qUpdate, setQUpdate] = useState(false);
-    const [pUpdate, setPUpdate] = useState(false);
-
     const [assessment, setAssessment] = useState(undefined);
+    const [answers, setAnswers] = useState(undefined);
+
     const [criteria, setCriteria] = useState(undefined);
     const [question, setQuestion] = useState(undefined);
     const [possibility, setPossibility] = useState(undefined);
 
-    const [showA, setShowA] = useState(false);
-    const [showCA, setShowCA] = useState(false);
+    const [answerImgPreview, setAnswerImgPreview] = useState([]);
 
-    const [showC, setShowC] = useState(false);
-    const [showCC, setShowCC] = useState(false);
-
-    const [showQ, setShowQ] = useState(false);
-    const [showCQ, setShowCQ] = useState(false);
-
-    const [showP, setShowP] = useState(false);
-
-    const availableP = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const [updateA, setUpdateA] = useState(false);
 
     useEffect(() => {
         getFactoriesAssessment().then((res) => {
             if (res.status === 200) {
                 setFactories(res.data[0]);
+            } else {
+                setFactories([]);
             }
         });
     }, []);
 
     useEffect(() => {
-        getAssessments().then((res) => {
-            if (res.status === 200) {
-                setAssessments(res.data[0]);
-
-                if (assessment !== undefined) {
-                    setAssessment(
-                        res.data[0].filter(
-                            (assessmentL) => assessmentL.id === assessment.id
-                        )[0]
-                    );
-                }
-            } else {
-                setAssessments([]);
-            }
-        });
-    }, [aUpdate]);
-
-    useEffect(() => {
         if (assessment != undefined) {
-            getCriterias(assessment.id).then((res) => {
+            getAnswers(assessment.id).then((res) => {
                 if (res.status === 200) {
-                    setCriterias(res.data[0]);
-                } else {
-                    setCriterias([]);
-                }
-            });
-
-            if (criteria != undefined) {
-                setCriteria(
-                    criterias.filter(
-                        (criteriaL) => criteriaL.id === criteria.id
-                    )[0]
-                );
-            }
-        }
-    }, [cUpdate, assessment]);
-
-    useEffect(() => {
-        if (criteria != undefined) {
-            getQuestions(criteria.id).then((res) => {
-                if (res.status === 200) {
-                    setQuestions(res.data[0]);
-                } else {
-                    setQuestions([]);
+                    setAnswers(res.data);
                 }
             });
         }
-    }, [qUpdate, criteria]);
+    }, [updateA]);
 
-    useEffect(() => {
-        if (question != undefined) {
-            getPosibility(question.id).then((res) => {
-                if (res.status === 200) {
-                    res.data[0].sort((a, b) => a.score - b.score);
-                    let temp = [];
-                    for (let i in availableP) {
-                        temp.push(res.data[0].filter((p) => p.score == i)[0]);
-                    }
-                    setPossibilities(temp);
-                } else {
-                    setPossibilities([]);
-                }
-            });
-        }
-    }, [question, pUpdate]);
-
-    if (assessments === null) {
+    if (factories === null || answers === null) {
         return <Loader />;
     }
 
     return (
         <div className="flex flex-wrap w-full h-full overflow-y-auto no-scrollbar">
-            {showA == false && showC == false && showQ == false && (
-                <div
-                    className={`flex flex-wrap sm:flex-row flex-col gap-3 w-full h-auto p-4 overflow-y-auto overflow-x-hidden no-scrollbar`}
-                >
-                    <div
-                        onClick={() => {
-                            setShowCA(true);
-                        }}
-                        className="flex flex-wrap sm:w-40 w-full h-40 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
-                    >
-                        <svg
-                            className="w-12 h-12 text-gray-400 group-hover:text-text transition-all duration-500 ease-in-out"
-                            width={24}
-                            height={24}
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                fill="none"
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 4v16m8-8H4"
-                            ></path>
-                        </svg>
+            {assessment !== undefined &&
+                answers != undefined &&
+                criteria === undefined && (
+                    <div className="flex flex-wrap gap-3 w-full h-max p-2">
+                        {assessment.criterias.map((criteria, index) => {
+                            let overall = (
+                                answers
+                                    .filter(
+                                        (ans) => ans.criteria === criteria.id
+                                    )
+                                    .reduce(
+                                        (acc, ans) =>
+                                            acc +
+                                            ((ans.answer !== undefined
+                                                ? ans.answer
+                                                : 0) *
+                                                criteria.questions.find(
+                                                    (q) => q.id === ans.question
+                                                ).weight) /
+                                                100,
+                                        0
+                                    ) /
+                                (criteria.questions.reduce((acc, q) => {
+                                    return acc + q.possibilities.length;
+                                }, 0) || 1)
+                            ).toFixed(2);
+                            return (
+                                <div
+                                    onClick={() => {
+                                        setCriteria(criteria);
+                                    }}
+                                    className={`flex flex-wrap justify-center content-center w-28 h-20 border-2 border-text capitalize text-md text-text font-semibold ${
+                                        overall === 0
+                                            ? `hover:bg-gradient-to-br hover:from-text hover:to-white`
+                                            : overall < 3
+                                            ? `hover:bg-gradient-to-br hover:from-text hover:to-red-700`
+                                            : overall < 5
+                                            ? `hover:bg-gradient-to-br hover:from-text hover:to-orange-500`
+                                            : overall < 7
+                                            ? `hover:bg-gradient-to-br hover:from-text hover:to-yellow-500`
+                                            : overall < 9
+                                            ? `hover:bg-gradient-to-br hover:from-text hover:to-green-500`
+                                            : `hover:bg-gradient-to-br hover:from-text hover:to-primary`
+                                    } hover:text-white hover:scale-110 transition-all duration-500 ease-in-out cursor-pointer rounded-md`}
+                                >
+                                    {criteria.name + " - " + overall}
+                                </div>
+                            );
+                        })}
                     </div>
-                    {assessments.map((assessmentL) => {
-                        return (
+                )}
+
+            {assessment !== undefined &&
+                answers !== undefined &&
+                criteria !== undefined && (
+                    <div className="flex flex-wrap w-full h-full">
+                        <div className="flex flex-col gap-2 w-full lg:w-1/5 h-48 pb-10 lg:h-full max-h-48 lg:max-h-full overflow-x-hidden overflow-y-auto no-scrollbar border-b-2 lg:border-b-0 lg:border-r-2 border-text px-4 py-2">
                             <div
                                 onClick={() => {
-                                    setAssessment(assessmentL);
-                                    setShowA(true);
+                                    for (let question of criteria.questions) {
+                                        for (let possibility of question.possibilities) {
+                                            let ans = answers.find(
+                                                (ans) =>
+                                                    ans.possibility ===
+                                                    possibility.id
+                                            );
+
+                                            if (ans !== undefined) {
+                                                saveAnswer(ans).then((res) => {
+                                                    if (res.status === 200) {
+                                                        setTimeout(() => {
+                                                            setUpdateA(
+                                                                !updateA
+                                                            );
+                                                        }, 50);
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    }
+
+                                    setAnswers(null);
+                                    setAnswerImgPreview([]);
+                                    setCriteria(undefined);
+                                    setQuestion(undefined);
                                 }}
-                                key={assessmentL.id}
-                                className="relative flex flex-wrap sm:w-40 w-full h-40 border-2 border-text rounded-md justify-center content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
+                                className="flex flex-wrap justify-center content-center w-full h-20 min-h-20 border-2 border-text rounded-md capitalize text-mx text-text font-semibold hover:bg-text hover:text-white transition-all duration-500 ease-in-out scale-95 cursor-pointer"
                             >
-                                <p className="text-text text-center text-lg font-semibold group-hover:text-primary transition-all duration-500 ease-in-out">
-                                    {assessmentL.name}
-                                </p>
+                                Save & Back
                             </div>
-                        );
-                    })}
-                </div>
-            )}
-
-            {showA == true && showC == false && showQ == false && (
-                <div className={`w-full h-full flex flex-wrap`}>
-                    <div className="flex flex-wrap xl:w-[25%] sm:w-[45%] w-full p-4 h-auto sm:h-full sm:border-r-2 sm:border-text">
-                        <Formik
-                            initialValues={
-                                assessment != undefined
-                                    ? assessment
-                                    : {
-                                          name: "",
-                                          year: 0,
-                                          description: "",
-                                          factory: "",
-                                      }
-                            }
-                            onSubmit={(values) => {
-                                cuAssessment(values).then((res) => {
-                                    if (res.status === 201) {
-                                        setAUpdate(!aUpdate);
-                                    }
-                                });
-                            }}
-                        >
-                            {(values, errors) => (
-                                <Form className="flex flex-col w-full h-full p-4 justify-between">
-                                    <div className="flex flex-wrap w-full h-auto">
-                                        <div className="flex flex-col w-full p-2">
-                                            <label className="text-text font-semibold">
-                                                Name
-                                            </label>
-                                            <ErrorMessage
-                                                name="name"
-                                                component="div"
-                                                className="text-red-700 text-lg font-semibold"
-                                            />
-                                            <Field
-                                                type="text"
-                                                name="name"
-                                                className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                            />
-                                        </div>
-                                        <div className="flex flex-col w-full p-2">
-                                            <label className="text-text font-semibold">
-                                                Year
-                                            </label>
-                                            <ErrorMessage
-                                                name="year"
-                                                component="div"
-                                                className="text-red-700 text-lg font-semibold"
-                                            />
-                                            <Field
-                                                type="number"
-                                                name="year"
-                                                className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                            />
-                                        </div>
-                                        <div className="flex flex-col w-full p-2">
-                                            <label className="text-text font-semibold">
-                                                Description
-                                            </label>
-                                            <ErrorMessage
-                                                name="description"
-                                                component="div"
-                                                className="text-red-700 text-lg font-semibold"
-                                            />
-                                            <Field
-                                                as="textarea"
-                                                name="description"
-                                                className="border-2 h-24 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                            />
-                                        </div>
-                                        <div className="flex flex-col w-full p-2">
-                                            <label
-                                                htmlFor="factory"
-                                                className="text-text font-semibold"
-                                            >
-                                                Factory
-                                            </label>
-                                            <ErrorMessage
-                                                name="factory"
-                                                component="div"
-                                                className="text-red-700 text-lg font-semibold"
-                                            />
-                                            <Field
-                                                as="select"
-                                                name="factory"
-                                                className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                            >
-                                                {assessment === undefined && (
-                                                    <option
-                                                        value=""
-                                                        disabled
-                                                        selected
-                                                    >
-                                                        Select Factory
-                                                    </option>
-                                                )}
-                                                {factories.map((factory) => {
-                                                    return (
-                                                        <option
-                                                            key={factory.id}
-                                                            value={factory.id}
-                                                        >
-                                                            {factory.name}
-                                                        </option>
-                                                    );
-                                                })}
-                                            </Field>
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-wrap w-full p-2 gap-2 justify-between">
-                                        <button
-                                            type="submit"
-                                            className="sm:w-[48%] w-full py-2 border-2 border-text bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
-                                        >
-                                            Update
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                deleteAssessment(
-                                                    assessment.id
-                                                ).then((res) => {
-                                                    if (res.status === 201) {
-                                                        setShowA(false);
-                                                        setAssessment(
-                                                            undefined
-                                                        );
-                                                        setCriterias(undefined);
-                                                        setQuestions(undefined);
-                                                        setAUpdate(!aUpdate);
-                                                    }
-                                                });
-                                            }}
-                                            type="button"
-                                            className="sm:w-[48%] w-full py-2 border-2 border-text bg-red-800 hover:bg-red-600 transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
-                                        >
-                                            Delete
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="sm:w-[48%] w-full py-2 underline border-2 border-text transition-all duration-500 ease-in-out text-lg font-semibold text-text rounded-md"
-                                        >
-                                            Dublicate
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                setShowA(false);
-                                                setAssessment(undefined);
-                                            }}
-                                            type="button"
-                                            className="sm:w-[48%] w-full py-2  transition-all duration-500 ease-in-out text-lg font-semibold text-text border-2 border-text rounded-md"
-                                        >
-                                            Back
-                                        </button>
-                                    </div>
-                                </Form>
-                            )}
-                        </Formik>
-                    </div>
-                    <div className="flex flex-wrap flex-col md:flex-row gap-3 xl:w-[75%] sm:w-[55%] w-full p-4 h-auto sm:h-auto overflow-y-auto overflow-x-hidden no-scrollbar">
-                        <div
-                            onClick={() => {
-                                setShowCC(true);
-                            }}
-                            className="flex flex-wrap md:w-40 w-full h-40 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
-                        >
-                            <svg
-                                className="w-12 h-12 text-gray-400 group-hover:text-text transition-all duration-500 ease-in-out"
-                                width={24}
-                                height={24}
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M12 4v16m8-8H4"
-                                ></path>
-                            </svg>
-                        </div>
-                        {criterias.map((criteriaL) => {
-                            return (
-                                <div
-                                    onClick={() => {
-                                        setCriteria(criteriaL);
-                                        setShowC(true);
-                                    }}
-                                    key={criteriaL.id}
-                                    className="relative flex flex-wrap md:w-40 w-full h-40 border-2 border-text rounded-md justify-center content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
-                                >
-                                    <p className="text-text text-center text-lg font-semibold group-hover:text-primary transition-all duration-500 ease-in-out">
-                                        {criteriaL.name}
-                                    </p>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            )}
-
-            {showA == true && showC == true && showQ == false && (
-                <div className="flex flex-wrap w-full h-full">
-                    <div className="flex flex-wrap xl:w-[25%] sm:w-[45%] w-full p-4 h-auto sm:h-full sm:border-r-2 sm:border-text">
-                        <Formik
-                            initialValues={
-                                criteria != undefined
-                                    ? criteria
-                                    : {
-                                          name: "",
-                                          description: "",
-                                      }
-                            }
-                            onSubmit={(values) => {
-                                cuCriteria(values).then((res) => {
-                                    if (res.status === 201) {
-                                        setCUpdate(!cUpdate);
-                                    }
-                                });
-                            }}
-                        >
-                            {(values, errors) => (
-                                <Form className="flex flex-col w-full h-full p-4 justify-between">
-                                    <div className="flex flex-wrap w-full h-auto">
-                                        <div className="flex flex-col w-full p-2">
-                                            <label className="text-text font-semibold">
-                                                Name
-                                            </label>
-                                            <ErrorMessage
-                                                name="name"
-                                                component="div"
-                                                className="text-red-700 text-lg font-semibold"
-                                            />
-                                            <Field
-                                                type="text"
-                                                name="name"
-                                                className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                            />
-                                        </div>
-
-                                        <div className="flex flex-col w-full p-2">
-                                            <label className="text-text font-semibold">
-                                                Description
-                                            </label>
-                                            <ErrorMessage
-                                                name="description"
-                                                component="div"
-                                                className="text-red-700 text-lg font-semibold"
-                                            />
-                                            <Field
-                                                as="textarea"
-                                                name="description"
-                                                className="border-2 h-24 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-wrap w-full p-2 gap-2 justify-between">
-                                        <button
-                                            type="submit"
-                                            className="sm:w-[48%] w-full py-2 border-2 border-text bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
-                                        >
-                                            Update
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                deleteCriteria(
-                                                    criteria.id
-                                                ).then((res) => {
-                                                    if (res.status === 201) {
-                                                        setShowC(false);
-                                                        setCriteria(undefined);
-                                                        setQuestions(undefined);
-                                                        setCUpdate(!cUpdate);
-                                                    }
-                                                });
-                                            }}
-                                            type="button"
-                                            className="sm:w-[48%] w-full py-2 border-2 border-text bg-red-800 hover:bg-red-600 transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
-                                        >
-                                            Delete
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="sm:w-[48%] w-full py-2 underline border-2 border-text transition-all duration-500 ease-in-out text-lg font-semibold text-text rounded-md"
-                                        >
-                                            Dublicate
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                setShowC(false);
-                                                setShowA(true);
-                                                setCriteria(undefined);
-                                            }}
-                                            type="button"
-                                            className="sm:w-[48%] w-full py-2  transition-all duration-500 ease-in-out text-lg font-semibold text-text border-2 border-text rounded-md"
-                                        >
-                                            Back
-                                        </button>
-                                    </div>
-                                </Form>
-                            )}
-                        </Formik>
-                    </div>
-                    <div className="flex flex-wrap flex-col md:flex-row gap-3 xl:w-[75%] sm:w-[55%] w-full p-4 h-auto sm:h-auto overflow-y-auto overflow-x-hidden no-scrollbar">
-                        <div
-                            onClick={() => {
-                                setShowCQ(true);
-                            }}
-                            className="flex flex-wrap sm:w-40 w-full h-40 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
-                        >
-                            <svg
-                                className="w-12 h-12 text-gray-400 group-hover:text-text transition-all duration-500 ease-in-out"
-                                width={24}
-                                height={24}
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M12 4v16m8-8H4"
-                                ></path>
-                            </svg>
-                        </div>
-                        {questions.map((questionL) => {
-                            return (
-                                <div
-                                    onClick={() => {
-                                        setQuestion(questionL);
-                                        setShowQ(true);
-                                    }}
-                                    key={questionL.id}
-                                    className="relative flex flex-wrap md:w-40 w-full h-40 border-2 border-text rounded-md justify-center content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
-                                >
-                                    <p className="text-text text-center text-lg font-semibold group-hover:text-primary transition-all duration-500 ease-in-out">
-                                        {questionL.question}
-                                    </p>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            )}
-
-            {showA == true && showC == true && showQ == true && (
-                <div className="flex flex-wrap w-full h-full">
-                    <div className="flex flex-wrap xl:w-[25%] sm:w-[45%] w-full p-4 h-full sm:h-full sm:border-r-2 sm:border-text">
-                        <Formik
-                            initialValues={
-                                question != undefined
-                                    ? question
-                                    : {
-                                          question: "",
-                                          comment: "",
-                                      }
-                            }
-                            onSubmit={(values) => {
-                                cuQuestion(values).then((res) => {
-                                    if (res.status === 201) {
-                                        setQUpdate(!cUpdate);
-                                    }
-                                });
-                            }}
-                        >
-                            {(values, errors) => (
-                                <Form className="flex flex-col w-full h-full p-4 justify-between">
-                                    <div className="flex flex-wrap w-full h-auto">
-                                        <div className="flex flex-col w-full p-2">
-                                            <label className="text-text font-semibold">
-                                                Question
-                                            </label>
-                                            <ErrorMessage
-                                                name="question"
-                                                component="div"
-                                                className="text-red-700 text-lg font-semibold"
-                                            />
-                                            <Field
-                                                type="text"
-                                                name="question"
-                                                className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                            />
-                                        </div>
-
-                                        <div className="flex flex-col w-full p-2">
-                                            <label className="text-text font-semibold">
-                                                Comment
-                                            </label>
-                                            <ErrorMessage
-                                                name="comment"
-                                                component="div"
-                                                className="text-red-700 text-lg font-semibold"
-                                            />
-                                            <Field
-                                                as="textarea"
-                                                name="comment"
-                                                className="border-2 h-24 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-wrap w-full p-2 gap-2 justify-between">
-                                        <button
-                                            type="submit"
-                                            className="sm:w-[48%] w-full py-2 border-2 border-text bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
-                                        >
-                                            Update
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                deleteQuestion(
-                                                    question.id
-                                                ).then((res) => {
-                                                    if (res.status === 201) {
-                                                        setShowQ(false);
-                                                        setShowC;
-                                                        setQuestion(undefined);
-                                                        setQUpdate(!qUpdate);
-                                                    }
-                                                });
-                                            }}
-                                            type="button"
-                                            className="sm:w-[48%] w-full py-2 border-2 border-text bg-red-800 hover:bg-red-600 transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
-                                        >
-                                            Delete
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="sm:w-[48%] w-full py-2 underline border-2 border-text transition-all duration-500 ease-in-out text-lg font-semibold text-text rounded-md"
-                                        >
-                                            Dublicate
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                setShowQ(false);
-                                                setShowC(true);
-                                                setQuestion(undefined);
-                                            }}
-                                            type="button"
-                                            className="sm:w-[48%] w-full py-2  transition-all duration-500 ease-in-out text-lg font-semibold text-text border-2 border-text rounded-md"
-                                        >
-                                            Back
-                                        </button>
-                                    </div>
-                                </Form>
-                            )}
-                        </Formik>
-                    </div>
-                    <div className="flex flex-wrap flex-col gap-3 xl:w-[75%] sm:w-[55%] w-full p-4 h-auto sm:h-auto overflow-y-auto overflow-x-hidden no-scrollbar">
-                        {availableP.map((p) => {
-                            return possibilities[p] != undefined ? (
-                                <div
-                                    onClick={() => {
-                                        setPossibility(possibilities[p]);
-                                        setShowP(true);
-                                    }}
-                                    key={possibilities[p].id}
-                                    className="relative flex flex-wrap w-full h-[7.8%] border-2 border-text rounded-md justify-center content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
-                                >
-                                    <p className="text-text text-center text-lg font-semibold group-hover:text-primary transition-all duration-500 ease-in-out">
-                                        {possibilities[p].possibility}
-                                    </p>
-                                </div>
-                            ) : (
-                                <div
-                                    onClick={() => {
-                                        setShowP(true);
-                                        setPossibility({
-                                            possibility: "",
-                                            score: p,
-                                            question: question.id,
-                                        });
-                                    }}
-                                    className="flex flex-wrap w-full h-[7.8%] border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
-                                >
-                                    <svg
-                                        className="w-12 h-12 text-gray-400 group-hover:text-text transition-all duration-500 ease-in-out"
-                                        width={24}
-                                        height={24}
-                                        viewBox="0 0 24 24"
+                            {criteria.questions.map((questionL, index) => {
+                                return (
+                                    <div
+                                        onClick={() => {
+                                            setQuestion(questionL);
+                                            setPossibility(undefined);
+                                        }}
+                                        className={`flex flex-wrap justify-center w-full h-20 min-h-20 max-h-20 border-2 border-text capitalize text-ellipsis overflow-hidden text-md text-text font-semibold ${
+                                            questionL === question
+                                                ? "bg-gradient-to-br from-text to-primary text-white"
+                                                : "hover:bg-gradient-to-br hover:from-text hover:to-primary hover:text-white scale-95 hover:scale-100"
+                                        } transition-all duration-500 ease-in-out cursor-pointer rounded-md p-1`}
                                     >
-                                        <path
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M12 4v16m8-8H4"
-                                        ></path>
-                                    </svg>
+                                        {questionL.question}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        {question !== undefined && (
+                            <div className="flex flex-col w-full lg:w-4/5 h-full max-h-full overflow-x-hidden overflow-y-auto no-scrollbar border-r-2 border-text">
+                                <div className="flex flex-wrap w-full h-max border-b-2 max-h-[10%] overflow-x-hidden overflow-y-auto no-scrollbar border-text capitalize text-xl text-primary font-semibold px-4 pt-3 pb-4">
+                                    {question.question}
                                 </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            )}
+                                <div className="flex flex-wrap w-full h-max max-h-40 overflow-y-auto no-scrollbar gap-3 border-b-2 border-text px-4 pt-3 pb-4">
+                                    <p className="text-text text-lg font-medium w-full">
+                                        Possibilities
+                                    </p>
+                                    {question.possibilities.map(
+                                        (possibilityL, index) => (
+                                            <div
+                                                onClick={() => {
+                                                    setPossibility(
+                                                        possibilityL
+                                                    );
+                                                    let exists = answers.find(
+                                                        (ans) =>
+                                                            ans.possibility ===
+                                                            possibilityL.id
+                                                    );
 
-            {/* CU dialog assessment */}
-            <Dialog
-                className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
-                header={"Create"}
-                headerClassName="text-lg font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
-                contentClassName="p-2"
-                visible={showCA}
-                onHide={() => {
-                    setShowCA(false);
-                    setAssessment(undefined);
-                }}
-            >
-                <Formik
-                    initialValues={
-                        assessment != undefined
-                            ? assessment
-                            : {
-                                  name: "",
-                                  year: 0,
-                                  description: "",
-                                  factory: "",
-                              }
-                    }
-                    onSubmit={(values, actions) => {
-                        cuAssessment(values).then((res) => {
-                            if (res.status === 201) {
-                                setShowCA(false);
-                                setAssessment(undefined);
-                                setAUpdate(!aUpdate);
-                                actions.resetForm({
-                                    values: {
-                                        name: "",
-                                        year: 0,
-                                        description: "",
-                                        factory: "",
-                                    },
-                                });
-                            }
-                        });
-                    }}
-                >
-                    {(values, errors) => (
-                        <Form className="flex flex-wrap w-full h-full p-4">
-                            <div className="flex flex-col w-full p-2">
-                                <label className="text-text font-semibold">
-                                    Name
-                                </label>
-                                <ErrorMessage
-                                    name="name"
-                                    component="div"
-                                    className="text-red-700 text-lg font-semibold"
-                                />
-                                <Field
-                                    type="text"
-                                    name="name"
-                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                />
-                            </div>
-                            <div className="flex flex-col w-full p-2">
-                                <label className="text-text font-semibold">
-                                    Year
-                                </label>
-                                <ErrorMessage
-                                    name="year"
-                                    component="div"
-                                    className="text-red-700 text-lg font-semibold"
-                                />
-                                <Field
-                                    type="number"
-                                    name="year"
-                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                />
-                            </div>
-                            <div className="flex flex-col w-full p-2">
-                                <label className="text-text font-semibold">
-                                    Description
-                                </label>
-                                <ErrorMessage
-                                    name="description"
-                                    component="div"
-                                    className="text-red-700 text-lg font-semibold"
-                                />
-                                <Field
-                                    as="textarea"
-                                    name="description"
-                                    className="border-2 h-24 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                />
-                            </div>
-                            <div className="flex flex-col w-full p-2">
-                                <label
-                                    htmlFor="factory"
-                                    className="text-text font-semibold"
-                                >
-                                    Factory
-                                </label>
-                                <ErrorMessage
-                                    name="factory"
-                                    component="div"
-                                    className="text-red-700 text-lg font-semibold"
-                                />
-                                <Field
-                                    as="select"
-                                    name="factory"
-                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                >
-                                    {assessment === undefined && (
-                                        <option value="" disabled selected>
-                                            Select Factory
-                                        </option>
+                                                    if (exists === undefined) {
+                                                        setAnswers((prev) => [
+                                                            ...prev,
+                                                            {
+                                                                assessment:
+                                                                    assessment.id,
+                                                                criteria:
+                                                                    criteria.id,
+                                                                question:
+                                                                    question.id,
+                                                                possibility:
+                                                                    possibilityL.id,
+                                                                answer: 0,
+                                                                evidence: [],
+                                                                comment: "",
+                                                            },
+                                                        ]);
+                                                    }
+
+                                                    setAnswerImgPreview([]);
+                                                }}
+                                                className={`flex flex-wrap w-full lg:w-48 h-auto justify-between py-2 px-2 text-text text-lg capitalize font-semibold rounded-md border-2 border-text content-center ${
+                                                    possibilityL === possibility
+                                                        ? "bg-gradient-to-br from-text to-primary text-white"
+                                                        : "hover:bg-gradient-to-br hover:from-text hover:to-primary hover:text-white"
+                                                } transition-all duration-500 ease-in-out cursor-pointer`}
+                                            >
+                                                {possibilityL.subcriteria !==
+                                                "Default"
+                                                    ? possibilityL.subcriteria
+                                                    : "-"}
+                                            </div>
+                                        )
                                     )}
-                                    {factories.map((factory) => {
-                                        return (
+                                </div>
+                                <div className="flex flex-wrap w-full h-max max-h-72 gap-3 border-b-2 overflow-y-auto no-scrollbar border-text px-4 pt-3 pb-4">
+                                    {possibility !== undefined && (
+                                        <div className="flex flex-wrap w-full h-max gap-3 px-4 py-2">
+                                            <p className="text-text text-lg font-medium w-full">
+                                                Statements
+                                            </p>
+                                            {possibility.statements.map(
+                                                (statementL, index) => (
+                                                    <div
+                                                        onClick={() => {
+                                                            statementL.statement !==
+                                                                undefined &&
+                                                                setAnswers(
+                                                                    answers.map(
+                                                                        (
+                                                                            ans
+                                                                        ) => {
+                                                                            if (
+                                                                                ans.possibility ===
+                                                                                possibility.id
+                                                                            ) {
+                                                                                return {
+                                                                                    ...ans,
+                                                                                    answer: statementL.score,
+                                                                                };
+                                                                            } else {
+                                                                                return ans;
+                                                                            }
+                                                                        }
+                                                                    )
+                                                                );
+                                                        }}
+                                                        className={`flex flex-wrap gap-2 w-full h-auto py-2 px-2 ${
+                                                            parseInt(
+                                                                statementL.score
+                                                            ) ===
+                                                            parseInt(
+                                                                answers.find(
+                                                                    (ans) =>
+                                                                        ans.possibility ===
+                                                                        possibility.id
+                                                                )?.answer
+                                                            )
+                                                                ? "bg-gradient-to-br from-text to-primary text-white scale:100 rounded-md cursor-pointer"
+                                                                : statementL.statement !==
+                                                                  undefined
+                                                                ? "bg-white text-text hover:scale-100 scale-90 cursor-pointer border-text"
+                                                                : "bg-slate-700 scale-90 rounded-md cursor-not-allowed text-white"
+                                                        }  transition-all duration-500 ease-in-out border-b-2 `}
+                                                    >
+                                                        <p
+                                                            className={`text-lg font-semibold ${
+                                                                statementL.score ===
+                                                                answers.find(
+                                                                    (ans) =>
+                                                                        ans.possibility ===
+                                                                        possibility.id
+                                                                )?.answer
+                                                                    ? "text-white"
+                                                                    : statementL.statement !==
+                                                                      undefined
+                                                                    ? "text-text border-r-2 border-text"
+                                                                    : "text-slate-white border-r-2 border-white"
+                                                            } px-2`}
+                                                        >
+                                                            {statementL.score}
+                                                        </p>
+                                                        {statementL.statement}
+                                                    </div>
+                                                )
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex flex-wrap w-full h-max gap-3 overflow-y-auto no-scrollbar px-4 pt-3 pb-4">
+                                    {possibility !== undefined && (
+                                        <div className="flex flex-wrap w-full h-auto gap-3">
+                                            <div className="flex flex-wrap w-full h-auto gap-3">
+                                                <p className="text-text text-lg font-medium w-full">
+                                                    Comments
+                                                </p>
+                                                <textarea
+                                                    value={
+                                                        answers.find(
+                                                            (ans) =>
+                                                                ans.possibility ===
+                                                                possibility.id
+                                                        )?.comment
+                                                    }
+                                                    onChange={(e) => {
+                                                        setAnswers(
+                                                            answers.map(
+                                                                (ans) => {
+                                                                    if (
+                                                                        ans.possibility ===
+                                                                        possibility.id
+                                                                    ) {
+                                                                        return {
+                                                                            ...ans,
+                                                                            comment:
+                                                                                e
+                                                                                    .target
+                                                                                    .value,
+                                                                        };
+                                                                    } else {
+                                                                        return ans;
+                                                                    }
+                                                                }
+                                                            )
+                                                        );
+                                                    }}
+                                                    className="border-2 border-text rounded-md p-2 w-full h-20"
+                                                ></textarea>
+                                            </div>
+                                            <div className="flex flex-wrap w-full h-auto gap-3">
+                                                <p className="text-text text-lg font-medium w-full">
+                                                    Evidence
+                                                </p>
+                                                <input
+                                                    type="file"
+                                                    accept="*"
+                                                    onChange={(e) => {
+                                                        setAnswerImgPreview([]);
+                                                        for (
+                                                            let i = 0;
+                                                            i <
+                                                            Object.keys(
+                                                                e.target.files
+                                                            ).length;
+                                                            i++
+                                                        ) {
+                                                            setAnswerImgPreview(
+                                                                (old) => [
+                                                                    ...old,
+                                                                    URL.createObjectURL(
+                                                                        e.target
+                                                                            .files[
+                                                                            i
+                                                                        ]
+                                                                    ),
+                                                                ]
+                                                            );
+                                                        }
+
+                                                        setAnswers(
+                                                            answers.map(
+                                                                (ans) => {
+                                                                    if (
+                                                                        ans.possibility ===
+                                                                        possibility.id
+                                                                    ) {
+                                                                        return {
+                                                                            ...ans,
+                                                                            new_evidence:
+                                                                                e
+                                                                                    .target
+                                                                                    .files,
+                                                                        };
+                                                                    } else {
+                                                                        return ans;
+                                                                    }
+                                                                }
+                                                            )
+                                                        );
+                                                    }}
+                                                    multiple
+                                                    className="border-2 border-text rounded-md p-2 w-full"
+                                                />
+                                            </div>
+                                            <div className="flex flex-wrap w-full h-auto gap-3">
+                                                {answers
+                                                    .find(
+                                                        (ans) =>
+                                                            ans.possibility ===
+                                                            possibility.id
+                                                    )
+                                                    ?.evidence.map(
+                                                        (file, index) => (
+                                                            <div className="relative">
+                                                                {file.includes(
+                                                                    ".pdf"
+                                                                ) ? (
+                                                                    <a
+                                                                        href={
+                                                                            import.meta
+                                                                                .env
+                                                                                .VITE_BACKEND_IMG_URL +
+                                                                            file
+                                                                        }
+                                                                        download={
+                                                                            "File.pdf"
+                                                                        }
+                                                                        target="_blank"
+                                                                    >
+                                                                        <svg
+                                                                            className="w-20 h-20"
+                                                                            width={
+                                                                                24
+                                                                            }
+                                                                            height={
+                                                                                24
+                                                                            }
+                                                                            viewBox="0 0 20 20"
+                                                                        >
+                                                                            <path
+                                                                                fill="currentColor"
+                                                                                d="M6.5 11a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 1 0v-.166h.334a1.167 1.167 0 0 0 0-2.334zm.834 1.334H7V12h.333a.167.167 0 0 1 0 .334M12 11.499a.5.5 0 0 1 .5-.499h.999a.5.5 0 0 1 0 1H13v.335h.5a.5.5 0 1 1 0 1H13l.001.164a.5.5 0 0 1-1 .002L12 12.834zM9.5 11a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h.502a1.5 1.5 0 0 0 0-3zm.5 2v-1h.002a.5.5 0 0 1 0 1zM4.001 4a2 2 0 0 1 2-2h4.585a1.5 1.5 0 0 1 1.061.44l3.914 3.914a1.5 1.5 0 0 1 .44 1.06v1.668a1.5 1.5 0 0 1 .998 1.414v4.003a1.5 1.5 0 0 1-.998 1.414V16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-.087A1.5 1.5 0 0 1 3 14.5v-4.003a1.5 1.5 0 0 1 1-1.414zm11 4h-3.5A1.5 1.5 0 0 1 10 6.5V3H6a1 1 0 0 0-1 1v4.996h10zM5 15.999A1 1 0 0 0 6 17h8a1 1 0 0 0 1-1.001zm6-12.792V6.5a.5.5 0 0 0 .5.5h3.292zM4.502 9.996a.5.5 0 0 0-.5.5v4.003a.5.5 0 0 0 .5.5h10.997a.5.5 0 0 0 .5-.5v-4.003a.5.5 0 0 0-.5-.5z"
+                                                                            ></path>
+                                                                        </svg>
+                                                                    </a>
+                                                                ) : file.includes(
+                                                                      ".docx"
+                                                                  ) |
+                                                                  file.includes(
+                                                                      ".doc"
+                                                                  ) ? (
+                                                                    <a
+                                                                        href={
+                                                                            import.meta
+                                                                                .env
+                                                                                .VITE_BACKEND_IMG_URL +
+                                                                            file
+                                                                        }
+                                                                        download={
+                                                                            "File.docx"
+                                                                        }
+                                                                    >
+                                                                        <svg
+                                                                            className="w-20 h-20"
+                                                                            width={
+                                                                                24
+                                                                            }
+                                                                            height={
+                                                                                24
+                                                                            }
+                                                                            viewBox="0 0 24 24"
+                                                                        >
+                                                                            <path
+                                                                                fill="none"
+                                                                                stroke="currentColor"
+                                                                                strokeLinecap="round"
+                                                                                strokeLinejoin="round"
+                                                                                strokeWidth={
+                                                                                    2
+                                                                                }
+                                                                                d="M10 3v4a1 1 0 0 1-1 1H5m4 4l1 5l2-3.333L14 17l1-5m4-8v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1"
+                                                                            ></path>
+                                                                        </svg>
+                                                                    </a>
+                                                                ) : file.includes(
+                                                                      ".ppt"
+                                                                  ) ||
+                                                                  file.includes(
+                                                                      ".pptx"
+                                                                  ) ? (
+                                                                    <a
+                                                                        href={
+                                                                            import.meta
+                                                                                .env
+                                                                                .VITE_BACKEND_IMG_URL +
+                                                                            file
+                                                                        }
+                                                                        download={
+                                                                            "File.pptx"
+                                                                        }
+                                                                    >
+                                                                        <svg
+                                                                            className="w-20 h-20"
+                                                                            width={
+                                                                                18
+                                                                            }
+                                                                            height={
+                                                                                24
+                                                                            }
+                                                                            viewBox="0 0 384 512"
+                                                                        >
+                                                                            <path
+                                                                                fill="currentColor"
+                                                                                d="M369.9 97.9L286 14C277 5 264.8-.1 252.1-.1H48C21.5 0 0 21.5 0 48v416c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V131.9c0-12.7-5.1-25-14.1-34M332.1 128H256V51.9zM48 464V48h160v104c0 13.3 10.7 24 24 24h104v288zm72-60V236c0-6.6 5.4-12 12-12h69.2c36.7 0 62.8 27 62.8 66.3c0 74.3-68.7 66.5-95.5 66.5V404c0 6.6-5.4 12-12 12H132c-6.6 0-12-5.4-12-12m48.5-87.4h23c7.9 0 13.9-2.4 18.1-7.2c8.5-9.8 8.4-28.5.1-37.8c-4.1-4.6-9.9-7-17.4-7h-23.9v52z"
+                                                                            ></path>
+                                                                        </svg>
+                                                                    </a>
+                                                                ) : file.includes(
+                                                                      "xls"
+                                                                  ) ||
+                                                                  file.includes(
+                                                                      "xlsx"
+                                                                  ) ? (
+                                                                    <svg
+                                                                        className="w-20 h-20"
+                                                                        width={
+                                                                            24
+                                                                        }
+                                                                        height={
+                                                                            24
+                                                                        }
+                                                                        viewBox="0 0 256 256"
+                                                                    >
+                                                                        <path
+                                                                            fill="currentColor"
+                                                                            d="M200 24H72a16 16 0 0 0-16 16v24H40a16 16 0 0 0-16 16v96a16 16 0 0 0 16 16h16v24a16 16 0 0 0 16 16h128a16 16 0 0 0 16-16V40a16 16 0 0 0-16-16m-40 80h40v48h-40Zm40-16h-40v-8a16 16 0 0 0-16-16V40h56ZM72 40h56v24H72ZM40 80h104v96H40Zm32 112h56v24H72Zm72 24v-24a16 16 0 0 0 16-16v-8h40v48Zm-78.15-69.12L81.59 128l-15.74-18.88a8 8 0 0 1 12.3-10.24L92 115.5l13.85-16.62a8 8 0 1 1 12.3 10.24L102.41 128l15.74 18.88a8 8 0 0 1-12.3 10.24L92 140.5l-13.85 16.62a8 8 0 0 1-12.3-10.24"
+                                                                        ></path>
+                                                                    </svg>
+                                                                ) : file.includes(
+                                                                      ".jpg"
+                                                                  ) ||
+                                                                  file.includes(
+                                                                      ".png"
+                                                                  ) ||
+                                                                  file.includes(
+                                                                      ".gif"
+                                                                  ) ||
+                                                                  file.includes(
+                                                                      ".svg"
+                                                                  ) ? (
+                                                                    <img
+                                                                        onDoubleClick={() => {
+                                                                            window.open(
+                                                                                import.meta
+                                                                                    .env
+                                                                                    .VITE_BACKEND_IMG_URL +
+                                                                                    file
+                                                                            );
+                                                                        }}
+                                                                        src={
+                                                                            import.meta
+                                                                                .env
+                                                                                .VITE_BACKEND_IMG_URL +
+                                                                            file
+                                                                        }
+                                                                        alt="
+                                                                evidence"
+                                                                        className="w-20 h-20"
+                                                                    />
+                                                                ) : (
+                                                                    <a
+                                                                        href={
+                                                                            import.meta
+                                                                                .env
+                                                                                .VITE_BACKEND_IMG_URL +
+                                                                            file
+                                                                        }
+                                                                        download={
+                                                                            "File"
+                                                                        }
+                                                                    >
+                                                                        <svg
+                                                                            className="w-20 h-20"
+                                                                            width={
+                                                                                24
+                                                                            }
+                                                                            height={
+                                                                                24
+                                                                            }
+                                                                            viewBox="0 0 1024 1024"
+                                                                        >
+                                                                            <path
+                                                                                fill="currentColor"
+                                                                                d="M854.6 288.7L639.4 73.4c-6-6-14.2-9.4-22.7-9.4H192c-17.7 0-32 14.3-32 32v832c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V311.3c0-8.5-3.4-16.6-9.4-22.6M790.2 326H602V137.8zm1.8 562H232V136h302v216a42 42 0 0 0 42 42h216zM402 549c0 5.4 4.4 9.5 9.8 9.5h32.4c5.4 0 9.8-4.2 9.8-9.4c0-28.2 25.8-51.6 58-51.6s58 23.4 58 51.5c0 25.3-21 47.2-49.3 50.9c-19.3 2.8-34.5 20.3-34.7 40.1v32c0 5.5 4.5 10 10 10h32c5.5 0 10-4.5 10-10v-12.2c0-6 4-11.5 9.7-13.3c44.6-14.4 75-54 74.3-98.9c-.8-55.5-49.2-100.8-108.5-101.6c-61.4-.7-111.5 45.6-111.5 103m78 195a32 32 0 1 0 64 0a32 32 0 1 0-64 0"
+                                                                            ></path>
+                                                                        </svg>
+                                                                    </a>
+                                                                )}
+
+                                                                <div
+                                                                    onClick={() => {
+                                                                        setAnswers(
+                                                                            answers.map(
+                                                                                (
+                                                                                    ans
+                                                                                ) => {
+                                                                                    if (
+                                                                                        ans.possibility ===
+                                                                                        possibility.id
+                                                                                    ) {
+                                                                                        return {
+                                                                                            ...ans,
+                                                                                            evidence:
+                                                                                                ans.evidence.filter(
+                                                                                                    (
+                                                                                                        e
+                                                                                                    ) =>
+                                                                                                        e !==
+                                                                                                        img
+                                                                                                ),
+                                                                                        };
+                                                                                    } else {
+                                                                                        return ans;
+                                                                                    }
+                                                                                }
+                                                                            )
+                                                                        );
+                                                                    }}
+                                                                    className="absolute top-[-10px] right-[-8px] rounded-full px-2 bg-red-500 text-white text-lg font-semibold cursor-pointer z-10"
+                                                                >
+                                                                    X
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    )}
+                                                {answerImgPreview.map(
+                                                    (img, index) => (
+                                                        <div className="relative">
+                                                            <img
+                                                                src={img}
+                                                                alt="evidence"
+                                                                className="w-20 h-20"
+                                                            />
+                                                            <div
+                                                                onClick={() => {
+                                                                    setAnswerImgPreview(
+                                                                        answerImgPreview.filter(
+                                                                            (
+                                                                                imgL
+                                                                            ) =>
+                                                                                imgL !==
+                                                                                img
+                                                                        )
+                                                                    );
+                                                                }}
+                                                                className="absolute top-[-10px] right-[-8px] rounded-full px-2 bg-red-500 text-white text-lg font-semibold z-10"
+                                                            >
+                                                                X
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+            {assessment === undefined && answers === undefined && (
+                <div className="flex flex-wrap w-full h-full justify-center items-center">
+                    <Formik
+                        initialValues={{
+                            factory: "",
+                            year: new Date().getFullYear(),
+                        }}
+                        onSubmit={(values, action) => {
+                            getAssessment(values.year, values.factory).then(
+                                (res) => {
+                                    if (res.status === 200) {
+                                        setAssessment(res.assessment);
+                                        setAnswers(res.answers);
+                                    }
+                                }
+                            );
+                        }}
+                    >
+                        {(values, error) => (
+                            <Form className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 h-auto flex flex-col border-2 border-text rounded-md p-2">
+                                <div className="flex flex-wrap flex-col p-3 w-full">
+                                    <label
+                                        htmlFor="factory"
+                                        className="text-text text-md font-semibold"
+                                    >
+                                        Factory
+                                    </label>
+                                    <ErrorMessage
+                                        name="factory"
+                                        component="div"
+                                        className="text-red-500 font-medium text-sm"
+                                    />
+                                    <Field
+                                        as="select"
+                                        name="factory"
+                                        className="border-2 border-text rounded-md p-1"
+                                    >
+                                        <option value="">Select Factory</option>
+                                        {factories.map((factory) => (
                                             <option
-                                                key={factory.id}
                                                 value={factory.id}
+                                                key={factory.id}
                                             >
                                                 {factory.name}
                                             </option>
-                                        );
-                                    })}
-                                </Field>
-                            </div>
-                            <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
-                                <button
-                                    type="submit"
-                                    className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
-                                >
-                                    Create
-                                </button>
-                            </div>
-                        </Form>
-                    )}
-                </Formik>
-            </Dialog>
-
-            {/* CU dialog criteria */}
-            {assessment != undefined && (
-                <Dialog
-                    className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
-                    header={"Create"}
-                    headerClassName="text-lg font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
-                    contentClassName="p-2"
-                    visible={showCC}
-                    onHide={() => {
-                        setShowCC(false);
-                        setCriteria(undefined);
-                    }}
-                >
-                    <Formik
-                        initialValues={
-                            criteria != undefined
-                                ? criteria
-                                : {
-                                      name: "",
-                                      overall: 0,
-                                      description: "",
-                                      assessment: assessment.id,
-                                  }
-                        }
-                        onSubmit={(values, actions) => {
-                            cuCriteria(values).then((res) => {
-                                if (res.status === 201) {
-                                    setShowCC(false);
-                                    setCriteria(undefined);
-                                    setCUpdate(!cUpdate);
-                                    actions.resetForm({
-                                        values: {
-                                            name: "",
-                                            overall: 0,
-                                            description: "",
-                                            assessment: assessment.id,
-                                        },
-                                    });
-                                }
-                            });
-                        }}
-                    >
-                        {(values, errors) => (
-                            <Form className="flex flex-wrap w-full h-full p-4">
-                                <div className="flex flex-col w-full p-2">
-                                    <label className="text-text font-semibold">
-                                        Name
+                                        ))}
+                                    </Field>
+                                </div>
+                                <div className="flex flex-wrap flex-col p-3 w-full">
+                                    <label
+                                        htmlFor="year"
+                                        className="text-text text-md font-semibold"
+                                    >
+                                        Year
                                     </label>
                                     <ErrorMessage
-                                        name="name"
+                                        name="year"
                                         component="div"
-                                        className="text-red-700 text-lg font-semibold"
+                                        className="text-red-500 font-medium text-sm"
                                     />
                                     <Field
-                                        type="text"
-                                        name="name"
-                                        className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                        type="number"
+                                        step="1"
+                                        min="2024"
+                                        max="2099"
+                                        name="year"
+                                        className="border-2 border-text rounded-md p-1"
                                     />
                                 </div>
-                                <div className="flex flex-col w-full p-2">
-                                    <label className="text-text font-semibold">
-                                        Description
-                                    </label>
-                                    <ErrorMessage
-                                        name="description"
-                                        component="div"
-                                        className="text-red-700 text-lg font-semibold"
-                                    />
-                                    <Field
-                                        as="textarea"
-                                        name="description"
-                                        className="border-2 h-24 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                    />
-                                </div>
-                                <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
+                                <div className="flex flex-wrap w-full p-3">
                                     <button
                                         type="submit"
-                                        className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
+                                        className="bg-primary text-white font-semibold text-md p-2 w-full rounded-md"
                                     >
-                                        Create
+                                        Submit
                                     </button>
                                 </div>
                             </Form>
                         )}
                     </Formik>
-                </Dialog>
+                </div>
             )}
-
-            {/* CU dialog question */}
-            {assessment != undefined && criteria != undefined && (
-                <Dialog
-                    className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
-                    header={question ? "Update" : "Create"}
-                    headerClassName="text-lg font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
-                    contentClassName="p-2"
-                    visible={showCQ}
-                    onHide={() => {
-                        setShowCQ(false);
-                        setQuestion(undefined);
-                    }}
-                >
-                    <Formik
-                        initialValues={
-                            question != undefined
-                                ? question
-                                : {
-                                      question: "",
-                                      asnwer: 0,
-                                      comment: "",
-                                      criteria: criteria.id,
-                                  }
-                        }
-                        onSubmit={(values, actions) => {
-                            cuQuestion(values).then((res) => {
-                                if (res.status === 201) {
-                                    setShowCQ(false);
-                                    setQuestion(undefined);
-                                    setQUpdate(!qUpdate);
-                                    actions.resetForm({
-                                        values: {
-                                            question: "",
-                                            asnwer: 0,
-                                            comment: "",
-                                            criteria: criteria.id,
-                                        },
-                                    });
-                                }
-                            });
-                        }}
-                    >
-                        {(values, errors) => (
-                            <Form className="flex flex-wrap w-full h-full p-4">
-                                <div className="flex flex-col w-full p-2">
-                                    <label className="text-text font-semibold">
-                                        Question
-                                    </label>
-                                    <ErrorMessage
-                                        name="question"
-                                        component="div"
-                                        className="text-red-700 text-lg font-semibold"
-                                    />
-                                    <Field
-                                        as="textarea"
-                                        name="question"
-                                        className="border-2 h-24 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                    />
-                                </div>
-                                <div className="flex flex-col w-full p-2">
-                                    <label className="text-text font-semibold">
-                                        Comment
-                                    </label>
-                                    <ErrorMessage
-                                        name="comment"
-                                        component="div"
-                                        className="text-red-700 text-lg font-semibold"
-                                    />
-                                    <Field
-                                        as="textarea"
-                                        name="comment"
-                                        className="border-2 h-24 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                    />
-                                </div>
-                                <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
-                                    <button
-                                        type="submit"
-                                        className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
-                                    >
-                                        {"Create"}
-                                    </button>
-                                </div>
-                            </Form>
-                        )}
-                    </Formik>
-                </Dialog>
-            )}
-
-            {/* CU dialog possibility */}
-            {assessment != undefined &&
-                criteria != undefined &&
-                question != undefined && (
-                    <Dialog
-                        className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
-                        header={possibility ? "Update" : "Create"}
-                        headerClassName="text-lg font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
-                        contentClassName="p-2"
-                        visible={showP}
-                        onHide={() => {
-                            setShowP(false);
-                            setPossibility(undefined);
-                        }}
-                    >
-                        <Formik
-                            initialValues={possibility}
-                            onSubmit={(values, actions) => {
-                                cuPosibility(values).then((res) => {
-                                    if (res.status === 201) {
-                                        setShowP(false);
-                                        setPossibility(undefined);
-                                        setPUpdate(!pUpdate);
-                                        actions.resetForm({
-                                            values: {
-                                                possibility: "",
-                                                score: 0,
-                                                question: question.id,
-                                            },
-                                        });
-                                    }
-                                });
-                            }}
-                        >
-                            {(values, errors) => (
-                                <Form className="flex flex-wrap w-full h-full p-4">
-                                    <div className="flex flex-col w-full p-2">
-                                        <label className="text-text font-semibold">
-                                            Statement
-                                        </label>
-                                        <ErrorMessage
-                                            name="possibility"
-                                            component="div"
-                                            className="text-red-700 text-lg font-semibold"
-                                        />
-                                        <Field
-                                            as="textarea"
-                                            name="possibility"
-                                            className="border-2 h-24 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                        />
-                                    </div>
-                                    <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
-                                        <button
-                                            type="submit"
-                                            className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
-                                        >
-                                            {possibility?.possibility != ""
-                                                ? "Update"
-                                                : "Create"}
-                                        </button>
-                                        {possibility?.possibility != "" && (
-                                            <button
-                                                onClick={() => {
-                                                    deletePosibility(
-                                                        possibility.id
-                                                    ).then((res) => {
-                                                        if (
-                                                            res.status === 201
-                                                        ) {
-                                                            setShowP(false);
-                                                            setPossibility(
-                                                                undefined
-                                                            );
-                                                            setPUpdate(
-                                                                !pUpdate
-                                                            );
-                                                        }
-                                                    });
-                                                }}
-                                                type="button"
-                                                className="sm:w-auto w-full px-10 py-2 bg-red-800 hover:bg-red-600 transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
-                                            >
-                                                Delete
-                                            </button>
-                                        )}
-                                    </div>
-                                </Form>
-                            )}
-                        </Formik>
-                    </Dialog>
-                )}
         </div>
     );
 };

@@ -28,7 +28,7 @@ router.post(
     [checkForLogged, checkForAccess(process.env.LEAN_ADMIN)],
     async (req, res) => {
         try {
-            const { id, question, comment, answer, criteria } = req.body;
+            const { id, question, comment, weight, criteria } = req.body;
 
             const questionV = await Question.findByPk({ id });
 
@@ -36,14 +36,14 @@ router.post(
                 await Question.update(id, {
                     question,
                     comment,
-                    answer,
+                    weight: weight != undefined ? weight : 100,
                     criteria,
                 });
             } else {
                 await Question.create({
                     question,
                     comment,
-                    answer: 0,
+                    weight: weight != undefined ? weight : 100,
                     criteria,
                 });
             }

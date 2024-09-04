@@ -5,10 +5,13 @@ import { DataTypes } from "surreality/utils/Typing/DataTypes.js";
 export const Possibilities = new Surreality(surreal, "possibilities");
 
 Possibilities.defineTable("SCHEMALESS", {
-    possibility: {
+    subcriteria: {
         type: DataTypes.STRING,
     },
-    score: {
+    statements: {
+        type: DataTypes.ARRAY,
+    },
+    weight: {
         type: DataTypes.NUMBER,
     },
     question: {

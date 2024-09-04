@@ -76,7 +76,7 @@ router.post(
             const role = await Role.findByPk({ id });
 
             if (role[0] && role[0].accessLevel < process.env.ADMIN_ACCESS) {
-                const updatedUser = await Role.update(
+                await Role.update(
                     id,
                     {
                         name: name !== undefined ? name : role.name,
@@ -93,13 +93,12 @@ router.post(
                 );
 
                 return res.status(201).json({
-                    data: updatedUser,
                     status: 201,
                     message: "Role updated successfully",
                 });
             }
 
-            const newRole = await Role.create(
+            await Role.create(
                 {
                     name: name,
                     accessLevel: accessLevel,
@@ -112,7 +111,6 @@ router.post(
             );
 
             return res.status(201).json({
-                data: newRole,
                 status: 201,
                 message: "Role created successfully",
             });
@@ -133,7 +131,7 @@ router.delete(
     ],
     async (req, res) => {
         try {
-            const { id } = req.query;
+            const { id } = req.body;
 
             const role = await Role.findByPk({ id });
 

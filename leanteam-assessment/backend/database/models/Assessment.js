@@ -12,11 +12,18 @@ Assessment.defineTable("SCHEMALESS", {
         type: DataTypes.RECORD,
         table: "factory",
     },
-    description: {
+    year: {
+        type: DataTypes.NUMBER,
+    },
+    questionaire: {
+        type: DataTypes.RECORD,
+        table: "questionaire",
+    },
+    status: {
         type: DataTypes.STRING,
         optional: true,
     },
-    year: {
-        type: DataTypes.NUMBER,
+    type: {
+        type: DataTypes.STRING,
     },
 });

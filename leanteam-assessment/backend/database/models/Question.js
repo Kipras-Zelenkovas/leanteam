@@ -12,12 +12,11 @@ Question.defineTable("SCHEMALESS", {
         type: DataTypes.STRING,
         optional: true,
     },
-    answer: {
-        type: DataTypes.NUMBER,
-        optional: true,
-    },
     criteria: {
         type: DataTypes.RECORD,
         table: "criteria",
+    },
+    weight: {
+        type: DataTypes.INTEGER,
     },
 });

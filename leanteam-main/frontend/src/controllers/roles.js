@@ -20,9 +20,9 @@ export const cuRole = async (data) => {
     }
 };
 
-export const deleteRole = async (data) => {
+export const deleteRole = async (id) => {
     try {
-        const res = await defaultHttp.delete("/role", data);
+        const res = await defaultHttp.delete("/role", { data: { id } });
 
         return res.data;
     } catch (error) {

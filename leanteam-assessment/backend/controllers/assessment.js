@@ -4,6 +4,8 @@ import { Assessment } from "../database/models/Assessment.js";
 import { Criteria } from "../database/models/Criteria.js";
 import { Question } from "../database/models/Question.js";
 import { Possibilities } from "../database/models/Possibilities.js";
+import { Factory } from "../database/models/Factory.js";
+import { Answers } from "../database/models/Answers.js";
 
 export const router = Router();
 
@@ -47,35 +49,69 @@ router.get(
     ],
     async (req, res) => {
         try {
-            const assessment = await Assessment.findOne({
+            let assessment = await Assessment.findOne({
                 where: {
-                    id: req.query.id,
+                    year: parseInt(req.query.year),
+                    factory: req.query.factory,
                 },
-                exclude: ["timestamps"],
-                include: [
-                    {
-                        relation: "criterias",
-                        exclude: ["timestamps"],
-                        include: [
-                            {
-                                relation: "questions",
-                                exclude: ["timestamps"],
-                            },
-                        ],
+            });
+
+            const criterias = await Criteria.selectAll({
+                exclude: ["timestamps", "questionaire"],
+                where: {
+                    questionaire:
+                        assessment[0].questionaire.tb +
+                        ":" +
+                        assessment[0].questionaire.id,
+                },
+            });
+
+            assessment[0]["criterias"] = criterias[0];
+
+            for (let i = 0; i < criterias[0].length; i++) {
+                const questions = await Question.selectAll({
+                    exclude: ["timestamps", "criteria"],
+                    where: {
+                        criteria:
+                            criterias[0][i].id.tb + ":" + criterias[0][i].id.id,
                     },
-                ],
+                });
+
+                criterias[0][i]["questions"] = questions[0];
+
+                for (let j = 0; j < questions[0].length; j++) {
+                    const possibilities = await Possibilities.selectAll({
+                        exclude: ["timestamps", "question"],
+                        where: {
+                            question:
+                                questions[0][j].id.tb +
+                                ":" +
+                                questions[0][j].id.id,
+                        },
+                    });
+
+                    questions[0][j]["possibilities"] = possibilities[0];
+                }
+            }
+
+            const answers = await Answers.selectAll({
+                exclude: ["timestamps"],
+                where: {
+                    assessment: assessment[0].id.tb + ":" + assessment[0].id.id,
+                },
             });
 
             return res.status(200).json({
                 status: 200,
-                data: assessment,
+                assessment: assessment[0],
+                answers: answers[0],
             });
         } catch (error) {
             return res.status(500).json({
                 errors: {
                     status: 500,
                     statusText: false,
-                    message: error,
+                    message: error.message,
                 },
             });
         }
@@ -84,26 +120,36 @@ router.get(
 
 router.post(
     "/assessment",
-    [checkForLogged, checkForAccess(process.env.LEAN_ADMIN)],
+    [
+        checkForLogged,
+        [
+            checkForAccess(process.env.LEAN_USER) ||
+                checkForAccess(process.env.LEAN_ADMIN),
+        ],
+    ],
     async (req, res) => {
         try {
-            const { id, name, factory, description, year } = req.body;
+            const { id, factory, questionaire, type, year } = req.body;
 
             const assessment = await Assessment.findByPk({ id: id });
 
+            const factoryV = await Factory.findByPk({ id: factory });
+
             if (assessment[0]) {
                 await Assessment.update(id, {
-                    name: name,
+                    name: factoryV[0].name + " asssessment " + year,
                     factory: factory,
-                    description: description,
+                    questionaire: questionaire,
                     year: year,
+                    type: type,
                 });
             } else {
                 await Assessment.create({
-                    name: name,
+                    name: factoryV[0].name + " asssessment " + year,
                     factory: factory,
-                    description: description,
+                    questionaire: questionaire,
                     year: year,
+                    type: type,
                 });
             }
 
@@ -125,42 +171,16 @@ router.post(
 
 router.delete(
     "/assessment",
-    [checkForLogged, checkForAccess(process.env.LEAN_ADMIN)],
+    [
+        checkForLogged,
+        [
+            checkForAccess(process.env.LEAN_USER) ||
+                checkForAccess(process.env.LEAN_ADMIN),
+        ],
+    ],
     async (req, res) => {
         try {
             const { id } = req.body;
-
-            const criterias = await Criteria.selectAll({
-                where: {
-                    assessment: id,
-                },
-            });
-
-            for (const criteria of criterias[0]) {
-                const questions = await Question.selectAll({
-                    where: {
-                        criteria: criteria.id,
-                    },
-                });
-
-                for (const question of questions[0]) {
-                    const possibilities = await Possibilities.selectAll({
-                        where: {
-                            question: question.id,
-                        },
-                    });
-
-                    for (const possibility of possibilities[0]) {
-                        await Possibilities.delete(possibility.id, {
-                            force: true,
-                        });
-                    }
-
-                    await Question.delete(question.id, { force: true });
-                }
-
-                await criteria.delete(criteria.id, { force: true });
-            }
 
             await Assessment.delete(id, { force: true });
 
@@ -173,7 +193,7 @@ router.delete(
                 errors: {
                     status: 500,
                     statusText: false,
-                    message: error,
+                    message: error.message,
                 },
             });
         }

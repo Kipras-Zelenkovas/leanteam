@@ -27,20 +27,32 @@ router.post(
     [checkForLogged, checkForAccess(process.env.LEAN_ADMIN)],
     async (req, res) => {
         try {
-            const { id, possibility, score, question } = req.body;
+            const { id, subcriteria, statements, weight, question } = req.body;
 
             const possibilityV = await Possibilities.findByPk({ id });
 
             if (possibilityV[0]) {
                 await Possibilities.update(id, {
-                    possibility,
-                    score,
+                    subcriteria:
+                        subcriteria == undefined ||
+                        subcriteria == "" ||
+                        subcriteria == null
+                            ? possibilityV[0].subcriteria
+                            : subcriteria,
+                    statements,
+                    weight,
                     question,
                 });
             } else {
                 await Possibilities.create({
-                    possibility,
-                    score,
+                    subcriteria:
+                        subcriteria == undefined ||
+                        subcriteria == "" ||
+                        subcriteria == null
+                            ? "Default"
+                            : subcriteria,
+                    statements,
+                    weight,
                     question,
                 });
             }

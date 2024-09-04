@@ -10,9 +10,11 @@ export const getAssessments = async () => {
     }
 };
 
-export const getAssessment = async (id) => {
+export const getAssessment = async (year, factory) => {
     try {
-        const res = await http.get("/assessment", { params: { id } });
+        const res = await http.get("/assessment", {
+            params: { year: parseInt(year), factory: factory },
+        });
 
         return res.data;
     } catch (error) {

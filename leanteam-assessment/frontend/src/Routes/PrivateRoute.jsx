@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Loader } from "../Components/Loader.jsx";
 import { check_cookie, checkForAccess } from "../../../../auth.js";
 
@@ -33,10 +33,11 @@ export const PrivateRoute = ({ Component, accessLevel }) => {
                     }
                 } else if (res.status === 401 || res.status === 403) {
                     setCookieExist(false);
-                    window.location.href = "http://localhost:5173/";
+                    window.location.href = import.meta.env.VITE_MAIN_LOGIN_HREF;
                     return null;
                 } else {
-                    window.location.href = "http://localhost:5173/500";
+                    window.location.href =
+                        import.meta.env.VITE_MAIN_LOGIN_HREF + "500";
                     return null;
                 }
             })
@@ -47,7 +48,8 @@ export const PrivateRoute = ({ Component, accessLevel }) => {
                 ) {
                     setCookieExist(false);
                 } else {
-                    window.location.href = "http://localhost:5173/500";
+                    window.location.href =
+                        import.meta.env.VITE_MAIN_LOGIN_HREF + "500";
                     return null;
                 }
             });
@@ -70,12 +72,12 @@ export const PrivateRoute = ({ Component, accessLevel }) => {
 
         return navigate("/");
     } else if (access === false) {
-        window.location.href = "http://localhost:5173/403";
+        window.location.href = import.meta.env.VITE_MAIN_LOGIN_HREF + "403";
         return null;
     } else if (access) {
         return <Component />;
     } else {
-        window.location.href = "http://localhost:5173/500";
+        window.location.href = import.meta.env.VITE_MAIN_LOGIN_HREF + "500";
         return null;
     }
 };

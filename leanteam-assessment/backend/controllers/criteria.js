@@ -11,7 +11,7 @@ router.get("/criterias", checkForLogged, async (req, res) => {
         const criteria = await Criteria.selectAll({
             exclude: ["timestamps"],
             where: {
-                assessment: req.query.assessment,
+                questionaire: req.query.questionaire,
             },
         });
 
@@ -51,23 +51,26 @@ router.post(
     [checkForLogged, checkForAccess(process.env.LEAN_ADMIN)],
     async (req, res) => {
         try {
-            const { id, name, overall, description, assessment } = req.body;
+            const { id, name, description, icon, weight, questionaire } =
+                req.body;
 
             const criteria = await Criteria.findByPk({ id });
 
             if (criteria[0]) {
                 await Criteria.update(id, {
                     name,
-                    overall,
+                    weight: weight != undefined ? weight : 100,
+                    icon: icon != undefined ? icon : "icon-default",
                     description,
-                    assessment,
+                    questionaire,
                 });
             } else {
                 await Criteria.create({
                     name,
-                    overall,
+                    weight: weight != undefined ? weight : 100,
+                    icon: icon != undefined ? icon : "icon-default",
                     description,
-                    assessment,
+                    questionaire,
                 });
             }
 
