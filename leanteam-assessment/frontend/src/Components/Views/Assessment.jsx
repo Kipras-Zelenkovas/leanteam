@@ -73,21 +73,45 @@ export const Assessment = () => {
                             return (
                                 <div
                                     onClick={() => {
-                                        setCriteria(criteria);
+                                        let sortedQuestions =
+                                            criteria.questions.sort((a, b) => {
+                                                if (a.question < b.question) {
+                                                    return -1;
+                                                }
+                                                if (a.question > b.question) {
+                                                    return 1;
+                                                }
+                                                return 0;
+                                            });
+                                        setCriteria({
+                                            ...criteria,
+                                            questions: sortedQuestions,
+                                        });
                                     }}
-                                    className={`flex flex-wrap justify-center content-center w-28 h-20 border-2 border-text capitalize text-md text-text font-semibold ${
-                                        overall === 0
-                                            ? `hover:bg-gradient-to-br hover:from-text hover:to-white`
-                                            : overall < 3
-                                            ? `hover:bg-gradient-to-br hover:from-text hover:to-red-700`
+                                    // ${
+                                    //     overall === 0
+                                    //         ? `hover:bg-gradient-to-br hover:from-text hover:to-white hover:scale-110`
+                                    //         : overall < 3
+                                    //         ? `hover:bg-gradient-to-br hover:from-text hover:to-red-700 hover:scale-110`
+                                    //         : overall < 5
+                                    //         ? `hover:bg-gradient-to-br hover:from-text hover:to-orange-500 hover:scale-110`
+                                    //         : overall < 7
+                                    //         ? `hover:bg-gradient-to-br hover:from-text hover:to-yellow-500 hover:scale-110`
+                                    //         : overall < 9
+                                    //         ? `hover:bg-gradient-to-br hover:from-text hover:to-green-500 hover:scale-110`
+                                    //         : `hover:bg-gradient-to-br hover:from-text hover:to-primary hover:scale-110`
+                                    // }
+                                    className={`flex flex-wrap text-center justify-center content-center w-28 h-20 border-2 border-text capitalize text-md text-text font-semibold ${
+                                        overall < 3
+                                            ? `hover:bg-slate-500`
                                             : overall < 5
-                                            ? `hover:bg-gradient-to-br hover:from-text hover:to-orange-500`
+                                            ? `hover:bg-sky-500`
                                             : overall < 7
-                                            ? `hover:bg-gradient-to-br hover:from-text hover:to-yellow-500`
+                                            ? `hover:bg-blue-800`
                                             : overall < 9
-                                            ? `hover:bg-gradient-to-br hover:from-text hover:to-green-500`
-                                            : `hover:bg-gradient-to-br hover:from-text hover:to-primary`
-                                    } hover:text-white hover:scale-110 transition-all duration-500 ease-in-out cursor-pointer rounded-md`}
+                                            ? `hover:bg-green-500`
+                                            : `hover:bg-primary`
+                                    } hover:text-white transition-all duration-500 ease-in-out cursor-pointer rounded-md`}
                                 >
                                     {criteria.name + " - " + overall}
                                 </div>
@@ -100,7 +124,10 @@ export const Assessment = () => {
                 answers !== undefined &&
                 criteria !== undefined && (
                     <div className="flex flex-wrap w-full h-full">
-                        <div className="flex flex-col gap-2 w-full lg:w-1/5 h-48 pb-10 lg:h-full max-h-48 lg:max-h-full overflow-x-hidden overflow-y-auto no-scrollbar border-b-2 lg:border-b-0 lg:border-r-2 border-text px-4 py-2">
+                        <div className="flex flex-col gap-2 w-full lg:w-1/5 h-64 pb-10 lg:h-full max-h-64 lg:max-h-full overflow-x-hidden overflow-y-auto no-scrollbar border-b-2 lg:border-b-0 lg:border-r-2 border-text px-4 py-2">
+                            <p className="text-text text-lg font-semibold p-2 border-b-2 border-text text-center">
+                                {criteria.name}
+                            </p>
                             <div
                                 onClick={() => {
                                     for (let question of criteria.questions) {
@@ -143,8 +170,10 @@ export const Assessment = () => {
                                         }}
                                         className={`flex flex-wrap justify-center w-full h-20 min-h-20 max-h-20 border-2 border-text capitalize text-ellipsis overflow-hidden text-md text-text font-semibold ${
                                             questionL === question
-                                                ? "bg-gradient-to-br from-text to-primary text-white"
-                                                : "hover:bg-gradient-to-br hover:from-text hover:to-primary hover:text-white scale-95 hover:scale-100"
+                                                ? // bg-gradient-to-br from-text to-primary text-white
+                                                  "bg-primary text-white scale-95"
+                                                : // hover:bg-gradient-to-br hover:from-text hover:to-primary
+                                                  "hover:bg-primary hover:text-white scale-95 hover:scale-100"
                                         } transition-all duration-500 ease-in-out cursor-pointer rounded-md p-1`}
                                     >
                                         {questionL.question}
@@ -154,12 +183,18 @@ export const Assessment = () => {
                         </div>
                         {question !== undefined && (
                             <div className="flex flex-col w-full lg:w-4/5 h-full max-h-full overflow-x-hidden overflow-y-auto no-scrollbar border-r-2 border-text">
-                                <div className="flex flex-wrap w-full h-max border-b-2 max-h-[10%] overflow-x-hidden overflow-y-auto no-scrollbar border-text capitalize text-xl text-primary font-semibold px-4 pt-3 pb-4">
+                                <div className="flex flex-wrap w-full h-max border-b-2 max-h-[10%] overflow-x-hidden overflow-y-auto no-scrollbar border-text capitalize text-xl text-primary font-semibold px-4 py-4 ">
                                     {question.question}
+                                </div>
+                                <div className="flex flex-col w-full h-max border-b-2 max-h-auto overflow-x-hidden overflow-y-auto no-scrollbar border-text capitalize text-md text-text font-semibold px-4 py-4 ">
+                                    <p className="text-text text-lg font-medium w-full">
+                                        Comments / Expectations
+                                    </p>
+                                    {question.comment}
                                 </div>
                                 <div className="flex flex-wrap w-full h-max max-h-40 overflow-y-auto no-scrollbar gap-3 border-b-2 border-text px-4 pt-3 pb-4">
                                     <p className="text-text text-lg font-medium w-full">
-                                        Possibilities
+                                        Criterias
                                     </p>
                                     {question.possibilities.map(
                                         (possibilityL, index) => (
@@ -197,8 +232,10 @@ export const Assessment = () => {
                                                 }}
                                                 className={`flex flex-wrap w-full lg:w-48 h-auto justify-between py-2 px-2 text-text text-lg capitalize font-semibold rounded-md border-2 border-text content-center ${
                                                     possibilityL === possibility
-                                                        ? "bg-gradient-to-br from-text to-primary text-white"
-                                                        : "hover:bg-gradient-to-br hover:from-text hover:to-primary hover:text-white"
+                                                        ? //bg-gradient-to-br from-text to-primary text-white
+                                                          "bg-primary text-white"
+                                                        : //hover:bg-gradient-to-br hover:from-text hover:to-primary hover:text-white
+                                                          "hover:bg-gradient-to-br hover:bg-primary hover:text-white"
                                                 } transition-all duration-500 ease-in-out cursor-pointer`}
                                             >
                                                 {possibilityL.subcriteria !==
@@ -215,71 +252,160 @@ export const Assessment = () => {
                                             <p className="text-text text-lg font-medium w-full">
                                                 Statements
                                             </p>
-                                            {possibility.statements.map(
-                                                (statementL, index) => (
-                                                    <div
-                                                        onClick={() => {
-                                                            statementL.statement !==
-                                                                undefined &&
-                                                                setAnswers(
-                                                                    answers.map(
-                                                                        (
-                                                                            ans
-                                                                        ) => {
-                                                                            if (
-                                                                                ans.possibility ===
-                                                                                possibility.id
-                                                                            ) {
-                                                                                return {
-                                                                                    ...ans,
-                                                                                    answer: statementL.score,
-                                                                                };
-                                                                            } else {
-                                                                                return ans;
+                                            <div className="flex flex-col lg:hidden w-full gap-3 h-auto">
+                                                {possibility.statements.map(
+                                                    (statementL, index) => (
+                                                        <div
+                                                            onClick={() => {
+                                                                statementL.statement !==
+                                                                    undefined &&
+                                                                    setAnswers(
+                                                                        answers.map(
+                                                                            (
+                                                                                ans
+                                                                            ) => {
+                                                                                if (
+                                                                                    ans.possibility ===
+                                                                                    possibility.id
+                                                                                ) {
+                                                                                    return {
+                                                                                        ...ans,
+                                                                                        answer: statementL.score,
+                                                                                    };
+                                                                                } else {
+                                                                                    return ans;
+                                                                                }
                                                                             }
-                                                                        }
-                                                                    )
-                                                                );
-                                                        }}
-                                                        className={`flex flex-wrap gap-2 w-full h-auto py-2 px-2 ${
-                                                            parseInt(
-                                                                statementL.score
-                                                            ) ===
-                                                            parseInt(
-                                                                answers.find(
-                                                                    (ans) =>
-                                                                        ans.possibility ===
-                                                                        possibility.id
-                                                                )?.answer
-                                                            )
-                                                                ? "bg-gradient-to-br from-text to-primary text-white scale:100 rounded-md cursor-pointer"
-                                                                : statementL.statement !==
-                                                                  undefined
-                                                                ? "bg-white text-text hover:scale-100 scale-90 cursor-pointer border-text"
-                                                                : "bg-slate-700 scale-90 rounded-md cursor-not-allowed text-white"
-                                                        }  transition-all duration-500 ease-in-out border-b-2 `}
-                                                    >
-                                                        <p
-                                                            className={`text-lg font-semibold ${
-                                                                statementL.score ===
-                                                                answers.find(
-                                                                    (ans) =>
-                                                                        ans.possibility ===
-                                                                        possibility.id
-                                                                )?.answer
-                                                                    ? "text-white"
+                                                                        )
+                                                                    );
+                                                            }}
+                                                            className={`flex flex-wrap gap-2 w-full h-auto py-2 px-2 ${
+                                                                parseInt(
+                                                                    statementL.score
+                                                                ) ===
+                                                                parseInt(
+                                                                    answers.find(
+                                                                        (ans) =>
+                                                                            ans.possibility ===
+                                                                            possibility.id
+                                                                    )?.answer
+                                                                )
+                                                                    ? // bg-gradient-to-br from-text to-primary text-white scale:100
+                                                                      "bg-primary text-white scale-90 rounded-md cursor-pointer"
                                                                     : statementL.statement !==
                                                                       undefined
-                                                                    ? "text-text border-r-2 border-text"
-                                                                    : "text-slate-white border-r-2 border-white"
-                                                            } px-2`}
+                                                                    ? //   hover:scale-100
+                                                                      "bg-white text-text hover:bg-primary hover:text-white hover:rounded-md hover:border-b-0 scale-90 cursor-pointer border-text"
+                                                                    : "bg-slate-700 scale-90 rounded-md cursor-not-allowed text-white"
+                                                            }  transition-all duration-500 ease-in-out border-b-2 `}
                                                         >
-                                                            {statementL.score}
-                                                        </p>
-                                                        {statementL.statement}
-                                                    </div>
-                                                )
-                                            )}
+                                                            <p
+                                                                className={`text-lg font-semibold ${
+                                                                    statementL.score ===
+                                                                    answers.find(
+                                                                        (ans) =>
+                                                                            ans.possibility ===
+                                                                            possibility.id
+                                                                    )?.answer
+                                                                        ? "text-white"
+                                                                        : statementL.statement !==
+                                                                          undefined
+                                                                        ? "text-text border-r-2 border-text hover:border-white hover:text-white"
+                                                                        : "text-white border-r-2 border-white "
+                                                                } px-2`}
+                                                            >
+                                                                {
+                                                                    statementL.score
+                                                                }
+                                                            </p>
+                                                            {
+                                                                statementL.statement
+                                                            }
+                                                        </div>
+                                                    )
+                                                )}
+                                            </div>
+
+                                            <div className="flex flex-wrap w-full gap-2 h-auto justify-evenly">
+                                                {possibility.statements.map(
+                                                    (statementL, index) => (
+                                                        <div className="flex flex-col h-full gap-2 w-[8.5%]">
+                                                            <p
+                                                                className={`text-md w-full scale-90 py-1 font-semibold text-center text-white rounded-md border-2 border-text ${
+                                                                    statementL.score <
+                                                                    3
+                                                                        ? "bg-slate-500"
+                                                                        : statementL.score <
+                                                                          5
+                                                                        ? "bg-sky-500"
+                                                                        : statementL.score <
+                                                                          7
+                                                                        ? "bg-blue-800"
+                                                                        : statementL.score <
+                                                                          9
+                                                                        ? "bg-green-500"
+                                                                        : "bg-primary"
+                                                                } px-2`}
+                                                            >
+                                                                {
+                                                                    statementL.score
+                                                                }
+                                                            </p>
+                                                            <div
+                                                                onClick={() => {
+                                                                    statementL.statement !==
+                                                                        undefined &&
+                                                                        setAnswers(
+                                                                            answers.map(
+                                                                                (
+                                                                                    ans
+                                                                                ) => {
+                                                                                    if (
+                                                                                        ans.possibility ===
+                                                                                        possibility.id
+                                                                                    ) {
+                                                                                        return {
+                                                                                            ...ans,
+                                                                                            answer: statementL.score,
+                                                                                        };
+                                                                                    } else {
+                                                                                        return ans;
+                                                                                    }
+                                                                                }
+                                                                            )
+                                                                        );
+                                                                }}
+                                                                className={`flex flex-col gap-2 w-full h-full py-2 px-2 ${
+                                                                    parseInt(
+                                                                        statementL.score
+                                                                    ) ===
+                                                                    parseInt(
+                                                                        answers.find(
+                                                                            (
+                                                                                ans
+                                                                            ) =>
+                                                                                ans.possibility ===
+                                                                                possibility.id
+                                                                        )
+                                                                            ?.answer
+                                                                    )
+                                                                        ? // bg-gradient-to-br from-text to-primary text-white scale:100
+                                                                          "bg-primary text-white scale-90 rounded-md cursor-pointer"
+                                                                        : statementL.statement !==
+                                                                          undefined
+                                                                        ? //   hover:scale-100
+                                                                          "bg-white text-text hover:bg-primary hover:text-white hover:rounded-md hover:border-0 scale-90 cursor-pointer border-text"
+                                                                        : "bg-slate-700 scale-90 rounded-md cursor-not-allowed text-white"
+                                                                }  transition-all duration-500 ease-in-out border-2 rounded-md`}
+                                                            >
+                                                                {
+                                                                    statementL.statement
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                )}
+                                            </div>
                                         </div>
                                     )}
                                 </div>

@@ -26,3 +26,4 @@ dev-utils
 *.njsproj
 *.sln
 *.sw?
+.env
