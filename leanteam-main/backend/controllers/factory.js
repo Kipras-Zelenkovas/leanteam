@@ -2,6 +2,7 @@ import { Router } from "express";
 import { checkForAccess, checkForLogged } from "../../../middleware.js";
 import { Factory } from "../database/models/Factory.js";
 import { DataTypes } from "surreality/utils/Typing/DataTypes.js";
+import jwt from "jsonwebtoken";
 
 export const router = Router();
 
@@ -26,6 +27,36 @@ router.get(
 
 router.get("/factories_assessment", [checkForLogged], async (req, res) => {
     try {
+        const user = jwt.verify(req.cookies.token, process.env.JSONSECRET);
+
+        if (
+            user.roles["Superadmin"] !== undefined ||
+            user.roles["Admin"] !== undefined
+        ) {
+            const factories = await Factory.selectAll({
+                exclude: [
+                    "timestamps",
+                    "contactName",
+                    "description",
+                    "email",
+                    "phone",
+                    "environment",
+                    "hr",
+                    "location",
+                    "logistics",
+                    "maintenance",
+                    "production",
+                    "quality",
+                    "safety",
+                ],
+            });
+
+            return res.status(200).json({
+                status: 200,
+                data: factories,
+            });
+        }
+
         const factories = await Factory.selectAll({
             exclude: [
                 "timestamps",
@@ -42,6 +73,9 @@ router.get("/factories_assessment", [checkForLogged], async (req, res) => {
                 "quality",
                 "safety",
             ],
+            where: {
+                lean: user.id,
+            },
         });
 
         return res.status(200).json({
@@ -49,7 +83,7 @@ router.get("/factories_assessment", [checkForLogged], async (req, res) => {
             data: factories,
         });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
 });
 

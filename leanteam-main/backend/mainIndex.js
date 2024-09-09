@@ -44,9 +44,9 @@ app.get("/test", (req, res) => {
 
 const server = https.createServer(
     {
-        key: fs.readFileSync(process.env.KEY_PATH),
-        cert: fs.readFileSync(process.env.CERT_PATH),
-        ca: fs.readFileSync(process.env.CA_PATH),
+        key: fs.readFileSync("./dev-utils/certificates/key.pem"),
+        cert: fs.readFileSync("./dev-utils/certificates/cert.crt"),
+        ca: fs.readFileSync("./dev-utils/certificates/ca.crt"),
     },
     app
 );

@@ -32,6 +32,16 @@ export const getAssessment = async (year, factory) => {
     }
 };
 
+export const getLeanAssessments = async () => {
+    try {
+        const res = await http.get("/lean_assessments");
+
+        return res.data;
+    } catch (error) {
+        return error.response;
+    }
+};
+
 export const cuAssessment = async (data) => {
     try {
         const res = await http.post("/assessment", data);

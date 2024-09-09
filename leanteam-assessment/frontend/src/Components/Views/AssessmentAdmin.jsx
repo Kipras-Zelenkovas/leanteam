@@ -24,6 +24,7 @@ export const AssessmentAdmin = () => {
 
     useEffect(() => {
         getFactoriesAsessment().then((res) => {
+            console.log(res);
             if (res.status === 200) {
                 setFactories(res.data[0]);
             }

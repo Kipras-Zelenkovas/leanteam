@@ -49,8 +49,16 @@ export const Assessment = () => {
             {assessment !== undefined &&
                 answers != undefined &&
                 criteria === undefined && (
-                    <div className="flex flex-wrap gap-3 w-full h-max p-2">
+                    <div className="flex flex-wrap w-full h-max gap-3 p-2 justify-evenly">
                         {assessment.criterias.map((criteria, index) => {
+                            let total = criteria.questions.reduce((acc, q) => {
+                                return acc + q.possibilities.length;
+                            }, 0);
+
+                            let totalAnswered = answers.filter(
+                                (ans) => ans.criteria === criteria.id
+                            ).length;
+
                             let overall = (
                                 answers
                                     .filter(
@@ -102,19 +110,54 @@ export const Assessment = () => {
                                     //         ? `hover:bg-gradient-to-br hover:from-text hover:to-green-500 hover:scale-110`
                                     //         : `hover:bg-gradient-to-br hover:from-text hover:to-primary hover:scale-110`
                                     // }
-                                    className={`flex flex-wrap text-center justify-center content-center w-28 h-20 border-2 border-text capitalize text-md text-text font-semibold ${
+                                    className={`flex flex-wrap text-center justify-center content-center w-full lg:w-[30%] h-28 border-2 border-text capitalize text-md text-white font-semibold ${
                                         overall < 3
-                                            ? `hover:bg-slate-500`
+                                            ? `bg-slate-600 hover:bg-slate-500`
                                             : overall < 5
-                                            ? `hover:bg-sky-500`
+                                            ? `bg-sky-500 hover:bg-sky-400`
                                             : overall < 7
-                                            ? `hover:bg-blue-800`
+                                            ? `bg-blue-800 hover:bg-blue-600`
                                             : overall < 9
-                                            ? `hover:bg-green-500`
-                                            : `hover:bg-primary`
-                                    } hover:text-white transition-all duration-500 ease-in-out cursor-pointer rounded-md`}
+                                            ? `bg-emerald-700 hover:bg-emerald-500`
+                                            : `bg-primary hover:bg-primary-light`
+                                    } transition-all duration-500 ease-in-out cursor-pointer rounded-md`}
                                 >
-                                    {criteria.name + " - " + overall}
+                                    <div className="flex flex-wrap w-full justify-between h-auto px-3">
+                                        <div className="flex flex-col w-auto text-start h-auto">
+                                            <p className="text-md">
+                                                {totalAnswered === 0
+                                                    ? "Not started"
+                                                    : totalAnswered === total
+                                                    ? "Completed"
+                                                    : "In Progress"}
+                                            </p>
+                                            <p className="text-xl">
+                                                {criteria.name}
+                                            </p>
+                                        </div>
+                                        <div className="flex flex-col w-auto text-start h-auto">
+                                            <p className="text-center">
+                                                Score:
+                                            </p>
+                                            <p className="text-center">
+                                                {overall}
+                                            </p>
+                                        </div>
+                                        <div className="flex flex-col w-auto text-start h-auto">
+                                            <p className="text-center">
+                                                Answered:
+                                            </p>
+                                            <p className="text-center">
+                                                {totalAnswered + "/" + total}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-wrap w-full h-auto">
+                                        <p className="text-md w-full font-semibold text-center">
+                                            {assessment.type +
+                                                " self assessment"}
+                                        </p>
+                                    </div>
                                 </div>
                             );
                         })}
@@ -142,6 +185,7 @@ export const Assessment = () => {
                                             if (ans !== undefined) {
                                                 saveAnswer(ans).then((res) => {
                                                     if (res.status === 200) {
+                                                        setAnswers(null);
                                                         setTimeout(() => {
                                                             setUpdateA(
                                                                 !updateA
@@ -153,7 +197,6 @@ export const Assessment = () => {
                                         }
                                     }
 
-                                    setAnswers(null);
                                     setAnswerImgPreview([]);
                                     setCriteria(undefined);
                                     setQuestion(undefined);
