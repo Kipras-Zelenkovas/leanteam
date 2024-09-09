@@ -3,11 +3,11 @@ import {
     cuAssessment,
     deleteAssessment,
     getAssessments,
+    getFactoriesAsessment,
 } from "../../controllers/assessment";
 import { Loader } from "../Loader";
 import { Dialog } from "primereact/dialog";
 import { ErrorMessage, Field, Form, Formik } from "formik";
-import { getFactoriesAssessment } from "../../controllers/factories";
 import { getQuestionaires } from "../../controllers/questionaires";
 
 export const AssessmentAdmin = () => {
@@ -23,7 +23,7 @@ export const AssessmentAdmin = () => {
     const [showCA, setShowCA] = useState(false);
 
     useEffect(() => {
-        getFactoriesAssessment().then((res) => {
+        getFactoriesAsessment().then((res) => {
             if (res.status === 200) {
                 setFactories(res.data[0]);
             }

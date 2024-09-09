@@ -180,6 +180,36 @@ export const Navigation = () => {
                                 </svg>
                             </Link>
                         </li>
+                        <li className="w-full border-b-2 border-text p-[0.2rem]">
+                            <Link
+                                title="Factories"
+                                to="/administrator/factories"
+                                className="hidden sm:flex w-full justify-center"
+                            >
+                                <svg
+                                    className={`w-10 h-10 rounded-md transition-all duration-[800ms] ease-in-out ${
+                                        window.location.pathname ===
+                                        "/administrator/factories"
+                                            ? "bg-gradient-to-br from-primary to-text text-white p-1"
+                                            : "text-primary p-0 bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white hover:p-1"
+                                    }`}
+                                    width={24}
+                                    height={24}
+                                    viewBox="0 0 24 24"
+                                >
+                                    <g
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                    >
+                                        <path d="M4 21c1.147-4.02 1.983-8.027 2-12h6c.017 3.973.853 7.98 2 12"></path>
+                                        <path d="M12.5 13H17c.025 2.612.894 5.296 2 8M9 5a2.4 2.4 0 0 1 2-1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2-1a2.4 2.4 0 0 1 2-1a2.4 2.4 0 0 1 2 1M3 21h19"></path>
+                                    </g>
+                                </svg>
+                            </Link>
+                        </li>
                         {cookieExist ? (
                             <li className="w-full border-b-2 border-text p-[0.2rem]">
                                 <div
@@ -413,6 +443,71 @@ export const Navigation = () => {
                                             </svg>
                                             Accesses
                                         </Link>
+                                    </li>
+                                    <li className="w-full border-b-2 border-text p-[0.2rem]">
+                                        <Link
+                                            className={`flex flex-wrap sm:hidden items-center text-md font-semibold gap-2 rounded-md transition-all duration-[800ms] ease-in-out pl-1 ${
+                                                window.location.href ===
+                                                import.meta.env
+                                                    .VITE_MAIN_PRODUCTION_HREF
+                                                    ? "bg-gradient-to-br from-primary to-text text-white"
+                                                    : "text-primary bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white"
+                                            }`}
+                                            to="/administrator/factories"
+                                        >
+                                            <svg
+                                                className="w-10 h-10 rounded-md "
+                                                width={24}
+                                                height={24}
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <g
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                >
+                                                    <path d="M4 21c1.147-4.02 1.983-8.027 2-12h6c.017 3.973.853 7.98 2 12"></path>
+                                                    <path d="M12.5 13H17c.025 2.612.894 5.296 2 8M9 5a2.4 2.4 0 0 1 2-1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2-1a2.4 2.4 0 0 1 2-1a2.4 2.4 0 0 1 2 1M3 21h19"></path>
+                                                </g>
+                                            </svg>
+                                            Factories
+                                        </Link>
+                                    </li>
+                                    <li className="w-full border-b-2 border-text p-[0.2rem]">
+                                        <div
+                                            onClick={() => {
+                                                window.location.href =
+                                                    import.meta.env.VITE_MAIN_PRODUCTION_HREF;
+                                            }}
+                                            className={`flex flex-wrap sm:hidden items-center text-md font-semibold gap-2 rounded-md transition-all duration-[800ms] ease-in-out pl-1 ${
+                                                window.location.pathname ===
+                                                "/administrator/factories"
+                                                    ? "bg-gradient-to-br from-primary to-text text-white"
+                                                    : "text-primary bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white cursor-pointer"
+                                            }`}
+                                            to="/administrator/factories"
+                                        >
+                                            <svg
+                                                className="w-10 h-10 rounded-md "
+                                                width={24}
+                                                height={24}
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <g
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                >
+                                                    <path d="M4 21c1.147-4.02 1.983-8.027 2-12h6c.017 3.973.853 7.98 2 12"></path>
+                                                    <path d="M12.5 13H17c.025 2.612.894 5.296 2 8M9 5a2.4 2.4 0 0 1 2-1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2-1a2.4 2.4 0 0 1 2-1a2.4 2.4 0 0 1 2 1M3 21h19"></path>
+                                                </g>
+                                            </svg>
+                                            Production
+                                        </div>
                                     </li>
                                     {cookieExist ? (
                                         <li className="w-full border-b-2 border-text p-[0.2rem]">

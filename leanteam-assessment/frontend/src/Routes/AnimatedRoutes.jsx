@@ -13,18 +13,7 @@ export const AnimatedRoutes = () => {
                 <AnimatePresence>
                     <Routes location={location} key={location.pathname}>
                         <Route
-                            path="/administrator/factories"
-                            element={
-                                <PrivateRoute
-                                    accessLevel={
-                                        import.meta.env.VITE_LEAN_ADMIN
-                                    }
-                                    Component={routes.Factories}
-                                />
-                            }
-                        />
-                        <Route
-                            path="/assessment"
+                            path="/"
                             element={
                                 <PrivateRoute
                                     accessLevel={import.meta.env.VITE_LEAN_USER}

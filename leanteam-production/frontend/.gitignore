@@ -12,8 +12,6 @@ dist
 dist-ssr
 *.local
 
-dev.txt
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -24,5 +22,3 @@ dev.txt
 *.njsproj
 *.sln
 *.sw?
-.env
-.leanteam-production/*

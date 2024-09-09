@@ -1,4 +1,14 @@
-import { http } from "./http";
+import { http, httpMain } from "./http";
+
+export const getFactoriesAsessment = async () => {
+    try {
+        const res = await httpMain.get("/factories_assessment");
+
+        return res.data;
+    } catch (error) {
+        return error.response;
+    }
+};
 
 export const getAssessments = async () => {
     try {

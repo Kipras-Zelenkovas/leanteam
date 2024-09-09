@@ -9,8 +9,7 @@ Assessment.defineTable("SCHEMALESS", {
         type: DataTypes.STRING,
     },
     factory: {
-        type: DataTypes.RECORD,
-        table: "factory",
+        type: DataTypes.STRING,
     },
     year: {
         type: DataTypes.NUMBER,

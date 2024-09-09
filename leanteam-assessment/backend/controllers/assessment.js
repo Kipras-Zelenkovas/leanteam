@@ -4,8 +4,9 @@ import { Assessment } from "../database/models/Assessment.js";
 import { Criteria } from "../database/models/Criteria.js";
 import { Question } from "../database/models/Question.js";
 import { Possibilities } from "../database/models/Possibilities.js";
-import { Factory } from "../database/models/Factory.js";
+import { Factory } from "../../../leanteam-main/backend/database/models/Factory.js";
 import { Answers } from "../database/models/Answers.js";
+import { DataTypes } from "surreality/utils/Typing/DataTypes.js";
 
 export const router = Router();
 
@@ -52,9 +53,13 @@ router.get(
             let assessment = await Assessment.findOne({
                 where: {
                     year: parseInt(req.query.year),
-                    factory: req.query.factory,
+                    factory: {
+                        data: req.query.factory,
+                        as: DataTypes.STRING,
+                    },
                 },
             });
+            console.log(req.query);
 
             const criterias = await Criteria.selectAll({
                 exclude: ["timestamps", "questionaire"],
@@ -138,7 +143,10 @@ router.post(
             if (assessment[0]) {
                 await Assessment.update(id, {
                     name: factoryV[0].name + " asssessment " + year,
-                    factory: factory,
+                    factory: {
+                        data: factory,
+                        as: DataTypes.STRING,
+                    },
                     questionaire: questionaire,
                     year: year,
                     type: type,
@@ -146,7 +154,10 @@ router.post(
             } else {
                 await Assessment.create({
                     name: factoryV[0].name + " asssessment " + year,
-                    factory: factory,
+                    factory: {
+                        data: factory,
+                        as: DataTypes.STRING,
+                    },
                     questionaire: questionaire,
                     year: year,
                     type: type,

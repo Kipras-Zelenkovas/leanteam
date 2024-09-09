@@ -1,8 +1,8 @@
-import { http } from "./http";
+import { defaultHttp } from "./defaultHttp.js";
 
 export const getFactoriesA = async () => {
     try {
-        const res = await http.get("/factories_admin");
+        const res = await defaultHttp.get("/factories_admin");
 
         return res.data;
     } catch (error) {
@@ -12,7 +12,7 @@ export const getFactoriesA = async () => {
 
 export const getFactoriesAssessment = async () => {
     try {
-        const res = await http.get("/factories_assessment");
+        const res = await defaultHttp.get("/factories_assessment");
 
         return res.data;
     } catch (error) {
@@ -22,7 +22,7 @@ export const getFactoriesAssessment = async () => {
 
 export const cuFactory = async (data) => {
     try {
-        const res = await http.post("/factory", data);
+        const res = await defaultHttp.post("/factory", data);
 
         return res.data;
     } catch (error) {
@@ -32,7 +32,7 @@ export const cuFactory = async (data) => {
 
 export const deleteFactory = async (id) => {
     try {
-        const res = await http.delete("/factory", { data: { id } });
+        const res = await defaultHttp.delete("/factory", { data: { id } });
 
         return res.data;
     } catch (error) {

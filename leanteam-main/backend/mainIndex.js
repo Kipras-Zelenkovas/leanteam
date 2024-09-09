@@ -5,6 +5,7 @@ import fs from "fs";
 import https from "https";
 import DotenvFlow from "dotenv-flow";
 
+import { router as factoryRouter } from "./controllers/factory.js";
 import { router as userRouter } from "./controllers/user.js";
 import { router as roleRouter } from "./controllers/role.js";
 import { router as teamRouter } from "./controllers/team.js";
@@ -29,6 +30,7 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(express.static("public"));
 
 app.use("/v1/main/", [
+    factoryRouter,
     userRouter,
     roleRouter,
     teamRouter,

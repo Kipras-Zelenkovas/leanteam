@@ -62,6 +62,15 @@ export const AnimatedRoutes = () => {
                                 />
                             }
                         />
+                        <Route
+                            path="/administrator/factories"
+                            element={
+                                <PrivateRoute
+                                    Component={routes.Factories}
+                                    accessLevel={import.meta.env.VITE_ADMIN}
+                                />
+                            }
+                        />
                     </Routes>
                 </AnimatePresence>
             </div>

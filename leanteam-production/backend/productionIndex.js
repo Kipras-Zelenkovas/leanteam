@@ -5,13 +5,6 @@ import cookieParser from "cookie-parser";
 import fs from "fs";
 import https from "https";
 
-import { router as assessmentRouter } from "./controllers/assessment.js";
-import { router as questionaireRouter } from "./controllers/questionaire.js";
-import { router as criteriaRouter } from "./controllers/criteria.js";
-import { router as questionRouter } from "./controllers/question.js";
-import { router as possibilityRouter } from "./controllers/possibility.js";
-import { router as answerRouter } from "./controllers/answers.js";
-
 DotenvFlow.config();
 
 const app = express();
@@ -26,14 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-app.use("/v1/assessment/", [
-    assessmentRouter,
-    criteriaRouter,
-    questionRouter,
-    possibilityRouter,
-    questionaireRouter,
-    answerRouter,
-]);
+// app.use("/v1/assessment/");
 
 const server = https.createServer(
     {

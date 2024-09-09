@@ -517,9 +517,9 @@ export const QuestionaireOriginal = () => {
                                             setShowQ(true);
                                         }}
                                         key={questionL.id}
-                                        className="relative flex flex-wrap md:w-40 w-full h-40 max-h-40 overflow-hidden border-2 border-text rounded-md justify-center content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
+                                        className="relative flex flex-wrap md:w-40 w-full h-40 max-h-40 overflow-hidden border-2 border-text rounded-md justify-center text-ellipsis cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
                                     >
-                                        <p className="text-text text-center text-lg font-semibold group-hover:text-primary transition-all duration-500 ease-in-out text-wrap">
+                                        <p className="text-text text-center text-lg font-semibold group-hover:text-primary transition-all duration-500 ease-in-out text-elipse">
                                             {questionL.question}
                                         </p>
                                     </div>
@@ -533,7 +533,7 @@ export const QuestionaireOriginal = () => {
                 showC == true &&
                 showQ == true &&
                 possibilities != null && (
-                    <div className="flex flex-wrap w-full h-full overflow-y-hidden">
+                    <div className="flex flex-wrap w-full h-full overflow-y-auto no-scrollbar sm:overflow-y-hidden pb-16 md:pb-0">
                         <div className="flex flex-wrap xl:w-[25%] sm:w-[45%] w-full p-4 h-full sm:h-full max-h-full overflow-y-auto no-scrollbar sm:border-r-2 sm:border-text">
                             <p className="text-xl text-text font-semibold w-full text-center">
                                 Question
@@ -747,7 +747,7 @@ export const QuestionaireOriginal = () => {
                                             setShowP(true);
                                         }}
                                         key={p.id}
-                                        className="relative flex flex-wrap w-36 h-36 p-2 border-2 border-text rounded-md justify-center content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
+                                        className="relative flex flex-wrap w-36 h-36 max-h-36 overflow-hidden p-2 border-2 border-text rounded-md justify-center content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
                                     >
                                         <p className="text-text text-center text-lg font-semibold group-hover:text-primary transition-all duration-500 ease-in-out">
                                             {p.subcriteria}

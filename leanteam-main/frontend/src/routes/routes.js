@@ -8,6 +8,7 @@ import { Profile } from "../components/Profile.jsx";
 import { Accessess } from "../components/Administrator/Accessess.jsx";
 import { Teams } from "../components/Administrator/Teams.jsx";
 import { Users } from "../components/Administrator/Users.jsx";
+import { Factories } from "../components/Administrator/Factories.jsx";
 
 export const routes = {
     Page403: Page403,
@@ -20,4 +21,5 @@ export const routes = {
     Users: Users,
     Teams: Teams,
     Accessess: Accessess,
+    Factories: Factories,
 };

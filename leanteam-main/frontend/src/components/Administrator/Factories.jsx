@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { Loader } from "../Loader";
-import { getUsers } from "../../controllers/users";
+import { Loader } from "../../../../../leanteam-assessment/frontend/src/Components/Loader";
+import { getUsers } from "../../../../../leanteam-assessment/frontend/src/controllers/users";
 import {
     cuFactory,
     deleteFactory,
     getFactoriesA,
-} from "../../controllers/factories";
+} from "../../controllers/factories.js";
 import { Dialog } from "primereact/dialog";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 
@@ -23,7 +23,6 @@ export const Factories = () => {
         getUsers().then((res) => {
             if (res.status === 200) {
                 const users = res.data[0];
-                console.log(users);
 
                 const managers = users.filter((user) => user.roles["Manager"]);
                 const leans = users.filter((user) => user.roles["Lean"]);
