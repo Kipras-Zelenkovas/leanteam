@@ -17,7 +17,7 @@ Criteria.defineTable("SCHEMALESS", {
         table: "questionaire",
     },
     weight: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.FLOAT,
     },
     icon: {
         type: DataTypes.STRING,

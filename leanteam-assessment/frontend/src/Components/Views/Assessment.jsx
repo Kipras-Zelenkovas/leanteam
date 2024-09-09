@@ -59,13 +59,12 @@ export const Assessment = () => {
                                     .reduce(
                                         (acc, ans) =>
                                             acc +
-                                            ((ans.answer !== undefined
+                                            (ans.answer !== undefined
                                                 ? ans.answer
                                                 : 0) *
                                                 criteria.questions.find(
                                                     (q) => q.id === ans.question
-                                                ).weight) /
-                                                100,
+                                                ).weight,
                                         0
                                     ) /
                                 (criteria.questions.reduce((acc, q) => {
@@ -265,27 +264,25 @@ export const Assessment = () => {
                                                     (statementL, index) => (
                                                         <div
                                                             onClick={() => {
-                                                                statementL.statement !==
-                                                                    undefined &&
-                                                                    setAnswers(
-                                                                        answers.map(
-                                                                            (
-                                                                                ans
-                                                                            ) => {
-                                                                                if (
-                                                                                    ans.possibility ===
-                                                                                    possibility.id
-                                                                                ) {
-                                                                                    return {
-                                                                                        ...ans,
-                                                                                        answer: statementL.score,
-                                                                                    };
-                                                                                } else {
-                                                                                    return ans;
-                                                                                }
+                                                                setAnswers(
+                                                                    answers.map(
+                                                                        (
+                                                                            ans
+                                                                        ) => {
+                                                                            if (
+                                                                                ans.possibility ===
+                                                                                possibility.id
+                                                                            ) {
+                                                                                return {
+                                                                                    ...ans,
+                                                                                    answer: statementL.score,
+                                                                                };
+                                                                            } else {
+                                                                                return ans;
                                                                             }
-                                                                        )
-                                                                    );
+                                                                        }
+                                                                    )
+                                                                );
                                                             }}
                                                             className={`flex flex-wrap gap-2 w-full h-auto py-2 px-2 ${
                                                                 parseInt(
@@ -300,11 +297,8 @@ export const Assessment = () => {
                                                                 )
                                                                     ? // bg-gradient-to-br from-text to-primary text-white scale:100
                                                                       "bg-primary text-white scale-90 rounded-md cursor-pointer"
-                                                                    : statementL.statement !==
-                                                                      undefined
-                                                                    ? //   hover:scale-100
+                                                                    : //   hover:scale-100
                                                                       "bg-white text-text hover:bg-primary hover:text-white hover:rounded-md hover:border-b-0 scale-90 cursor-pointer border-text"
-                                                                    : "bg-slate-700 scale-90 rounded-md cursor-not-allowed text-white"
                                                             }  transition-all duration-500 ease-in-out border-b-2 `}
                                                         >
                                                             <p
@@ -361,27 +355,25 @@ export const Assessment = () => {
                                                             </p>
                                                             <div
                                                                 onClick={() => {
-                                                                    statementL.statement !==
-                                                                        undefined &&
-                                                                        setAnswers(
-                                                                            answers.map(
-                                                                                (
-                                                                                    ans
-                                                                                ) => {
-                                                                                    if (
-                                                                                        ans.possibility ===
-                                                                                        possibility.id
-                                                                                    ) {
-                                                                                        return {
-                                                                                            ...ans,
-                                                                                            answer: statementL.score,
-                                                                                        };
-                                                                                    } else {
-                                                                                        return ans;
-                                                                                    }
+                                                                    setAnswers(
+                                                                        answers.map(
+                                                                            (
+                                                                                ans
+                                                                            ) => {
+                                                                                if (
+                                                                                    ans.possibility ===
+                                                                                    possibility.id
+                                                                                ) {
+                                                                                    return {
+                                                                                        ...ans,
+                                                                                        answer: statementL.score,
+                                                                                    };
+                                                                                } else {
+                                                                                    return ans;
                                                                                 }
-                                                                            )
-                                                                        );
+                                                                            }
+                                                                        )
+                                                                    );
                                                                 }}
                                                                 className={`flex flex-col gap-2 w-full h-full py-2 px-2 ${
                                                                     parseInt(
@@ -399,11 +391,8 @@ export const Assessment = () => {
                                                                     )
                                                                         ? // bg-gradient-to-br from-text to-primary text-white scale:100
                                                                           "bg-primary text-white scale-90 rounded-md cursor-pointer"
-                                                                        : statementL.statement !==
-                                                                          undefined
-                                                                        ? //   hover:scale-100
+                                                                        : //   hover:scale-100
                                                                           "bg-white text-text hover:bg-primary hover:text-white hover:rounded-md hover:border-0 scale-90 cursor-pointer border-text"
-                                                                        : "bg-slate-700 scale-90 rounded-md cursor-not-allowed text-white"
                                                                 }  transition-all duration-500 ease-in-out border-2 rounded-md`}
                                                             >
                                                                 {

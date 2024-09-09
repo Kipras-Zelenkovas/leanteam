@@ -17,6 +17,6 @@ Question.defineTable("SCHEMALESS", {
         table: "criteria",
     },
     weight: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.FLOAT,
     },
 });

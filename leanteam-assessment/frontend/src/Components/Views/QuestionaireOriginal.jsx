@@ -179,7 +179,7 @@ export const QuestionaireOriginal = () => {
                                 key={questionaireL.id}
                                 className="relative flex flex-wrap sm:w-40 w-full h-40 border-2 border-text rounded-md justify-center content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
                             >
-                                <p className="text-text text-center text-lg font-semibold group-hover:text-primary transition-all duration-500 ease-in-out">
+                                <p className="text-text text-center text-md font-semibold group-hover:text-primary transition-all duration-500 ease-in-out">
                                     {questionaireL.name}
                                 </p>
                             </div>
@@ -224,7 +224,7 @@ export const QuestionaireOriginal = () => {
                                                 <ErrorMessage
                                                     name="name"
                                                     component="div"
-                                                    className="text-red-700 text-lg font-semibold"
+                                                    className="text-red-700 text-md font-semibold"
                                                 />
                                                 <Field
                                                     type="text"
@@ -239,7 +239,7 @@ export const QuestionaireOriginal = () => {
                                                 <ErrorMessage
                                                     name="year"
                                                     component="div"
-                                                    className="text-red-700 text-lg font-semibold"
+                                                    className="text-red-700 text-md font-semibold"
                                                 />
                                                 <Field
                                                     type="number"
@@ -251,7 +251,7 @@ export const QuestionaireOriginal = () => {
                                         <div className="flex flex-wrap w-full p-2 gap-2 justify-between">
                                             <button
                                                 type="submit"
-                                                className="sm:w-[48%] w-full py-2 border-2 border-text bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
+                                                className="sm:w-[48%] w-full py-2 border-2 border-text bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
                                             >
                                                 Update
                                             </button>
@@ -283,7 +283,7 @@ export const QuestionaireOriginal = () => {
                                                     });
                                                 }}
                                                 type="button"
-                                                className="sm:w-[48%] w-full py-2 border-2 border-text bg-red-800 hover:bg-red-600 transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
+                                                className="sm:w-[48%] w-full py-2 border-2 border-text bg-red-800 hover:bg-red-600 transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
                                             >
                                                 Delete
                                             </button>
@@ -292,7 +292,7 @@ export const QuestionaireOriginal = () => {
                                                     setShowDQu(true);
                                                 }}
                                                 type="button"
-                                                className="sm:w-[48%] w-full py-2 underline border-2 border-text transition-all duration-500 ease-in-out text-lg font-semibold text-text rounded-md"
+                                                className="sm:w-[48%] w-full py-2 underline border-2 border-text transition-all duration-500 ease-in-out text-md font-semibold text-text rounded-md"
                                             >
                                                 Dublicate
                                             </button>
@@ -302,7 +302,7 @@ export const QuestionaireOriginal = () => {
                                                     setQuestionaire(undefined);
                                                 }}
                                                 type="button"
-                                                className="sm:w-[48%] w-full py-2  transition-all duration-500 ease-in-out text-lg font-semibold text-text border-2 border-text rounded-md"
+                                                className="sm:w-[48%] w-full py-2  transition-all duration-500 ease-in-out text-md font-semibold text-text border-2 border-text rounded-md"
                                             >
                                                 Back
                                             </button>
@@ -344,7 +344,7 @@ export const QuestionaireOriginal = () => {
                                         key={criteriaL.id}
                                         className="relative flex flex-wrap md:w-40 w-full h-40 border-2 border-text rounded-md justify-center content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
                                     >
-                                        <p className="text-text text-center text-lg font-semibold group-hover:text-primary transition-all duration-500 ease-in-out">
+                                        <p className="text-text text-center text-md font-semibold group-hover:text-primary transition-all duration-500 ease-in-out">
                                             {criteriaL.name}
                                         </p>
                                     </div>
@@ -361,7 +361,7 @@ export const QuestionaireOriginal = () => {
                     <div className="flex flex-wrap w-full h-full">
                         <div className="flex flex-wrap xl:w-[25%] sm:w-[45%] w-full p-4 h-auto sm:h-full sm:border-r-2 sm:border-text">
                             <p className="text-xl text-text font-semibold w-full text-center">
-                                Criteria
+                                Category
                             </p>
                             <Formik
                                 initialValues={
@@ -370,7 +370,7 @@ export const QuestionaireOriginal = () => {
                                         : {
                                               name: "",
                                               description: "",
-                                              weight: 100,
+                                              weight: 1,
                                           }
                                 }
                                 onSubmit={(values) => {
@@ -391,7 +391,7 @@ export const QuestionaireOriginal = () => {
                                                 <ErrorMessage
                                                     name="name"
                                                     component="div"
-                                                    className="text-red-700 text-lg font-semibold"
+                                                    className="text-red-700 text-md font-semibold"
                                                 />
                                                 <Field
                                                     type="text"
@@ -407,7 +407,7 @@ export const QuestionaireOriginal = () => {
                                                 <ErrorMessage
                                                     name="description"
                                                     component="div"
-                                                    className="text-red-700 text-lg font-semibold"
+                                                    className="text-red-700 text-md font-semibold"
                                                 />
                                                 <Field
                                                     as="textarea"
@@ -417,13 +417,12 @@ export const QuestionaireOriginal = () => {
                                             </div>
                                             <div className="flex flex-col w-full p-2">
                                                 <label className="text-text font-semibold">
-                                                    Criterias weight (
-                                                    percentage )
+                                                    Categories weight
                                                 </label>
                                                 <ErrorMessage
                                                     name="weight"
                                                     component="div"
-                                                    className="text-red-700 text-lg font-semibold"
+                                                    className="text-red-700 text-md font-semibold"
                                                 />
                                                 <Field
                                                     type="number"
@@ -436,7 +435,7 @@ export const QuestionaireOriginal = () => {
                                         <div className="flex flex-wrap w-full p-2 gap-2 justify-between">
                                             <button
                                                 type="submit"
-                                                className="sm:w-[48%] w-full py-2 border-2 border-text bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
+                                                className="sm:w-[48%] w-full py-2 border-2 border-text bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
                                             >
                                                 Update
                                             </button>
@@ -462,7 +461,7 @@ export const QuestionaireOriginal = () => {
                                                     });
                                                 }}
                                                 type="button"
-                                                className="sm:w-[48%] w-full py-2 border-2 border-text bg-red-800 hover:bg-red-600 transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
+                                                className="sm:w-[48%] w-full py-2 border-2 border-text bg-red-800 hover:bg-red-600 transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
                                             >
                                                 Delete
                                             </button>
@@ -477,7 +476,7 @@ export const QuestionaireOriginal = () => {
                                                     setCriteria(undefined);
                                                 }}
                                                 type="button"
-                                                className="sm:w-[48%] w-full py-2  transition-all duration-500 ease-in-out text-lg font-semibold text-text border-2 border-text rounded-md"
+                                                className="sm:w-[48%] w-full py-2  transition-all duration-500 ease-in-out text-md font-semibold text-text border-2 border-text rounded-md"
                                             >
                                                 Back
                                             </button>
@@ -517,9 +516,9 @@ export const QuestionaireOriginal = () => {
                                             setShowQ(true);
                                         }}
                                         key={questionL.id}
-                                        className="relative flex flex-wrap md:w-40 w-full h-40 max-h-40 overflow-hidden border-2 border-text rounded-md justify-center text-ellipsis cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
+                                        className="relative flex flex-wrap md:w-40 w-full h-40 max-h-40 overflow-hidden border-2 border-text rounded-md justify-center content-center text-ellipsis cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
                                     >
-                                        <p className="text-text text-center text-lg font-semibold group-hover:text-primary transition-all duration-500 ease-in-out text-elipse">
+                                        <p className="text-text text-center text-md font-semibold group-hover:text-primary transition-all duration-500 ease-in-out text-elipse">
                                             {questionL.question}
                                         </p>
                                     </div>
@@ -545,7 +544,7 @@ export const QuestionaireOriginal = () => {
                                         : {
                                               question: "",
                                               comment: "",
-                                              weight: 100,
+                                              weight: 1,
                                           }
                                 }
                                 onSubmit={(values) => {
@@ -566,7 +565,7 @@ export const QuestionaireOriginal = () => {
                                                 <ErrorMessage
                                                     name="question"
                                                     component="div"
-                                                    className="text-red-700 text-lg font-semibold"
+                                                    className="text-red-700 text-md font-semibold"
                                                 />
                                                 <textarea
                                                     ref={questionTextareaRef}
@@ -584,7 +583,7 @@ export const QuestionaireOriginal = () => {
                                                 <ErrorMessage
                                                     name="comment"
                                                     component="div"
-                                                    className="text-red-700 text-lg font-semibold"
+                                                    className="text-red-700 text-md font-semibold"
                                                 />
                                                 <textarea
                                                     ref={commentTextareaRef}
@@ -596,13 +595,12 @@ export const QuestionaireOriginal = () => {
                                             </div>
                                             <div className="flex flex-col w-full p-2">
                                                 <label className="text-text font-semibold">
-                                                    Questions weight (
-                                                    percentage )
+                                                    Questions weight
                                                 </label>
                                                 <ErrorMessage
                                                     name="weight"
                                                     component="div"
-                                                    className="text-red-700 text-lg font-semibold"
+                                                    className="text-red-700 text-md font-semibold"
                                                 />
                                                 <Field
                                                     type="number"
@@ -615,7 +613,7 @@ export const QuestionaireOriginal = () => {
                                         <div className="flex flex-wrap w-full p-2 gap-2 justify-between">
                                             <button
                                                 type="submit"
-                                                className="sm:w-[48%] w-full py-2 border-2 border-text bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
+                                                className="sm:w-[48%] w-full py-2 border-2 border-text bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
                                             >
                                                 Update
                                             </button>
@@ -645,7 +643,7 @@ export const QuestionaireOriginal = () => {
                                                     });
                                                 }}
                                                 type="button"
-                                                className="sm:w-[48%] w-full py-2 border-2 border-text bg-red-800 hover:bg-red-600 transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
+                                                className="sm:w-[48%] w-full py-2 border-2 border-text bg-red-800 hover:bg-red-600 transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
                                             >
                                                 Delete
                                             </button>
@@ -656,7 +654,7 @@ export const QuestionaireOriginal = () => {
                                                     setQuestion(undefined);
                                                 }}
                                                 type="button"
-                                                className="sm:w-[48%] w-full py-2  transition-all duration-500 ease-in-out text-lg font-semibold text-text border-2 border-text rounded-md"
+                                                className="sm:w-[48%] w-full py-2  transition-all duration-500 ease-in-out text-md font-semibold text-text border-2 border-text rounded-md"
                                             >
                                                 Back
                                             </button>
@@ -671,7 +669,7 @@ export const QuestionaireOriginal = () => {
                                     setShowP(true);
                                     setPossibility({
                                         subcriteria: "None",
-                                        weight: 100,
+                                        weight: 1,
                                         statements: [
                                             {
                                                 statement: "",
@@ -749,7 +747,7 @@ export const QuestionaireOriginal = () => {
                                         key={p.id}
                                         className="relative flex flex-wrap w-36 h-36 max-h-36 overflow-hidden p-2 border-2 border-text rounded-md justify-center content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
                                     >
-                                        <p className="text-text text-center text-lg font-semibold group-hover:text-primary transition-all duration-500 ease-in-out">
+                                        <p className="text-text text-center text-md font-semibold group-hover:text-primary transition-all duration-500 ease-in-out">
                                             {p.subcriteria}
                                         </p>
                                     </div>
@@ -763,7 +761,7 @@ export const QuestionaireOriginal = () => {
             <Dialog
                 className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
                 header={"Create"}
-                headerClassName="text-lg font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
+                headerClassName="text-md font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
                 contentClassName="p-2"
                 visible={showCQu}
                 onHide={() => {
@@ -803,7 +801,7 @@ export const QuestionaireOriginal = () => {
                                 <ErrorMessage
                                     name="year"
                                     component="div"
-                                    className="text-red-700 text-lg font-semibold"
+                                    className="text-red-700 text-md font-semibold"
                                 />
                                 <Field
                                     type="number"
@@ -814,7 +812,7 @@ export const QuestionaireOriginal = () => {
                             <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
                                 <button
                                     type="submit"
-                                    className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
+                                    className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
                                 >
                                     Create
                                 </button>
@@ -828,7 +826,7 @@ export const QuestionaireOriginal = () => {
             <Dialog
                 className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
                 header={"Create"}
-                headerClassName="text-lg font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
+                headerClassName="text-md font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
                 contentClassName="p-2"
                 visible={showDQu}
                 onHide={() => {
@@ -869,7 +867,7 @@ export const QuestionaireOriginal = () => {
                                 <ErrorMessage
                                     name="year"
                                     component="div"
-                                    className="text-red-700 text-lg font-semibold"
+                                    className="text-red-700 text-md font-semibold"
                                 />
                                 <Field
                                     type="number"
@@ -880,7 +878,7 @@ export const QuestionaireOriginal = () => {
                             <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
                                 <button
                                     type="submit"
-                                    className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
+                                    className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
                                 >
                                     Create
                                 </button>
@@ -895,7 +893,7 @@ export const QuestionaireOriginal = () => {
                 <Dialog
                     className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
                     header={"Create"}
-                    headerClassName="text-lg font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
+                    headerClassName="text-md font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
                     contentClassName="p-2"
                     visible={showCC}
                     onHide={() => {
@@ -909,7 +907,7 @@ export const QuestionaireOriginal = () => {
                                 ? criteria
                                 : {
                                       name: "",
-                                      weight: 100,
+                                      weight: 1,
                                       icon: "icon-default",
                                       description: "",
                                       questionaire: questionaire.id,
@@ -924,7 +922,7 @@ export const QuestionaireOriginal = () => {
                                     actions.resetForm({
                                         values: {
                                             name: "",
-                                            weight: 100,
+                                            weight: 1,
                                             icon: "icon-default",
                                             description: "",
                                             questionaire: questionaire.id,
@@ -943,7 +941,7 @@ export const QuestionaireOriginal = () => {
                                     <ErrorMessage
                                         name="name"
                                         component="div"
-                                        className="text-red-700 text-lg font-semibold"
+                                        className="text-red-700 text-md font-semibold"
                                     />
                                     <Field
                                         type="text"
@@ -958,7 +956,7 @@ export const QuestionaireOriginal = () => {
                                     <ErrorMessage
                                         name="description"
                                         component="div"
-                                        className="text-red-700 text-lg font-semibold"
+                                        className="text-red-700 text-md font-semibold"
                                     />
                                     <Field
                                         as="textarea"
@@ -974,7 +972,7 @@ export const QuestionaireOriginal = () => {
                                     <ErrorMessage
                                         name="weight"
                                         component="div"
-                                        className="text-red-700 text-lg font-semibold"
+                                        className="text-red-700 text-md font-semibold"
                                     />
                                     <Field
                                         type="number"
@@ -986,7 +984,7 @@ export const QuestionaireOriginal = () => {
                                 <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
                                     <button
                                         type="submit"
-                                        className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
+                                        className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
                                     >
                                         Create
                                     </button>
@@ -1002,7 +1000,7 @@ export const QuestionaireOriginal = () => {
                 <Dialog
                     className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
                     header={question ? "Update" : "Create"}
-                    headerClassName="text-lg font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
+                    headerClassName="text-md font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
                     contentClassName="p-2"
                     visible={showCQ}
                     onHide={() => {
@@ -1016,7 +1014,7 @@ export const QuestionaireOriginal = () => {
                                 ? question
                                 : {
                                       question: "",
-                                      weight: 100,
+                                      weight: 1,
                                       comment: "",
                                       criteria: criteria.id,
                                   }
@@ -1030,7 +1028,7 @@ export const QuestionaireOriginal = () => {
                                     actions.resetForm({
                                         values: {
                                             question: "",
-                                            weight: 100,
+                                            weight: 1,
                                             comment: "",
                                             criteria: criteria.id,
                                         },
@@ -1048,7 +1046,7 @@ export const QuestionaireOriginal = () => {
                                     <ErrorMessage
                                         name="question"
                                         component="div"
-                                        className="text-red-700 text-lg font-semibold"
+                                        className="text-red-700 text-md font-semibold"
                                     />
                                     <Field
                                         as="textarea"
@@ -1063,7 +1061,7 @@ export const QuestionaireOriginal = () => {
                                     <ErrorMessage
                                         name="comment"
                                         component="div"
-                                        className="text-red-700 text-lg font-semibold"
+                                        className="text-red-700 text-md font-semibold"
                                     />
                                     <Field
                                         as="textarea"
@@ -1078,7 +1076,7 @@ export const QuestionaireOriginal = () => {
                                     <ErrorMessage
                                         name="weight"
                                         component="div"
-                                        className="text-red-700 text-lg font-semibold"
+                                        className="text-red-700 text-md font-semibold"
                                     />
                                     <Field
                                         type="number"
@@ -1090,7 +1088,7 @@ export const QuestionaireOriginal = () => {
                                 <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
                                     <button
                                         type="submit"
-                                        className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
+                                        className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
                                     >
                                         {"Create"}
                                     </button>
@@ -1108,7 +1106,7 @@ export const QuestionaireOriginal = () => {
                     <Dialog
                         className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
                         header={possibility ? "Update" : "Create"}
-                        headerClassName="text-lg font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
+                        headerClassName="text-md font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
                         contentClassName="p-2"
                         visible={showP}
                         onHide={() => {
@@ -1137,7 +1135,7 @@ export const QuestionaireOriginal = () => {
                                         <ErrorMessage
                                             name="subcriteria"
                                             component="div"
-                                            className="text-red-700 text-lg font-semibold"
+                                            className="text-red-700 text-md font-semibold"
                                         />
                                         <Field
                                             type="text"
@@ -1157,7 +1155,7 @@ export const QuestionaireOriginal = () => {
                                                 <ErrorMessage
                                                     name={`statements[${index}].statement`}
                                                     component="div"
-                                                    className="text-red-700 text-lg font-semibold"
+                                                    className="text-red-700 text-md font-semibold"
                                                 />
                                                 <Field
                                                     type="text"
@@ -1171,7 +1169,7 @@ export const QuestionaireOriginal = () => {
                                     <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
                                         <button
                                             type="submit"
-                                            className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
+                                            className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
                                         >
                                             {possibility != undefined &&
                                             possibility.id != undefined
@@ -1200,7 +1198,7 @@ export const QuestionaireOriginal = () => {
                                                         });
                                                     }}
                                                     type="button"
-                                                    className="sm:w-auto w-full px-10 py-2 bg-red-800 hover:bg-red-600 transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
+                                                    className="sm:w-auto w-full px-10 py-2 bg-red-800 hover:bg-red-600 transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
                                                 >
                                                     Delete
                                                 </button>
