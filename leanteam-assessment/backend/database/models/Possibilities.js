@@ -11,9 +11,9 @@ Possibilities.defineTable("SCHEMALESS", {
     statements: {
         type: DataTypes.ARRAY,
     },
-    weight: {
-        type: DataTypes.NUMBER,
-    },
+    // weight: {
+    //     type: DataTypes.NUMBER,
+    // },
     question: {
         type: DataTypes.RECORD,
         table: "question",

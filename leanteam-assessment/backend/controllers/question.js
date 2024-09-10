@@ -32,24 +32,33 @@ router.post(
 
             const questionV = await Question.findByPk({ id });
 
+            let q = undefined;
             if (questionV[0]) {
-                await Question.update(id, {
-                    question,
-                    comment,
-                    weight: weight != undefined ? weight : 100,
-                    criteria,
-                });
+                q = await Question.update(
+                    id,
+                    {
+                        question,
+                        comment,
+                        weight: weight != undefined ? weight : 100,
+                        criteria,
+                    },
+                    { return: "AFTER" }
+                );
             } else {
-                await Question.create({
-                    question,
-                    comment,
-                    weight: weight != undefined ? weight : 100,
-                    criteria,
-                });
+                q = await Question.create(
+                    {
+                        question,
+                        comment,
+                        weight: weight != undefined ? weight : 100,
+                        criteria,
+                    },
+                    { return: "AFTER" }
+                );
             }
 
             return res.status(201).json({
                 status: 201,
+                data: q[0],
                 message: "Question saved successfully",
             });
         } catch (error) {

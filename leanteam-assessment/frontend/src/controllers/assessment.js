@@ -20,10 +20,10 @@ export const getAssessments = async () => {
     }
 };
 
-export const getAssessment = async (year, factory) => {
+export const getAssessment = async (id) => {
     try {
         const res = await http.get("/assessment", {
-            params: { year: parseInt(year), factory: factory },
+            params: { id },
         });
 
         return res.data;
@@ -32,9 +32,13 @@ export const getAssessment = async (year, factory) => {
     }
 };
 
-export const getLeanAssessments = async () => {
+export const getLeanAssessments = async (id) => {
     try {
-        const res = await http.get("/lean_assessments");
+        const res = await http.get("/lean_assessments", {
+            params: {
+                id,
+            },
+        });
 
         return res.data;
     } catch (error) {

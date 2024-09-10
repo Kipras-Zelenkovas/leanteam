@@ -57,13 +57,17 @@ router.post(
             const criteria = await Criteria.findByPk({ id });
 
             if (criteria[0]) {
-                await Criteria.update(id, {
-                    name,
-                    weight: weight != undefined ? weight : 100,
-                    icon: icon != undefined ? icon : "icon-default",
-                    description,
-                    questionaire,
-                });
+                await Criteria.update(
+                    id,
+                    {
+                        name,
+                        weight: weight != undefined ? weight : 100,
+                        icon: icon != undefined ? icon : "icon-default",
+                        description,
+                        questionaire,
+                    },
+                    { type: "SET" }
+                );
             } else {
                 await Criteria.create({
                     name,

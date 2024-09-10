@@ -43,7 +43,7 @@ router.post(
 
             if (questionaire[0]) {
                 await Questionaire.update(id, {
-                    name: name != undefined ? name : "Questionaire " + year,
+                    name: "Questionaire " + year,
                     year,
                 });
             } else {

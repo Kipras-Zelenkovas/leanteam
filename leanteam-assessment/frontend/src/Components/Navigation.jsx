@@ -102,6 +102,55 @@ export const Navigation = () => {
                     <div className="flex flex-wrap w-full h-max gap-2">
                         <li className="w-full border-b-2 border-text p-[0.2rem]">
                             <Link
+                                title="My assessments"
+                                to="/lean/assessments"
+                                className="hidden sm:flex w-full justify-center"
+                            >
+                                <svg
+                                    width="512"
+                                    height="512"
+                                    viewBox="0 0 512 512"
+                                    className={`w-10 h-10 rounded-md transition-all duration-[800ms] ease-in-out ${
+                                        window.location.pathname ===
+                                        "/lean/assessments"
+                                            ? "bg-gradient-to-br from-primary to-text text-white p-1"
+                                            : "text-primary p-0 bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white hover:p-1"
+                                    }`}
+                                >
+                                    <rect
+                                        width="512"
+                                        height="512"
+                                        x="0"
+                                        y="0"
+                                        rx="30"
+                                        fill="transparent"
+                                        stroke="transparent"
+                                        strokeWidth="0"
+                                        strokeOpacity="100%"
+                                        paintOrder="stroke"
+                                    ></rect>
+                                    <svg
+                                        width="100%"
+                                        height="100%"
+                                        viewBox="0 0 16 16"
+                                        fill="currentColor"
+                                        x="30"
+                                        y="20"
+                                        role="img"
+                                        className="inline-block"
+                                    >
+                                        <g fill="currentColor">
+                                            <path
+                                                fill="currentColor"
+                                                d="M13 10.085a1.5 1.5 0 0 1 1 1.415v.5a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6.5a1.5 1.5 0 0 1 1-1.415V3.5A1.5 1.5 0 0 1 4.5 2h5A1.5 1.5 0 0 1 11 3.5V10h1V4.085A1.5 1.5 0 0 1 13 5.5v4.585Zm-3-.792V3.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0-.5.5V5h1.086a1.5 1.5 0 0 1 1.06.44L10 9.292ZM3 6.5V12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-.5a.5.5 0 0 0-.5-.5h-1.586a1.5 1.5 0 0 1-1.06-.44L5.439 6.147A.5.5 0 0 0 5.086 6H3.5a.5.5 0 0 0-.5.5Z"
+                                            />
+                                        </g>
+                                    </svg>
+                                </svg>
+                            </Link>
+                        </li>
+                        <li className="w-full border-b-2 border-text p-[0.2rem]">
+                            <Link
                                 title="Assessments"
                                 to="/assessments"
                                 className="hidden sm:flex w-full justify-center"
@@ -311,6 +360,60 @@ export const Navigation = () => {
                                     </li>
                                 </div>
                                 <div className="flex flex-wrap w-full h-max gap-2">
+                                    <li className="w-full border-b-2 border-text p-[0.2rem]">
+                                        <Link
+                                            className={`flex flex-wrap sm:hidden items-center text-md font-semibold gap-2 rounded-md transition-all duration-[800ms] ease-in-out pl-1 ${
+                                                window.location.pathname ===
+                                                "/lean/assessments"
+                                                    ? "bg-gradient-to-br from-primary to-text text-white"
+                                                    : "text-primary bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white"
+                                            }`}
+                                            to="/lean/assessments"
+                                        >
+                                            <svg
+                                                width="512"
+                                                height="512"
+                                                viewBox="0 0 512 512"
+                                                className={`w-10 h-10 rounded-md transition-all duration-[800ms] ease-in-out ${
+                                                    window.location.pathname ===
+                                                    "/lean/assessments"
+                                                        ? "bg-gradient-to-br from-primary to-text text-white p-1"
+                                                        : "text-primary p-0 bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white hover:p-1"
+                                                }`}
+                                            >
+                                                <rect
+                                                    width="512"
+                                                    height="512"
+                                                    x="0"
+                                                    y="0"
+                                                    rx="30"
+                                                    fill="transparent"
+                                                    stroke="transparent"
+                                                    strokeWidth="0"
+                                                    strokeOpacity="100%"
+                                                    paintOrder="stroke"
+                                                ></rect>
+                                                <svg
+                                                    width="100%"
+                                                    height="100%"
+                                                    viewBox="0 0 16 16"
+                                                    fill="currentColor"
+                                                    x="30"
+                                                    y="20"
+                                                    role="img"
+                                                    className="inline-block"
+                                                >
+                                                    <g fill="currentColor">
+                                                        <path
+                                                            fill="currentColor"
+                                                            d="M13 10.085a1.5 1.5 0 0 1 1 1.415v.5a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6.5a1.5 1.5 0 0 1 1-1.415V3.5A1.5 1.5 0 0 1 4.5 2h5A1.5 1.5 0 0 1 11 3.5V10h1V4.085A1.5 1.5 0 0 1 13 5.5v4.585Zm-3-.792V3.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0-.5.5V5h1.086a1.5 1.5 0 0 1 1.06.44L10 9.292ZM3 6.5V12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-.5a.5.5 0 0 0-.5-.5h-1.586a1.5 1.5 0 0 1-1.06-.44L5.439 6.147A.5.5 0 0 0 5.086 6H3.5a.5.5 0 0 0-.5.5Z"
+                                                        />
+                                                    </g>
+                                                </svg>
+                                            </svg>
+                                            My assessments
+                                        </Link>
+                                    </li>
                                     <li className="w-full border-b-2 border-text p-[0.2rem]">
                                         <Link
                                             className={`flex flex-wrap sm:hidden items-center text-md font-semibold gap-2 rounded-md transition-all duration-[800ms] ease-in-out pl-1 ${

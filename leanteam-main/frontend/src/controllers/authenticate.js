@@ -13,11 +13,7 @@ export const login = async (data) => {
 
         return res.data;
     } catch (err) {
-        if (err.response.status === 500) {
-            console.error(err.response.data.message);
-        } else {
-            return err.response.data;
-        }
+        console.error(err);
     }
 };
 

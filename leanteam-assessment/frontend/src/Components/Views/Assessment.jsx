@@ -2,13 +2,16 @@ import { ErrorMessage, Field, Form, Formik } from "formik";
 import { Loader } from "../Loader.jsx";
 import { useEffect, useState } from "react";
 import {
+    cuAssessment,
     getAssessment,
+    getAssessments,
     getFactoriesAsessment,
 } from "../../controllers/assessment.js";
 import { getAnswers, saveAnswer } from "../../controllers/answers.js";
+import { Dialog } from "primereact/dialog";
 
 export const Assessment = () => {
-    const [factories, setFactories] = useState(null);
+    const [assessments, setAssessments] = useState(null);
     const [assessment, setAssessment] = useState(undefined);
     const [answers, setAnswers] = useState(undefined);
 
@@ -19,16 +22,17 @@ export const Assessment = () => {
     const [answerImgPreview, setAnswerImgPreview] = useState([]);
 
     const [updateA, setUpdateA] = useState(false);
+    const [update, setUpdate] = useState(false);
+
+    const [completeDialog, setCompleteDialog] = useState(false);
 
     useEffect(() => {
-        getFactoriesAsessment().then((res) => {
+        getAssessments().then((res) => {
             if (res.status === 200) {
-                setFactories(res.data[0]);
-            } else {
-                setFactories([]);
+                setAssessments(res.data);
             }
         });
-    }, []);
+    }, [update]);
 
     useEffect(() => {
         if (assessment != undefined) {
@@ -40,16 +44,78 @@ export const Assessment = () => {
         }
     }, [updateA]);
 
-    if (factories === null || answers === null) {
+    if (assessments === null || answers === null) {
         return <Loader />;
     }
 
     return (
         <div className="flex flex-wrap w-full h-full overflow-y-auto no-scrollbar">
+            {assessment === undefined && answers === undefined && (
+                <div className="flex flex-wrap w-full h-full p-4">
+                    {assessments.map((assessment) => (
+                        <div
+                            onClick={() => {
+                                getAssessment(assessment.id).then((res) => {
+                                    if (res.status === 200) {
+                                        setAssessment(res.assessment);
+                                        setAnswers(res.answers);
+                                    }
+                                });
+                            }}
+                            className={`flex flex-wrap flex-col justify-between py-2 w-full md:w-1/4 h-32 border-2 border-text capitalize text-md text-white font-semibold ${
+                                assessment.status === "completed"
+                                    ? "bg-primary hover:bg-primary-light"
+                                    : "bg-sky-600 hover:bg-sky-500"
+                            } transition-all duration-500 ease-in-out cursor-pointer rounded-md
+                            `}
+                        >
+                            <div className="flex flex-wrap text-md flex-col w-full h-auto px-3 capitalize">
+                                <p className="text-md">{assessment.status}</p>
+                                <p className="text-xl">{assessment.name}</p>
+                            </div>
+                            <div className="flex flex-wrap w-full h-auto px-3">
+                                <p className="text-md w-full font-semibold">
+                                    {assessment.type + " self assessment"}
+                                </p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
             {assessment !== undefined &&
                 answers != undefined &&
                 criteria === undefined && (
-                    <div className="flex flex-wrap w-full h-max gap-3 p-2 justify-evenly">
+                    <div className="flex flex-wrap w-full h-max gap-3 p-2 justify-evenly overflow-y-auto no-scrollbar">
+                        <div className="flex flex-wrap w-full h-16 justify-between content-center lg:mx-10">
+                            <div
+                                onClick={() => {
+                                    setAssessment(undefined);
+                                    setAnswers(undefined);
+                                }}
+                                className="flex flex-wrap content-center justify-center text-text text-lg font-semibold text-center border-text border-2 rounded-md w-[45%] h-full hover:bg-text hover:text-white transition-all duration-500 ease-in-out cursor-pointer"
+                            >
+                                Back
+                            </div>
+                            {answers.filter((ans) => ans.answer !== undefined)
+                                .length ===
+                                assessment.criterias.reduce((acc, curr) => {
+                                    return (
+                                        acc +
+                                        curr.questions.reduce((acc, curr) => {
+                                            return (
+                                                acc + curr.possibilities.length
+                                            );
+                                        }, 0)
+                                    );
+                                }, 0) && (
+                                <div
+                                    onClick={() => setCompleteDialog(true)}
+                                    className="flex flex-wrap content-center justify-center text-text text-lg font-semibold text-center border-text border-2 rounded-md w-[45%] h-full hover:bg-primary hover:text-white  transition-all duration-500 ease-in-out cursor-pointer"
+                                >
+                                    Complete
+                                </div>
+                            )}
+                        </div>
                         {assessment.criterias.map((criteria, index) => {
                             let total = criteria.questions.reduce((acc, q) => {
                                 return acc + q.possibilities.length;
@@ -168,67 +234,94 @@ export const Assessment = () => {
                 answers !== undefined &&
                 criteria !== undefined && (
                     <div className="flex flex-wrap w-full h-full pb-20 lg:pb-0">
-                        <div className="flex flex-col gap-2 w-full lg:w-1/5 h-64 pb-10 lg:h-full max-h-64 lg:max-h-full overflow-x-hidden overflow-y-auto no-scrollbar border-b-2 lg:border-b-0 lg:border-r-2 border-text px-4 py-2">
-                            <p className="text-text text-md font-semibold p-2 border-b-2 border-text text-center">
-                                {criteria.name}
-                            </p>
-                            <div
-                                onClick={() => {
-                                    for (let question of criteria.questions) {
-                                        for (let possibility of question.possibilities) {
-                                            let ans = answers.find(
-                                                (ans) =>
-                                                    ans.possibility ===
-                                                    possibility.id
-                                            );
+                        {question === undefined && (
+                            <div className="flex flex-col gap-2 w-full h-64 pb-10 lg:h-full max-h-64 lg:max-h-full overflow-x-hidden overflow-y-auto no-scrollbar border-b-2 lg:border-b-0 lg:border-r-2 border-text px-4 py-2">
+                                <p className="text-text text-md font-semibold p-2 border-b-2 border-text text-center">
+                                    {criteria.name}
+                                </p>
+                                <div
+                                    onClick={() => {
+                                        if (assessment.status !== "completed") {
+                                            for (let question of criteria.questions) {
+                                                for (let possibility of question.possibilities) {
+                                                    let ans = answers.find(
+                                                        (ans) =>
+                                                            ans.possibility ===
+                                                            possibility.id
+                                                    );
 
-                                            if (ans !== undefined) {
-                                                saveAnswer(ans).then((res) => {
-                                                    if (res.status === 200) {
-                                                        setAnswers(null);
-                                                        setTimeout(() => {
-                                                            setUpdateA(
-                                                                !updateA
-                                                            );
-                                                        }, 50);
+                                                    if (ans !== undefined) {
+                                                        saveAnswer(ans).then(
+                                                            (res) => {
+                                                                if (
+                                                                    res.status ===
+                                                                    200
+                                                                ) {
+                                                                    setAnswers(
+                                                                        null
+                                                                    );
+                                                                    setTimeout(
+                                                                        () => {
+                                                                            setUpdateA(
+                                                                                !updateA
+                                                                            );
+                                                                        },
+                                                                        50
+                                                                    );
+                                                                }
+                                                            }
+                                                        );
                                                     }
-                                                });
+                                                }
                                             }
+                                            setAnswerImgPreview([]);
                                         }
-                                    }
 
-                                    setAnswerImgPreview([]);
-                                    setCriteria(undefined);
-                                    setQuestion(undefined);
-                                }}
-                                className="flex flex-wrap justify-center content-center w-full h-20 min-h-20 border-2 border-text rounded-md capitalize text-mx text-text font-semibold hover:bg-text hover:text-white transition-all duration-500 ease-in-out scale-95 cursor-pointer"
-                            >
-                                Save & Back
+                                        setCriteria(undefined);
+                                        setQuestion(undefined);
+                                    }}
+                                    className="flex flex-wrap justify-center content-center w-full h-20 min-h-20 border-2 border-text rounded-md capitalize text-mx text-text font-semibold hover:bg-text hover:text-white transition-all duration-500 ease-in-out scale-95 cursor-pointer"
+                                >
+                                    {assessment.status === "completed"
+                                        ? "Back"
+                                        : "Save & Back"}
+                                </div>
+                                {criteria.questions.map((questionL, index) => {
+                                    return (
+                                        <div
+                                            onClick={() => {
+                                                setQuestion(questionL);
+                                                setPossibility(undefined);
+                                            }}
+                                            className={`flex flex-wrap justify-center w-full h-20 min-h-20 max-h-20 border-2 border-text capitalize text-ellipsis overflow-hidden text-md text-text font-semibold ${
+                                                questionL === question
+                                                    ? // bg-gradient-to-br from-text to-primary text-white
+                                                      "bg-primary text-white scale-95"
+                                                    : // hover:bg-gradient-to-br hover:from-text hover:to-primary
+                                                      "hover:bg-primary hover:text-white scale-95 hover:scale-100"
+                                            } transition-all duration-500 ease-in-out cursor-pointer rounded-md p-1`}
+                                        >
+                                            {questionL.question}
+                                        </div>
+                                    );
+                                })}
                             </div>
-                            {criteria.questions.map((questionL, index) => {
-                                return (
+                        )}
+                        {question !== undefined && (
+                            <div className="flex flex-col w-full h-full max-h-full overflow-x-hidden overflow-y-auto no-scrollbar border-r-2 border-text">
+                                <div className="flex flex-wrap w-full h-max border-b-2 max-h-[10%] overflow-x-hidden overflow-y-auto no-scrollbar border-text capitalize text-lg text-primary font-semibold px-4 py-4 ">
+                                    <p className="w-[90%] h-full">
+                                        {question.question}
+                                    </p>
                                     <div
                                         onClick={() => {
-                                            setQuestion(questionL);
+                                            setQuestion(undefined);
                                             setPossibility(undefined);
                                         }}
-                                        className={`flex flex-wrap justify-center w-full h-20 min-h-20 max-h-20 border-2 border-text capitalize text-ellipsis overflow-hidden text-md text-text font-semibold ${
-                                            questionL === question
-                                                ? // bg-gradient-to-br from-text to-primary text-white
-                                                  "bg-primary text-white scale-95"
-                                                : // hover:bg-gradient-to-br hover:from-text hover:to-primary
-                                                  "hover:bg-primary hover:text-white scale-95 hover:scale-100"
-                                        } transition-all duration-500 ease-in-out cursor-pointer rounded-md p-1`}
+                                        className="flex flex-wrap justify-center w-[10%] h-full border-2 border-text rounded-md text-center text-text cursor-pointer hover:bg-text hover:text-white transition-all duration-500 ease-in-out py-1"
                                     >
-                                        {questionL.question}
+                                        Back
                                     </div>
-                                );
-                            })}
-                        </div>
-                        {question !== undefined && (
-                            <div className="flex flex-col w-full lg:w-4/5 h-full max-h-full overflow-x-hidden overflow-y-auto no-scrollbar border-r-2 border-text">
-                                <div className="flex flex-wrap w-full h-max border-b-2 max-h-[10%] overflow-x-hidden overflow-y-auto no-scrollbar border-text capitalize text-lg text-primary font-semibold px-4 py-4 ">
-                                    {question.question}
                                 </div>
                                 <div className="flex flex-col w-full h-max border-b-2 max-h-auto overflow-x-hidden overflow-y-auto no-scrollbar border-text capitalize text-sm text-text font-semibold px-4 py-4 ">
                                     <p className="text-text text-md font-medium w-full">
@@ -307,27 +400,29 @@ export const Assessment = () => {
                                                     (statementL, index) => (
                                                         <div
                                                             onClick={() => {
-                                                                setAnswers(
-                                                                    answers.map(
-                                                                        (
-                                                                            ans
-                                                                        ) => {
-                                                                            if (
-                                                                                ans.possibility ===
-                                                                                possibility.id
-                                                                            ) {
-                                                                                return {
-                                                                                    ...ans,
-                                                                                    answer: statementL.score,
-                                                                                };
-                                                                            } else {
-                                                                                return ans;
+                                                                assessment.status !==
+                                                                    "completed" &&
+                                                                    setAnswers(
+                                                                        answers.map(
+                                                                            (
+                                                                                ans
+                                                                            ) => {
+                                                                                if (
+                                                                                    ans.possibility ===
+                                                                                    possibility.id
+                                                                                ) {
+                                                                                    return {
+                                                                                        ...ans,
+                                                                                        answer: statementL.score,
+                                                                                    };
+                                                                                } else {
+                                                                                    return ans;
+                                                                                }
                                                                             }
-                                                                        }
-                                                                    )
-                                                                );
+                                                                        )
+                                                                    );
                                                             }}
-                                                            className={`flex flex-wrap gap-2 w-full h-auto py-2 px-2 ${
+                                                            className={`group flex flex-wrap gap-2 w-full h-auto py-2 px-2 ${
                                                                 parseInt(
                                                                     statementL.score
                                                                 ) ===
@@ -339,9 +434,19 @@ export const Assessment = () => {
                                                                     )?.answer
                                                                 )
                                                                     ? // bg-gradient-to-br from-text to-primary text-white scale:100
-                                                                      "bg-primary text-white scale-90 rounded-md cursor-pointer"
+                                                                      `bg-primary text-white scale-90 rounded-md ${
+                                                                          assessment.status ===
+                                                                          "completed"
+                                                                              ? "cursor-not-allowed"
+                                                                              : "cursor-pointer"
+                                                                      }`
                                                                     : //   hover:scale-100
-                                                                      "bg-white text-text hover:bg-primary hover:text-white hover:rounded-md hover:border-b-0 scale-90 cursor-pointer border-text"
+                                                                      `bg-white text-text ${
+                                                                          assessment.status ===
+                                                                          "completed"
+                                                                              ? "cursor-not-allowed"
+                                                                              : "cursor-pointer hover:bg-primary hover:text-white"
+                                                                      } rounded-md scale-90 border-text`
                                                             }  transition-all duration-500 ease-in-out border-b-2 `}
                                                         >
                                                             <p
@@ -355,7 +460,12 @@ export const Assessment = () => {
                                                                         ? "text-white"
                                                                         : statementL.statement !==
                                                                           undefined
-                                                                        ? "text-text hover:text-white"
+                                                                        ? `text-text ${
+                                                                              assessment.status ===
+                                                                              "completed"
+                                                                                  ? ""
+                                                                                  : "group-hover:text-white"
+                                                                          }`
                                                                         : "text-white  "
                                                                 } px-2`}
                                                             >
@@ -398,25 +508,27 @@ export const Assessment = () => {
                                                             </p>
                                                             <div
                                                                 onClick={() => {
-                                                                    setAnswers(
-                                                                        answers.map(
-                                                                            (
-                                                                                ans
-                                                                            ) => {
-                                                                                if (
-                                                                                    ans.possibility ===
-                                                                                    possibility.id
-                                                                                ) {
-                                                                                    return {
-                                                                                        ...ans,
-                                                                                        answer: statementL.score,
-                                                                                    };
-                                                                                } else {
-                                                                                    return ans;
+                                                                    assessment.status !==
+                                                                        "completed" &&
+                                                                        setAnswers(
+                                                                            answers.map(
+                                                                                (
+                                                                                    ans
+                                                                                ) => {
+                                                                                    if (
+                                                                                        ans.possibility ===
+                                                                                        possibility.id
+                                                                                    ) {
+                                                                                        return {
+                                                                                            ...ans,
+                                                                                            answer: statementL.score,
+                                                                                        };
+                                                                                    } else {
+                                                                                        return ans;
+                                                                                    }
                                                                                 }
-                                                                            }
-                                                                        )
-                                                                    );
+                                                                            )
+                                                                        );
                                                                 }}
                                                                 className={`flex flex-col gap-2 w-full h-full py-2 px-2 ${
                                                                     parseInt(
@@ -433,9 +545,19 @@ export const Assessment = () => {
                                                                             ?.answer
                                                                     )
                                                                         ? // bg-gradient-to-br from-text to-primary text-white scale:100
-                                                                          "bg-primary text-white scale-90 rounded-md cursor-pointer"
+                                                                          `bg-primary text-white scale-90 rounded-md border-text ${
+                                                                              assessment.status ===
+                                                                              "completed"
+                                                                                  ? "cursor-not-allowed"
+                                                                                  : "cursor-pointer"
+                                                                          }`
                                                                         : //   hover:scale-100
-                                                                          "bg-white text-text hover:bg-primary hover:text-white hover:rounded-md hover:border-0 scale-90 cursor-pointer border-text"
+                                                                          `bg-white text-text rounded-md scale-90 ${
+                                                                              assessment.status ===
+                                                                              "completed"
+                                                                                  ? "cursor-not-allowed"
+                                                                                  : "cursor-pointer hover:bg-primary hover:text-white"
+                                                                          } border-text`
                                                                 }  transition-all duration-500 ease-in-out border-2 rounded-md`}
                                                             >
                                                                 {
@@ -456,93 +578,113 @@ export const Assessment = () => {
                                                 <p className="text-text text-md font-medium w-full">
                                                     Comments
                                                 </p>
-                                                <textarea
-                                                    value={
-                                                        answers.find(
-                                                            (ans) =>
-                                                                ans.possibility ===
-                                                                possibility.id
-                                                        )?.comment
-                                                    }
-                                                    onChange={(e) => {
-                                                        setAnswers(
-                                                            answers.map(
-                                                                (ans) => {
-                                                                    if (
-                                                                        ans.possibility ===
-                                                                        possibility.id
-                                                                    ) {
-                                                                        return {
-                                                                            ...ans,
-                                                                            comment:
-                                                                                e
-                                                                                    .target
-                                                                                    .value,
-                                                                        };
-                                                                    } else {
-                                                                        return ans;
+                                                {assessment.status !==
+                                                "completed" ? (
+                                                    <textarea
+                                                        value={
+                                                            answers.find(
+                                                                (ans) =>
+                                                                    ans.possibility ===
+                                                                    possibility.id
+                                                            )?.comment
+                                                        }
+                                                        onChange={(e) => {
+                                                            setAnswers(
+                                                                answers.map(
+                                                                    (ans) => {
+                                                                        if (
+                                                                            ans.possibility ===
+                                                                            possibility.id
+                                                                        ) {
+                                                                            return {
+                                                                                ...ans,
+                                                                                comment:
+                                                                                    e
+                                                                                        .target
+                                                                                        .value,
+                                                                            };
+                                                                        } else {
+                                                                            return ans;
+                                                                        }
                                                                     }
-                                                                }
-                                                            )
-                                                        );
-                                                    }}
-                                                    className="border-2 border-text rounded-md p-2 w-full h-20"
-                                                ></textarea>
+                                                                )
+                                                            );
+                                                        }}
+                                                        className="border-2 border-text rounded-md p-2 w-full h-20"
+                                                    ></textarea>
+                                                ) : (
+                                                    <p className="text-text text-md font-medium w-full">
+                                                        {
+                                                            answers.find(
+                                                                (ans) =>
+                                                                    ans.possibility ===
+                                                                    possibility.id
+                                                            )?.comment
+                                                        }
+                                                    </p>
+                                                )}
                                             </div>
                                             <div className="flex flex-wrap w-full h-auto gap-3">
                                                 <p className="text-text text-md font-medium w-full">
                                                     Evidence
                                                 </p>
-                                                <input
-                                                    type="file"
-                                                    accept="*"
-                                                    onChange={(e) => {
-                                                        setAnswerImgPreview([]);
-                                                        for (
-                                                            let i = 0;
-                                                            i <
-                                                            Object.keys(
-                                                                e.target.files
-                                                            ).length;
-                                                            i++
-                                                        ) {
+                                                {assessment.status !==
+                                                    "completed" && (
+                                                    <input
+                                                        type="file"
+                                                        accept="*"
+                                                        onChange={(e) => {
                                                             setAnswerImgPreview(
-                                                                (old) => [
-                                                                    ...old,
-                                                                    URL.createObjectURL(
-                                                                        e.target
-                                                                            .files[
-                                                                            i
-                                                                        ]
-                                                                    ),
-                                                                ]
+                                                                []
                                                             );
-                                                        }
+                                                            for (
+                                                                let i = 0;
+                                                                i <
+                                                                Object.keys(
+                                                                    e.target
+                                                                        .files
+                                                                ).length;
+                                                                i++
+                                                            ) {
+                                                                setAnswerImgPreview(
+                                                                    (old) => [
+                                                                        ...old,
+                                                                        URL.createObjectURL(
+                                                                            e
+                                                                                .target
+                                                                                .files[
+                                                                                i
+                                                                            ]
+                                                                        ),
+                                                                    ]
+                                                                );
+                                                            }
 
-                                                        setAnswers(
-                                                            answers.map(
-                                                                (ans) => {
-                                                                    if (
-                                                                        ans.possibility ===
-                                                                        possibility.id
-                                                                    ) {
-                                                                        return {
-                                                                            ...ans,
-                                                                            new_evidence:
-                                                                                e
-                                                                                    .target
-                                                                                    .files,
-                                                                        };
-                                                                    } else {
-                                                                        return ans;
+                                                            setAnswers(
+                                                                answers.map(
+                                                                    (ans) => {
+                                                                        if (
+                                                                            ans.possibility ===
+                                                                            possibility.id
+                                                                        ) {
+                                                                            return {
+                                                                                ...ans,
+                                                                                new_evidence:
+                                                                                    e
+                                                                                        .target
+                                                                                        .files,
+                                                                            };
+                                                                        } else {
+                                                                            return ans;
+                                                                        }
                                                                     }
-                                                                }
-                                                            )
-                                                        );
-                                                    }}
-                                                    multiple
-                                                    className="border-2 border-text rounded-md p-2 w-full"
-                                                />
+                                                                )
+                                                            );
+                                                        }}
+                                                        multiple
+                                                        className="border-2 border-text rounded-md p-2 w-full"
+                                                    />
+                                                )}
                                             </div>
                                             <div className="flex flex-wrap w-full h-auto gap-3">
                                                 {answers
@@ -811,87 +953,49 @@ export const Assessment = () => {
                     </div>
                 )}
 
-            {assessment === undefined && answers === undefined && (
-                <div className="flex flex-wrap w-full h-full justify-center items-center">
-                    <Formik
-                        initialValues={{
-                            factory: "",
-                            year: new Date().getFullYear(),
-                        }}
-                        onSubmit={(values, action) => {
-                            getAssessment(values.year, values.factory).then(
-                                (res) => {
-                                    if (res.status === 200) {
-                                        setAssessment(res.assessment);
-                                        setAnswers(res.answers);
-                                    }
-                                }
-                            );
-                        }}
-                    >
-                        {(values, error) => (
-                            <Form className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 h-auto flex flex-col border-2 border-text rounded-md p-2">
-                                <div className="flex flex-wrap flex-col p-3 w-full">
-                                    <label
-                                        htmlFor="factory"
-                                        className="text-text text-md font-semibold"
-                                    >
-                                        Factory
-                                    </label>
-                                    <ErrorMessage
-                                        name="factory"
-                                        component="div"
-                                        className="text-red-500 font-medium text-sm"
-                                    />
-                                    <Field
-                                        as="select"
-                                        name="factory"
-                                        className="border-2 border-text rounded-md p-1"
-                                    >
-                                        <option value="">Select Factory</option>
-                                        {factories.map((factory) => (
-                                            <option
-                                                value={factory.id}
-                                                key={factory.id}
-                                            >
-                                                {factory.name}
-                                            </option>
-                                        ))}
-                                    </Field>
-                                </div>
-                                <div className="flex flex-wrap flex-col p-3 w-full">
-                                    <label
-                                        htmlFor="year"
-                                        className="text-text text-md font-semibold"
-                                    >
-                                        Year
-                                    </label>
-                                    <ErrorMessage
-                                        name="year"
-                                        component="div"
-                                        className="text-red-500 font-medium text-sm"
-                                    />
-                                    <Field
-                                        type="number"
-                                        step="1"
-                                        min="2024"
-                                        max="2099"
-                                        name="year"
-                                        className="border-2 border-text rounded-md p-1"
-                                    />
-                                </div>
-                                <div className="flex flex-wrap w-full p-3">
-                                    <button
-                                        type="submit"
-                                        className="bg-primary text-white font-semibold text-md p-2 w-full rounded-md"
-                                    >
-                                        Submit
-                                    </button>
-                                </div>
-                            </Form>
-                        )}
-                    </Formik>
-                </div>
+            {completeDialog && (
+                <Dialog
+                    header="Complete Assessment"
+                    className="bg-white border-2 border-text rounded-md w-4/5 md:w-2/3 lg:w-1/3"
+                    headerClassName="bg-text text-white font-semibold h-12 px-2"
+                    contentClassName="p-4"
+                    visible={completeDialog}
+                    onHide={() => setCompleteDialog(false)}
+                >
+                    <div className="flex flex-wrap w-full h-auto gap-3">
+                        <p className="text-text text-md font-medium w-full text-center">
+                            Are you sure you want to complete this assessment?
+                        </p>
+                        <div className="flex flex-wrap w-full h-auto gap-3 justify-evenly">
+                            <div
+                                onClick={() => {
+                                    cuAssessment({
+                                        ...assessment,
+                                        status: "completed",
+                                    }).then((res) => {
+                                        if (res.status === 201) {
+                                            setUpdate(!update);
+                                            setCompleteDialog(false);
+                                            setAssessment(undefined);
+                                            setAnswers(undefined);
+                                        }
+                                    });
+                                }}
+                                className="flex flex-wrap justify-center content-center w-full h-20 min-h-20 border-2 border-text rounded-md capitalize text-mx text-text font-semibold hover:bg-primary hover:text-white transition-all duration-500 ease-in-out scale-95 cursor-pointer"
+                            >
+                                Confirm
+                            </div>
+                            <div
+                                onClick={() => {
+                                    setCompleteDialog(false);
+                                }}
+                                className="flex flex-wrap justify-center content-center w-full h-20 min-h-20 border-2 border-text rounded-md capitalize text-mx text-text font-semibold hover:bg-text hover:text-white transition-all duration-500 ease-in-out scale-95 cursor-pointer"
+                            >
+                                Cancel
+                            </div>
+                        </div>
+                    </div>
+                </Dialog>
             )}
         </div>
     );

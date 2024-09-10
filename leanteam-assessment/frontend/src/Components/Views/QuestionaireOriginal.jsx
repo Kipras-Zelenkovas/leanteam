@@ -28,7 +28,6 @@ export const QuestionaireOriginal = () => {
     const [questionaires, setQuestionaires] = useState(null);
     const [criterias, setCriterias] = useState(null);
     const [questions, setQuestions] = useState(null);
-    const [possibilities, setPossibilities] = useState(null);
 
     const [quUpdate, setQuUpdate] = useState(false);
     const [cUpdate, setCUpdate] = useState(false);
@@ -47,32 +46,9 @@ export const QuestionaireOriginal = () => {
     const [showC, setShowC] = useState(false);
     const [showCC, setShowCC] = useState(false);
 
-    const [showQ, setShowQ] = useState(false);
     const [showCQ, setShowCQ] = useState(false);
 
-    const [showP, setShowP] = useState(false);
-
-    const questionTextareaRef = useRef(null);
-    const commentTextareaRef = useRef(null);
-
     const availableP = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-    useEffect(() => {
-        if (question != undefined) {
-            setTimeout(() => {
-                console.log(questionTextareaRef);
-                console.log(commentTextareaRef);
-
-                questionTextareaRef.current.style.height = "auto";
-                questionTextareaRef.current.style.height =
-                    questionTextareaRef.current.scrollHeight + "px";
-
-                commentTextareaRef.current.style.height = "auto";
-                commentTextareaRef.current.style.height =
-                    commentTextareaRef.current.scrollHeight + "px";
-            }, 100);
-        }
-    }, [question]);
 
     useEffect(() => {
         getQuestionaires().then((res) => {
@@ -115,27 +91,33 @@ export const QuestionaireOriginal = () => {
 
     useEffect(() => {
         if (criteria != undefined) {
-            getQuestions(criteria.id).then((res) => {
+            getQuestions(criteria.id).then(async (res) => {
                 if (res.status === 200) {
-                    setQuestions(res.data[0]);
+                    let questions = [];
+
+                    for (let q of res.data[0]) {
+                        await getPosibility(q.id).then((res) => {
+                            if (res.status === 200) {
+                                let tempQ = {
+                                    ...q,
+                                    possibilities: res.data[0],
+                                };
+                                questions.push(tempQ);
+                            } else {
+                                q.push({
+                                    question: q,
+                                    possibilities: [],
+                                });
+                            }
+                        });
+                    }
+                    setQuestions(questions);
                 } else {
-                    setQuestions([]);
+                    setQuestions(null);
                 }
             });
         }
     }, [qUpdate, criteria]);
-
-    useEffect(() => {
-        if (question != undefined) {
-            getPosibility(question.id).then((res) => {
-                if (res.status === 200) {
-                    setPossibilities(res.data[0]);
-                } else {
-                    setPossibilities([]);
-                }
-            });
-        }
-    }, [question, pUpdate]);
 
     if (questionaires === null) {
         return <Loader />;
@@ -143,9 +125,9 @@ export const QuestionaireOriginal = () => {
 
     return (
         <div className="flex flex-wrap w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
-            {showQu == false && showC == false && showQ == false && (
+            {showQu == false && showC == false && showCQu == false && (
                 <div
-                    className={`flex flex-wrap sm:flex-row flex-col gap-3 w-full h-auto p-4 overflow-y-auto overflow-x-hidden no-scrollbar`}
+                    className={`flex md:flex-wrap flex-col md:flex-row gap-3 w-full p-4 h-auto max-h-full overflow-y-auto overflow-x-hidden no-scrollbar pb-20`}
                 >
                     <div
                         onClick={() => {
@@ -177,9 +159,9 @@ export const QuestionaireOriginal = () => {
                                     setShowQu(true);
                                 }}
                                 key={questionaireL.id}
-                                className="relative flex flex-wrap sm:w-40 w-full h-40 border-2 border-text rounded-md justify-center content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
+                                className="relative flex flex-wrap sm:w-40 w-full h-40 border-2 border-text rounded-md justify-center content-center group hover:bg-text transition-all duration-500 ease-in-out px-2 cursor-pointer"
                             >
-                                <p className="text-text text-center text-md font-semibold group-hover:text-primary transition-all duration-500 ease-in-out">
+                                <p className="text-text text-center text-md font-semibold group-hover:text-white">
                                     {questionaireL.name}
                                 </p>
                             </div>
@@ -188,138 +170,119 @@ export const QuestionaireOriginal = () => {
                 </div>
             )}
 
+            {showCQu == true && (
+                <div className="flex flex-wrap w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar content-center justify-center">
+                    <Formik
+                        initialValues={
+                            questionaire != undefined
+                                ? questionaire
+                                : {
+                                      year: 0,
+                                  }
+                        }
+                        onSubmit={(values, actions) => {
+                            cuQuestionaire(values).then((res) => {
+                                if (res.status === 201) {
+                                    setShowCQu(false);
+                                    setQuUpdate(!quUpdate);
+                                    actions.resetForm({
+                                        values: {
+                                            year: 0,
+                                        },
+                                    });
+                                }
+                            });
+                        }}
+                    >
+                        {(values, errors) => (
+                            <Form className="flex flex-wrap w-1/2 h-max p-4 border-2 border-text rounded-md">
+                                <div className="flex flex-col w-full p-2">
+                                    <label className="text-text font-semibold">
+                                        Year
+                                    </label>
+                                    <ErrorMessage
+                                        name="year"
+                                        component="div"
+                                        className="text-red-700 text-md font-semibold"
+                                    />
+                                    <Field
+                                        type="number"
+                                        name="year"
+                                        className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                    />
+                                </div>
+                                <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
+                                    <button
+                                        type="submit"
+                                        className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
+                                    >
+                                        {questionaire ? "Update" : "Create"}
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setShowCQu(false);
+                                        }}
+                                        type="button"
+                                        className="sm:w-auto w-full px-10 py-2 bg-white hover:bg-text border-2 border-text text-text hover:text-white rounded-md text-md font-semibold transition-all duration-500 ease-in-out"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </Form>
+                        )}
+                    </Formik>
+                </div>
+            )}
+
             {showQu == true &&
                 showC == false &&
-                showQ == false &&
-                criterias != null && (
-                    <div className={`w-full h-full flex flex-wrap`}>
-                        <div className="flex flex-wrap xl:w-[25%] sm:w-[45%] w-full p-4 h-auto sm:h-full sm:border-r-2 sm:border-text">
-                            <p className="text-xl text-text font-semibold w-full text-center">
-                                Questionaire
-                            </p>
-                            <Formik
-                                initialValues={
-                                    questionaire != undefined
-                                        ? questionaire
-                                        : {
-                                              name: "",
-                                              year: 0,
-                                          }
-                                }
-                                onSubmit={(values) => {
-                                    cuQuestionaire(values).then((res) => {
-                                        if (res.status === 201) {
-                                            setQuUpdate(!quUpdate);
-                                        }
-                                    });
+                criterias != null &&
+                showCC == false && (
+                    <div className={`w-full h-full flex flex-col`}>
+                        <div className="flex flex-wrap content-center w-full h-auto py-2 md:py-0 md:h-20 px-4 justify-between gap-2 md:gap-0 md:border-b-2 md:border-text">
+                            <button
+                                onClick={() => {
+                                    setShowQu(false);
+                                    setQuestionaire(undefined);
                                 }}
+                                className="w-full md:w-40 h-12 bg-white text-text border-2 border-text font-semibold rounded-md hover:bg-text hover:text-white transition-all duration-500 ease-in-out"
                             >
-                                {(values, errors) => (
-                                    <Form className="flex flex-col w-full h-full p-4 justify-between">
-                                        <div className="flex flex-wrap w-full h-auto">
-                                            <div className="flex flex-col w-full p-2">
-                                                <label className="text-text font-semibold">
-                                                    Name
-                                                </label>
-                                                <ErrorMessage
-                                                    name="name"
-                                                    component="div"
-                                                    className="text-red-700 text-md font-semibold"
-                                                />
-                                                <Field
-                                                    type="text"
-                                                    name="name"
-                                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                                />
-                                            </div>
-                                            <div className="flex flex-col w-full p-2">
-                                                <label className="text-text font-semibold">
-                                                    Year
-                                                </label>
-                                                <ErrorMessage
-                                                    name="year"
-                                                    component="div"
-                                                    className="text-red-700 text-md font-semibold"
-                                                />
-                                                <Field
-                                                    type="number"
-                                                    name="year"
-                                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="flex flex-wrap w-full p-2 gap-2 justify-between">
-                                            <button
-                                                type="submit"
-                                                className="sm:w-[48%] w-full py-2 border-2 border-text bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
-                                            >
-                                                Update
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    deleteQuestionaire(
-                                                        questionaire.id
-                                                    ).then((res) => {
-                                                        if (
-                                                            res.status === 201
-                                                        ) {
-                                                            setShowQu(false);
-                                                            setQuestionaire(
-                                                                undefined
-                                                            );
-                                                            setCriterias(
-                                                                undefined
-                                                            );
-                                                            setQuestions(
-                                                                undefined
-                                                            );
-                                                            setPossibilities(
-                                                                undefined
-                                                            );
-                                                            setQuUpdate(
-                                                                !quUpdate
-                                                            );
-                                                        }
-                                                    });
-                                                }}
-                                                type="button"
-                                                className="sm:w-[48%] w-full py-2 border-2 border-text bg-red-800 hover:bg-red-600 transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
-                                            >
-                                                Delete
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    setShowDQu(true);
-                                                }}
-                                                type="button"
-                                                className="sm:w-[48%] w-full py-2 underline border-2 border-text transition-all duration-500 ease-in-out text-md font-semibold text-text rounded-md"
-                                            >
-                                                Dublicate
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    setShowQu(false);
-                                                    setQuestionaire(undefined);
-                                                }}
-                                                type="button"
-                                                className="sm:w-[48%] w-full py-2  transition-all duration-500 ease-in-out text-md font-semibold text-text border-2 border-text rounded-md"
-                                            >
-                                                Back
-                                            </button>
-                                        </div>
-                                    </Form>
-                                )}
-                            </Formik>
-                        </div>
-                        <div className="flex flex-wrap flex-col md:flex-row gap-3 xl:w-[75%] sm:w-[55%] w-full p-4 h-auto sm:h-auto overflow-y-auto overflow-x-hidden no-scrollbar">
+                                Back
+                            </button>
+                            <div className="flex flex-wrap w-full md:w-auto h-auto gap-2">
+                                <button
+                                    onClick={() => {
+                                        deleteQuestionaire(
+                                            questionaire.id
+                                        ).then((res) => {
+                                            if (res.status === 201) {
+                                                setShowQu(false);
+                                                setQuestionaire(undefined);
+                                                setQuUpdate(!quUpdate);
+                                            }
+                                        });
+                                    }}
+                                    className="w-full md:w-40 h-12 bg-red-800 text-white border-2 border-red-800 font-semibold rounded-md hover:bg-red-600 transition-all duration-500 ease-in-out"
+                                >
+                                    Delete
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setShowCQu(true);
+                                    }}
+                                    className="w-full md:w-40 h-12 bg-blue-800 text-white border-2 border-blue-800 font-semibold rounded-md hover:bg-blue-600 transition-all duration-500 ease-in-out"
+                                >
+                                    Edit
+                                </button>
+                            </div>
                             <div
                                 onClick={() => {
                                     setShowCC(true);
                                 }}
-                                className="flex flex-wrap md:w-40 w-full h-40 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
+                                className="flex flex-wrap md:w-40 w-full h-12 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
                             >
                                 <svg
-                                    className="w-12 h-12 text-gray-400 group-hover:text-text transition-all duration-500 ease-in-out"
+                                    className="w-8 h-8 text-gray-400 group-hover:text-text transition-all duration-500 ease-in-out"
                                     width={24}
                                     height={24}
                                     viewBox="0 0 24 24"
@@ -334,19 +297,39 @@ export const QuestionaireOriginal = () => {
                                     ></path>
                                 </svg>
                             </div>
+                        </div>
+                        <div className="flex flex-col gap-3 w-full p-4 h-auto max-h-full overflow-y-auto overflow-x-hidden no-scrollbar pb-20">
                             {criterias.map((criteriaL) => {
                                 return (
                                     <div
                                         onClick={() => {
-                                            setCriteria(criteriaL);
                                             setShowC(true);
+                                            setCriteria(criteriaL);
                                         }}
                                         key={criteriaL.id}
-                                        className="relative flex flex-wrap md:w-40 w-full h-40 border-2 border-text rounded-md justify-center content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
+                                        className="relative flex flex-wrap w-full min-h-24 h-24 border-2 border-text rounded-md justify-center content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
                                     >
                                         <p className="text-text text-center text-md font-semibold group-hover:text-primary transition-all duration-500 ease-in-out">
                                             {criteriaL.name}
                                         </p>
+                                        {/* <button
+                                        onClick={() => {
+                                            setShowCC(true);
+                                            setCriteria(criteriaL);
+                                        }}
+                                        className="hidden group-hover:flex justify-center absolute top-8 z-10 w-4/5 text-text text-center text-md font-semibold border-2 border-text rounded-md bg-white hover:bg-text hover:text-white transition-all duration-500 ease-in-out py-1"
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setShowC(true);
+                                            setCriteria(criteriaL);
+                                        }}
+                                        className="hidden group-hover:flex justify-center absolute top-24 z-10 w-4/5 text-text text-center text-md font-semibold border-2 border-text rounded-md bg-white hover:bg-text hover:text-white transition-all duration-500 ease-in-out py-1"
+                                    >
+                                        Enter
+                                    </button> */}
                                     </div>
                                 );
                             })}
@@ -354,146 +337,170 @@ export const QuestionaireOriginal = () => {
                     </div>
                 )}
 
+            {showCC == true && (
+                <div className="flex flex-wrap w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar content-center justify-center">
+                    <Formik
+                        initialValues={
+                            criteria != undefined
+                                ? criteria
+                                : {
+                                      name: "",
+                                      weight: 1,
+                                      icon: "icon-default",
+                                      description: "",
+                                      questionaire: questionaire.id,
+                                  }
+                        }
+                        onSubmit={(values, actions) => {
+                            cuCriteria(values).then((res) => {
+                                if (res.status === 201) {
+                                    setShowCC(false);
+                                    setCriteria(undefined);
+                                    setCUpdate(!cUpdate);
+                                    actions.resetForm({
+                                        values: {
+                                            name: "",
+                                            weight: 1,
+                                            icon: "icon-default",
+                                            description: "",
+                                            questionaire: questionaire.id,
+                                        },
+                                    });
+                                }
+                            });
+                        }}
+                    >
+                        {(values, errors) => (
+                            <Form className="flex flex-wrap w-1/2 h-max p-4 border-2 border-text rounded-md">
+                                <div className="flex flex-col w-full p-2">
+                                    <label className="text-text font-semibold">
+                                        Name
+                                    </label>
+                                    <ErrorMessage
+                                        name="name"
+                                        component="div"
+                                        className="text-red-700 text-md font-semibold"
+                                    />
+                                    <Field
+                                        type="text"
+                                        name="name"
+                                        className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                    />
+                                </div>
+                                <div className="flex flex-col w-full p-2">
+                                    <label className="text-text font-semibold">
+                                        Description
+                                    </label>
+                                    <ErrorMessage
+                                        name="description"
+                                        component="div"
+                                        className="text-red-700 text-md font-semibold"
+                                    />
+                                    <Field
+                                        as="textarea"
+                                        name="description"
+                                        className="border-2 h-24 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                    />
+                                </div>
+
+                                <div className="flex flex-col w-full p-2">
+                                    <label className="text-text font-semibold">
+                                        Criterias weight ( percentage )
+                                    </label>
+                                    <ErrorMessage
+                                        name="weight"
+                                        component="div"
+                                        className="text-red-700 text-md font-semibold"
+                                    />
+                                    <Field
+                                        type="number"
+                                        step="1"
+                                        name="weight"
+                                        className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                    />
+                                </div>
+                                <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
+                                    <button
+                                        type="submit"
+                                        className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
+                                    >
+                                        {criteria != undefined
+                                            ? "Update"
+                                            : "Create"}
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setShowCC(false);
+                                        }}
+                                        type="button"
+                                        className="sm:w-auto w-full px-10 py-2 bg-white hover:bg-text border-2 border-text text-text hover:text-white rounded-md text-md font-semibold transition-all duration-500 ease-in-out"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </Form>
+                        )}
+                    </Formik>
+                </div>
+            )}
+
             {showQu == true &&
                 showC == true &&
-                showQ == false &&
-                questions != null && (
-                    <div className="flex flex-wrap w-full h-full">
-                        <div className="flex flex-wrap xl:w-[25%] sm:w-[45%] w-full p-4 h-auto sm:h-full sm:border-r-2 sm:border-text">
-                            <p className="text-xl text-text font-semibold w-full text-center">
-                                Category
-                            </p>
-                            <Formik
-                                initialValues={
-                                    criteria != undefined
-                                        ? criteria
-                                        : {
-                                              name: "",
-                                              description: "",
-                                              weight: 1,
-                                          }
-                                }
-                                onSubmit={(values) => {
-                                    cuCriteria(values).then((res) => {
-                                        if (res.status === 201) {
-                                            setCUpdate(!cUpdate);
-                                        }
-                                    });
+                questions != null &&
+                showCC == false &&
+                showCQ == false &&
+                showCQu == false && (
+                    <div className="flex flex-col w-full h-full">
+                        <div className="flex flex-wrap content-center w-full h-auto md:h-20 px-4 justify-between gap-2 md:gap-0 py-2 md:py-0 border-b-2 border-text">
+                            <button
+                                onClick={() => {
+                                    setShowC(false);
+                                    setCriteria(undefined);
                                 }}
+                                className="w-full md:w-40 h-12 bg-white text-text border-2 border-text font-semibold rounded-md hover:bg-text hover:text-white transition-all duration-500 ease-in-out"
                             >
-                                {(values, errors) => (
-                                    <Form className="flex flex-col w-full h-full p-4 justify-between">
-                                        <div className="flex flex-wrap w-full h-auto">
-                                            <div className="flex flex-col w-full p-2">
-                                                <label className="text-text font-semibold">
-                                                    Name
-                                                </label>
-                                                <ErrorMessage
-                                                    name="name"
-                                                    component="div"
-                                                    className="text-red-700 text-md font-semibold"
-                                                />
-                                                <Field
-                                                    type="text"
-                                                    name="name"
-                                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                                />
-                                            </div>
-
-                                            <div className="flex flex-col w-full p-2">
-                                                <label className="text-text font-semibold">
-                                                    Description
-                                                </label>
-                                                <ErrorMessage
-                                                    name="description"
-                                                    component="div"
-                                                    className="text-red-700 text-md font-semibold"
-                                                />
-                                                <Field
-                                                    as="textarea"
-                                                    name="description"
-                                                    className="border-2 h-24 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                                />
-                                            </div>
-                                            <div className="flex flex-col w-full p-2">
-                                                <label className="text-text font-semibold">
-                                                    Categories weight
-                                                </label>
-                                                <ErrorMessage
-                                                    name="weight"
-                                                    component="div"
-                                                    className="text-red-700 text-md font-semibold"
-                                                />
-                                                <Field
-                                                    type="number"
-                                                    step="1"
-                                                    name="weight"
-                                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="flex flex-wrap w-full p-2 gap-2 justify-between">
-                                            <button
-                                                type="submit"
-                                                className="sm:w-[48%] w-full py-2 border-2 border-text bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
-                                            >
-                                                Update
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    deleteCriteria(
-                                                        criteria.id
-                                                    ).then((res) => {
-                                                        if (
-                                                            res.status === 201
-                                                        ) {
-                                                            setShowC(false);
-                                                            setCriteria(
-                                                                undefined
-                                                            );
-                                                            setQuestions(
-                                                                undefined
-                                                            );
-                                                            setCUpdate(
-                                                                !cUpdate
-                                                            );
-                                                        }
-                                                    });
-                                                }}
-                                                type="button"
-                                                className="sm:w-[48%] w-full py-2 border-2 border-text bg-red-800 hover:bg-red-600 transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
-                                            >
-                                                Delete
-                                            </button>
-                                            <button
-                                                onClick={() => {
+                                Back
+                            </button>
+                            <div className="flex flex-wrap w-full md:w-auto h-auto gap-2">
+                                <button
+                                    onClick={() => {
+                                        deleteCriteria(criteria.id).then(
+                                            (res) => {
+                                                if (res.status === 201) {
                                                     setShowC(false);
-                                                    setShowQu(true);
-                                                    setQuestions(undefined);
-                                                    setPossibilities(undefined);
-                                                    setPossibility(undefined);
-                                                    setQuestion(undefined);
-                                                    setCriteria(undefined);
-                                                }}
-                                                type="button"
-                                                className="sm:w-[48%] w-full py-2  transition-all duration-500 ease-in-out text-md font-semibold text-text border-2 border-text rounded-md"
-                                            >
-                                                Back
-                                            </button>
-                                        </div>
-                                    </Form>
-                                )}
-                            </Formik>
-                        </div>
-                        <div className="flex flex-wrap flex-col md:flex-row gap-3 xl:w-[75%] sm:w-[55%] w-full p-4 h-auto sm:h-auto overflow-y-auto overflow-x-hidden no-scrollbar">
+                                                    setCUpdate(!cUpdate);
+                                                }
+                                            }
+                                        );
+                                    }}
+                                    className="w-full md:w-40 h-12 bg-red-800 text-white border-2 border-red-800 font-semibold rounded-md hover:bg-red-600 transition-all duration-500 ease-in-out"
+                                >
+                                    Delete
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setShowCC(true);
+                                    }}
+                                    className="w-full md:w-40 h-12 bg-blue-800 text-white border-2 border-blue-800 font-semibold rounded-md hover:bg-blue-600 transition-all duration-500 ease-in-out"
+                                >
+                                    Edit
+                                </button>
+                            </div>
                             <div
                                 onClick={() => {
                                     setShowCQ(true);
+                                    setQuestion({
+                                        question: "",
+                                        comment: "",
+                                        weight: 1,
+                                        criteria: criteria.id,
+                                        possibilities: [],
+                                    });
                                 }}
-                                className="flex flex-wrap sm:w-40 w-full h-40 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
+                                className="flex flex-wrap md:w-40 w-full h-12 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
                             >
                                 <svg
-                                    className="w-12 h-12 text-gray-400 group-hover:text-text transition-all duration-500 ease-in-out"
+                                    className="w-8 h-8 text-gray-400 group-hover:text-text transition-all duration-500 ease-in-out"
                                     width={24}
                                     height={24}
                                     viewBox="0 0 24 24"
@@ -508,15 +515,17 @@ export const QuestionaireOriginal = () => {
                                     ></path>
                                 </svg>
                             </div>
+                        </div>
+                        <div className="flex flex-col gap-3 w-full p-4 h-auto max-h-full overflow-y-auto overflow-x-hidden no-scrollbar pb-20">
                             {questions.map((questionL) => {
                                 return (
                                     <div
                                         onClick={() => {
                                             setQuestion(questionL);
-                                            setShowQ(true);
+                                            setShowCQ(true);
                                         }}
                                         key={questionL.id}
-                                        className="relative flex flex-wrap md:w-40 w-full h-40 max-h-40 overflow-hidden border-2 border-text rounded-md justify-center content-center text-ellipsis cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
+                                        className="relative flex flex-wrap w-full h-24 min-h-24 max-h-24 overflow-hidden border-2 border-text rounded-md justify-center content-center text-ellipsis cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
                                     >
                                         <p className="text-text text-center text-md font-semibold group-hover:text-primary transition-all duration-500 ease-in-out text-elipse">
                                             {questionL.question}
@@ -528,10 +537,305 @@ export const QuestionaireOriginal = () => {
                     </div>
                 )}
 
-            {showQu == true &&
+            {showCQ == true && (
+                <div className="flex flex-col w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
+                    <div className="flex flex-wrap content-center w-full h-auto md:h-20 md:min-h-20 px-4 justify-between gap-2 md:gap-0 py-2 md:py-0 border-b-2 border-text">
+                        <button
+                            onClick={() => {
+                                cuQuestion({
+                                    id: question.id,
+                                    criteria: question.criteria,
+                                    question: question.question,
+                                    comment: question.comment,
+                                    weight: parseFloat(question.weight),
+                                }).then((res) => {
+                                    if (res.status === 201) {
+                                        if (question.possibilities.length > 0) {
+                                            for (let p of question.possibilities) {
+                                                cuPosibility({
+                                                    id: p.id,
+                                                    question: res.data[0].id,
+                                                    statements: p.statements,
+                                                    subcriteria: p.subcriteria,
+                                                }).then((res) => {
+                                                    if (res.status === 201) {
+                                                        setQUpdate(!qUpdate);
+                                                        setShowCQ(false);
+                                                    }
+                                                });
+                                            }
+                                        } else {
+                                            setQUpdate(!qUpdate);
+                                            setShowCQ(false);
+                                        }
+                                    }
+                                });
+                            }}
+                            className="w-full md:w-40 h-12 bg-white text-text border-2 border-text font-semibold rounded-md hover:bg-text hover:text-white transition-all duration-500 ease-in-out"
+                        >
+                            Save & Back
+                        </button>
+                        <button
+                            onClick={() => {
+                                deleteQuestion(question.id).then((res) => {
+                                    if (res.status === 201) {
+                                        setShowCQ(false);
+                                        setQuestion(undefined);
+                                        setQUpdate(!qUpdate);
+                                    }
+                                });
+                            }}
+                            className="w-full md:w-40 h-12 bg-white text-red-800 border-2 border-red-800 font-semibold rounded-md hover:bg-red-800 hover:text-white transition-all duration-500 ease-in-out"
+                        >
+                            Delete
+                        </button>
+                    </div>
+                    <div className="flex flex-wrap w-full h-auto">
+                        <div className="flex flex-col w-full md:w-1/2 h-auto p-2 border-b-2 border-text">
+                            <p className="text-text text-lg font-semibold">
+                                Question
+                            </p>
+                            <textarea
+                                className="border-2 border-text p-1 rounded-md resize-none no-scrollbar min-h-48 max-h-48"
+                                value={question.question}
+                                onChange={(e) => {
+                                    setQuestion({
+                                        ...question,
+                                        question: e.target.value,
+                                    });
+                                }}
+                            ></textarea>
+                        </div>
+                        <div className="flex flex-col w-full md:w-1/2 h-auto p-2 border-b-2 border-text">
+                            <p className="text-text text-lg font-semibold">
+                                Comment / Expectations
+                            </p>
+                            <textarea
+                                className="border-2 border-text p-1 rounded-md resize-none no-scrollbar min-h-48 max-h-48"
+                                value={question.comment}
+                                onChange={(e) => {
+                                    setQuestion({
+                                        ...question,
+                                        comment: e.target.value,
+                                    });
+                                }}
+                            ></textarea>
+                        </div>
+                    </div>
+                    <div className="flex flex-wrap w-full h-auto p-2 border-b-2 border-text">
+                        <p className="text-text text-lg font-semibold">
+                            Weight
+                        </p>
+                        <input
+                            type="number"
+                            className="border-2 border-text p-1 rounded-md w-full"
+                            value={question.weight}
+                            onChange={(e) => {
+                                setQuestion({
+                                    ...question,
+                                    weight: e.target.value,
+                                });
+                            }}
+                        />
+                    </div>
+                    <div className="flex flex-wrap w-full h-auto p-2">
+                        <p className="text-text text-lg font-semibold">
+                            Statements
+                        </p>
+                        {question.possibilities != undefined &&
+                            question.possibilities.map(
+                                (possibility, indexP) => {
+                                    return (
+                                        <div className="flex flex-wrap h-auto w-full border-b-2 border-text p-2">
+                                            <div className="flex flex-wrap justify-between w-full h-auto p-2">
+                                                <input
+                                                    value={
+                                                        possibility.subcriteria
+                                                    }
+                                                    onChange={(e) => {
+                                                        let tempPossibilities =
+                                                            [
+                                                                ...question.possibilities,
+                                                            ];
+
+                                                        tempPossibilities[
+                                                            indexP
+                                                        ].subcriteria =
+                                                            e.target.value;
+
+                                                        setQuestion({
+                                                            ...question,
+                                                            possibilities:
+                                                                tempPossibilities,
+                                                        });
+                                                    }}
+                                                    className="text-text text-md font-semibold w-1/3 border-2 border-text rounded-md p-1"
+                                                />
+                                                <button className="w-32 h-auto p-1 bg-white text-red-800 border-red-800 border-2 rounded-md hover:bg-red-800 hover:text-white transition-all duration-500 ease-in-out ">
+                                                    Delete
+                                                </button>
+                                            </div>
+
+                                            {possibility.statements.map(
+                                                (statement, indexS) => {
+                                                    return (
+                                                        <div
+                                                            key={indexS}
+                                                            className="flex flex-wrap w-full sm:w-[50%] md:w-[33%] xl:w-[9%] h-auto p-2 rounded-md gap-2"
+                                                        >
+                                                            <p
+                                                                className={`text-md w-full py-1 font-semibold text-center text-white rounded-md border-2 border-text ${
+                                                                    indexS < 3
+                                                                        ? "bg-slate-500"
+                                                                        : indexS <
+                                                                          5
+                                                                        ? "bg-sky-500"
+                                                                        : indexS <
+                                                                          7
+                                                                        ? "bg-blue-800"
+                                                                        : indexS <
+                                                                          9
+                                                                        ? "bg-green-500"
+                                                                        : "bg-primary"
+                                                                } px-2`}
+                                                            >
+                                                                {indexS}
+                                                            </p>
+                                                            <textarea
+                                                                className="border-2 border-text p-1 rounded-md w-full h-32 min-h-32 max-h-32 resize-none no-scrollbar"
+                                                                onChange={(
+                                                                    e
+                                                                ) => {
+                                                                    let tempPossibilities =
+                                                                        [
+                                                                            ...question.possibilities,
+                                                                        ];
+
+                                                                    tempPossibilities[
+                                                                        indexP
+                                                                    ].statements[
+                                                                        indexS
+                                                                    ] = {
+                                                                        score: indexS,
+                                                                        statement:
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                    };
+
+                                                                    setQuestion(
+                                                                        {
+                                                                            ...question,
+                                                                            possibilities:
+                                                                                tempPossibilities,
+                                                                        }
+                                                                    );
+                                                                }}
+                                                            >
+                                                                {statement.statement !=
+                                                                undefined
+                                                                    ? statement.statement
+                                                                    : ""}
+                                                            </textarea>
+                                                        </div>
+                                                    );
+                                                }
+                                            )}
+                                        </div>
+                                    );
+                                }
+                            )}
+                        <div
+                            onClick={() => {
+                                let tempPossibilities = [
+                                    ...question.possibilities,
+                                ];
+
+                                tempPossibilities.push({
+                                    question: question.id,
+                                    subcriteria: "",
+                                    statements: [
+                                        {
+                                            score: 0,
+                                            statement: "",
+                                        },
+                                        {
+                                            score: 1,
+                                            statement: "",
+                                        },
+                                        {
+                                            score: 2,
+                                            statement: "",
+                                        },
+                                        {
+                                            score: 3,
+                                            statement: "",
+                                        },
+                                        {
+                                            score: 4,
+                                            statement: "",
+                                        },
+                                        {
+                                            score: 5,
+                                            statement: "",
+                                        },
+                                        {
+                                            score: 6,
+                                            statement: "",
+                                        },
+                                        {
+                                            score: 7,
+                                            statement: "",
+                                        },
+                                        {
+                                            score: 8,
+                                            statement: "",
+                                        },
+                                        {
+                                            score: 9,
+                                            statement: "",
+                                        },
+                                        {
+                                            score: 10,
+                                            statement: "",
+                                        },
+                                    ],
+                                });
+
+                                setQuestion({
+                                    ...question,
+                                    possibilities: tempPossibilities,
+                                });
+                            }}
+                            className="flex flex-wrap w-full h-12 mt-4 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
+                        >
+                            <svg
+                                className="w-8 h-8 text-gray-400 group-hover:text-text transition-all duration-500 ease-in-out"
+                                width={24}
+                                height={24}
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 4v16m8-8H4"
+                                ></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* {showQu == true &&
                 showC == true &&
                 showQ == true &&
-                possibilities != null && (
+                possibilities != null &&
+                showCC == false &&
+                showCQ == false &&
+                showCQu == false && (
                     <div className="flex flex-wrap w-full h-full overflow-y-auto no-scrollbar sm:overflow-y-hidden pb-16 md:pb-0">
                         <div className="flex flex-wrap xl:w-[25%] sm:w-[45%] w-full p-4 h-full sm:h-full max-h-full overflow-y-auto no-scrollbar sm:border-r-2 sm:border-text">
                             <p className="text-xl text-text font-semibold w-full text-center">
@@ -755,75 +1059,17 @@ export const QuestionaireOriginal = () => {
                             })}
                         </div>
                     </div>
-                )}
+                )} */}
 
-            {/* CU dialog questionaire */}
-            <Dialog
-                className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
-                header={"Create"}
-                headerClassName="text-md font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
-                contentClassName="p-2"
-                visible={showCQu}
-                onHide={() => {
-                    setShowCQu(false);
-                    setQuestionaire(undefined);
-                }}
-            >
-                <Formik
-                    initialValues={
-                        questionaire != undefined
-                            ? questionaire
-                            : {
-                                  year: 0,
-                              }
-                    }
-                    onSubmit={(values, actions) => {
-                        cuQuestionaire(values).then((res) => {
-                            if (res.status === 201) {
-                                setShowCQu(false);
-                                setQuestionaire(undefined);
-                                setQuUpdate(!quUpdate);
-                                actions.resetForm({
-                                    values: {
-                                        year: 0,
-                                    },
-                                });
-                            }
-                        });
-                    }}
-                >
-                    {(values, errors) => (
-                        <Form className="flex flex-wrap w-full h-full p-4">
-                            <div className="flex flex-col w-full p-2">
-                                <label className="text-text font-semibold">
-                                    Year
-                                </label>
-                                <ErrorMessage
-                                    name="year"
-                                    component="div"
-                                    className="text-red-700 text-md font-semibold"
-                                />
-                                <Field
-                                    type="number"
-                                    name="year"
-                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                />
-                            </div>
-                            <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
-                                <button
-                                    type="submit"
-                                    className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
-                                >
-                                    Create
-                                </button>
-                            </div>
-                        </Form>
-                    )}
-                </Formik>
-            </Dialog>
+            {/* CU dialog questionaire
+            {/* <div
+                className={`xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 h-auto bg-white border-text border-2 text-md font-bold text-text ${
+                    showCQu ? "flex flex-wrap" : "hidden"
+                } justify-between content-center p-2`}
+            ></div> */}
 
             {/* Dublicate dialog criteria */}
-            <Dialog
+            {/* <Dialog
                 className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
                 header={"Create"}
                 headerClassName="text-md font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
@@ -886,10 +1132,10 @@ export const QuestionaireOriginal = () => {
                         </Form>
                     )}
                 </Formik>
-            </Dialog>
+            </Dialog> */}
 
             {/* CU dialog criteria */}
-            {questionaire != undefined && (
+            {/* {questionaire != undefined && (
                 <Dialog
                     className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
                     header={"Create"}
@@ -901,102 +1147,12 @@ export const QuestionaireOriginal = () => {
                         setCriteria(undefined);
                     }}
                 >
-                    <Formik
-                        initialValues={
-                            criteria != undefined
-                                ? criteria
-                                : {
-                                      name: "",
-                                      weight: 1,
-                                      icon: "icon-default",
-                                      description: "",
-                                      questionaire: questionaire.id,
-                                  }
-                        }
-                        onSubmit={(values, actions) => {
-                            cuCriteria(values).then((res) => {
-                                if (res.status === 201) {
-                                    setShowCC(false);
-                                    setCriteria(undefined);
-                                    setCUpdate(!cUpdate);
-                                    actions.resetForm({
-                                        values: {
-                                            name: "",
-                                            weight: 1,
-                                            icon: "icon-default",
-                                            description: "",
-                                            questionaire: questionaire.id,
-                                        },
-                                    });
-                                }
-                            });
-                        }}
-                    >
-                        {(values, errors) => (
-                            <Form className="flex flex-wrap w-full h-full p-4">
-                                <div className="flex flex-col w-full p-2">
-                                    <label className="text-text font-semibold">
-                                        Name
-                                    </label>
-                                    <ErrorMessage
-                                        name="name"
-                                        component="div"
-                                        className="text-red-700 text-md font-semibold"
-                                    />
-                                    <Field
-                                        type="text"
-                                        name="name"
-                                        className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                    />
-                                </div>
-                                <div className="flex flex-col w-full p-2">
-                                    <label className="text-text font-semibold">
-                                        Description
-                                    </label>
-                                    <ErrorMessage
-                                        name="description"
-                                        component="div"
-                                        className="text-red-700 text-md font-semibold"
-                                    />
-                                    <Field
-                                        as="textarea"
-                                        name="description"
-                                        className="border-2 h-24 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                    />
-                                </div>
-
-                                <div className="flex flex-col w-full p-2">
-                                    <label className="text-text font-semibold">
-                                        Criterias weight ( percentage )
-                                    </label>
-                                    <ErrorMessage
-                                        name="weight"
-                                        component="div"
-                                        className="text-red-700 text-md font-semibold"
-                                    />
-                                    <Field
-                                        type="number"
-                                        step="1"
-                                        name="weight"
-                                        className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                    />
-                                </div>
-                                <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
-                                    <button
-                                        type="submit"
-                                        className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
-                                    >
-                                        Create
-                                    </button>
-                                </div>
-                            </Form>
-                        )}
-                    </Formik>
+                    
                 </Dialog>
-            )}
+            )} */}
 
             {/* CU dialog question */}
-            {questionaire != undefined && criteria != undefined && (
+            {/* {questionaire != undefined && criteria != undefined && (
                 <Dialog
                     className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
                     header={question ? "Update" : "Create"}
@@ -1008,99 +1164,12 @@ export const QuestionaireOriginal = () => {
                         setQuestion(undefined);
                     }}
                 >
-                    <Formik
-                        initialValues={
-                            question != undefined
-                                ? question
-                                : {
-                                      question: "",
-                                      weight: 1,
-                                      comment: "",
-                                      criteria: criteria.id,
-                                  }
-                        }
-                        onSubmit={(values, actions) => {
-                            cuQuestion(values).then((res) => {
-                                if (res.status === 201) {
-                                    setShowCQ(false);
-                                    setQuestion(undefined);
-                                    setQUpdate(!qUpdate);
-                                    actions.resetForm({
-                                        values: {
-                                            question: "",
-                                            weight: 1,
-                                            comment: "",
-                                            criteria: criteria.id,
-                                        },
-                                    });
-                                }
-                            });
-                        }}
-                    >
-                        {(values, errors) => (
-                            <Form className="flex flex-wrap w-full h-full p-4">
-                                <div className="flex flex-col w-full p-2">
-                                    <label className="text-text font-semibold">
-                                        Question
-                                    </label>
-                                    <ErrorMessage
-                                        name="question"
-                                        component="div"
-                                        className="text-red-700 text-md font-semibold"
-                                    />
-                                    <Field
-                                        as="textarea"
-                                        name="question"
-                                        className="border-2 h-24 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                    />
-                                </div>
-                                <div className="flex flex-col w-full p-2">
-                                    <label className="text-text font-semibold">
-                                        Comment
-                                    </label>
-                                    <ErrorMessage
-                                        name="comment"
-                                        component="div"
-                                        className="text-red-700 text-md font-semibold"
-                                    />
-                                    <Field
-                                        as="textarea"
-                                        name="comment"
-                                        className="border-2 h-24 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                    />
-                                </div>
-                                <div className="flex flex-col w-full p-2">
-                                    <label className="text-text font-semibold">
-                                        Questions weight ( percentage )
-                                    </label>
-                                    <ErrorMessage
-                                        name="weight"
-                                        component="div"
-                                        className="text-red-700 text-md font-semibold"
-                                    />
-                                    <Field
-                                        type="number"
-                                        step="1"
-                                        name="weight"
-                                        className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
-                                    />
-                                </div>
-                                <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
-                                    <button
-                                        type="submit"
-                                        className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
-                                    >
-                                        {"Create"}
-                                    </button>
-                                </div>
-                            </Form>
-                        )}
-                    </Formik>
+                   
                 </Dialog>
-            )}
+            )} */}
 
             {/* CU dialog possibility */}
-            {questionaire != undefined &&
+            {/* {questionaire != undefined &&
                 criteria != undefined &&
                 question != undefined && (
                     <Dialog
@@ -1208,7 +1277,7 @@ export const QuestionaireOriginal = () => {
                             )}
                         </Formik>
                     </Dialog>
-                )}
+                )} */}
         </div>
     );
 };

@@ -24,7 +24,6 @@ export const AssessmentAdmin = () => {
 
     useEffect(() => {
         getFactoriesAsessment().then((res) => {
-            console.log(res);
             if (res.status === 200) {
                 setFactories(res.data[0]);
             }
@@ -42,7 +41,7 @@ export const AssessmentAdmin = () => {
     useEffect(() => {
         getAssessments().then((res) => {
             if (res.status === 200) {
-                setAssessments(res.data[0]);
+                setAssessments(res.data);
 
                 if (assessment !== undefined) {
                     setAssessment(
@@ -125,6 +124,7 @@ export const AssessmentAdmin = () => {
                                   factory: "",
                                   questionaire: "",
                                   type: "",
+                                  status: "in progess",
                               }
                     }
                     onSubmit={(values, actions) => {
@@ -139,6 +139,7 @@ export const AssessmentAdmin = () => {
                                         factory: "",
                                         questionaire: "",
                                         type: "",
+                                        status: "in progess",
                                     },
                                 });
                             }
@@ -266,6 +267,25 @@ export const AssessmentAdmin = () => {
                                 >
                                     {assessment ? "Update" : "Create"}
                                 </button>
+                                {assessment?.id !== undefined && (
+                                    <button
+                                        onClick={() => {
+                                            deleteAssessment(
+                                                assessment.id
+                                            ).then((res) => {
+                                                if (res.status === 201) {
+                                                    setShowCA(false);
+                                                    setAssessment(undefined);
+                                                    setAUpdate(!aUpdate);
+                                                }
+                                            });
+                                        }}
+                                        type="button"
+                                        className="sm:w-auto w-full px-10 py-2 bg-red-700 hover:bg-red-500 transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
+                                    >
+                                        Delete
+                                    </button>
+                                )}
                             </div>
                         </Form>
                     )}
