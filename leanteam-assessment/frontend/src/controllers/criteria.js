@@ -1,8 +1,8 @@
 import { http } from "./http.js";
 
-export const getCriterias = async (questionaire) => {
+export const getCriterias = async (type) => {
     try {
-        const res = await http.get("/criterias", { params: { questionaire } });
+        const res = await http.get("/criterias", { params: { type } });
 
         return res.data;
     } catch (error) {

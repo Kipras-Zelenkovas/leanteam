@@ -2,17 +2,21 @@ import { surreal } from "../db.js";
 import { Surreality } from "surreality";
 import { DataTypes } from "surreality/utils/Typing/DataTypes.js";
 
-export const Questionaire = new Surreality(surreal, "questionaire");
+export const Type = new Surreality(surreal, "type");
 
-Questionaire.defineTable("SCHEMALESS", {
+Type.defineTable("SCHEMALESS", {
     name: {
         type: DataTypes.STRING,
     },
-    year: {
+    weight: {
         type: DataTypes.NUMBER,
     },
-    types: {
-        type: DataTypes.ARRAY,
+    formula: {
+        type: DataTypes.STRING,
         optional: true,
+    },
+    questionaire: {
+        type: DataTypes.RECORD,
+        table: "questionaire",
     },
 });

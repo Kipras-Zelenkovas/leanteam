@@ -1169,3 +1169,473 @@ export const Questionaire = () => {
         </div>
     );
 };
+
+{
+    /* {showQu == true &&
+                showC == true &&
+                showQ == true &&
+                possibilities != null &&
+                showCC == false &&
+                showCQ == false &&
+                showCQu == false && (
+                    <div className="flex flex-wrap w-full h-full overflow-y-auto no-scrollbar sm:overflow-y-hidden pb-16 md:pb-0">
+                        <div className="flex flex-wrap xl:w-[25%] sm:w-[45%] w-full p-4 h-full sm:h-full max-h-full overflow-y-auto no-scrollbar sm:border-r-2 sm:border-text">
+                            <p className="text-xl text-text font-semibold w-full text-center">
+                                Question
+                            </p>
+                            <Formik
+                                initialValues={
+                                    question != undefined
+                                        ? question
+                                        : {
+                                              question: "",
+                                              comment: "",
+                                              weight: 1,
+                                          }
+                                }
+                                onSubmit={(values) => {
+                                    cuQuestion(values).then((res) => {
+                                        if (res.status === 201) {
+                                            setQUpdate(!cUpdate);
+                                        }
+                                    });
+                                }}
+                            >
+                                {(values, errors) => (
+                                    <Form className="flex flex-col w-full h-full p-4 justify-between">
+                                        <div className="flex flex-wrap w-full h-auto">
+                                            <div className="flex flex-col w-full p-2">
+                                                <label className="text-text font-semibold">
+                                                    Question
+                                                </label>
+                                                <ErrorMessage
+                                                    name="question"
+                                                    component="div"
+                                                    className="text-red-700 text-md font-semibold"
+                                                />
+                                                <textarea
+                                                    ref={questionTextareaRef}
+                                                    name="question"
+                                                    className="border-2 resize-none no-scrollbar border-gray-400 rounded-md w-full  p-2 focus:border-text"
+                                                >
+                                                    {question.question}
+                                                </textarea>
+                                            </div>
+
+                                            <div className="flex flex-col w-full p-2">
+                                                <label className="text-text font-semibold">
+                                                    Comment
+                                                </label>
+                                                <ErrorMessage
+                                                    name="comment"
+                                                    component="div"
+                                                    className="text-red-700 text-md font-semibold"
+                                                />
+                                                <textarea
+                                                    ref={commentTextareaRef}
+                                                    name="comment"
+                                                    className="border-2 resize-none no-scrollbar border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                                >
+                                                    {question.comment}
+                                                </textarea>
+                                            </div>
+                                            <div className="flex flex-col w-full p-2">
+                                                <label className="text-text font-semibold">
+                                                    Questions weight
+                                                </label>
+                                                <ErrorMessage
+                                                    name="weight"
+                                                    component="div"
+                                                    className="text-red-700 text-md font-semibold"
+                                                />
+                                                <Field
+                                                    type="number"
+                                                    step="1"
+                                                    name="weight"
+                                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-wrap w-full p-2 gap-2 justify-between">
+                                            <button
+                                                type="submit"
+                                                className="sm:w-[48%] w-full py-2 border-2 border-text bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
+                                            >
+                                                Update
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    deleteQuestion(
+                                                        question.id
+                                                    ).then((res) => {
+                                                        if (
+                                                            res.status === 201
+                                                        ) {
+                                                            setShowQ(false);
+                                                            setShowC;
+                                                            setPossibilities(
+                                                                undefined
+                                                            );
+                                                            setPossibility(
+                                                                undefined
+                                                            );
+                                                            setQuestion(
+                                                                undefined
+                                                            );
+                                                            setQUpdate(
+                                                                !qUpdate
+                                                            );
+                                                        }
+                                                    });
+                                                }}
+                                                type="button"
+                                                className="sm:w-[48%] w-full py-2 border-2 border-text bg-red-800 hover:bg-red-600 transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
+                                            >
+                                                Delete
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    setShowQ(false);
+                                                    setShowC(true);
+                                                    setQuestion(undefined);
+                                                }}
+                                                type="button"
+                                                className="sm:w-[48%] w-full py-2  transition-all duration-500 ease-in-out text-md font-semibold text-text border-2 border-text rounded-md"
+                                            >
+                                                Back
+                                            </button>
+                                        </div>
+                                    </Form>
+                                )}
+                            </Formik>
+                        </div>
+                        <div className="flex flex-wrap gap-3 xl:w-[75%] sm:w-[55%] w-full p-4 h-auto sm:h-auto overflow-y-auto overflow-x-hidden no-scrollbar">
+                            <div
+                                onClick={() => {
+                                    setShowP(true);
+                                    setPossibility({
+                                        subcriteria: "None",
+                                        weight: 1,
+                                        statements: [
+                                            {
+                                                statement: "",
+                                                score: 0,
+                                            },
+                                            {
+                                                statement: "",
+                                                score: 1,
+                                            },
+                                            {
+                                                statement: "",
+                                                score: 2,
+                                            },
+                                            {
+                                                statement: "",
+                                                score: 3,
+                                            },
+                                            {
+                                                statement: "",
+                                                score: 4,
+                                            },
+                                            {
+                                                statement: "",
+                                                score: 5,
+                                            },
+                                            {
+                                                statement: "",
+                                                score: 6,
+                                            },
+                                            {
+                                                statement: "",
+                                                score: 7,
+                                            },
+                                            {
+                                                statement: "",
+                                                score: 8,
+                                            },
+                                            {
+                                                statement: "",
+                                                score: 9,
+                                            },
+                                            {
+                                                statement: "",
+                                                score: 10,
+                                            },
+                                        ],
+                                        question: question.id,
+                                    });
+                                }}
+                                className="flex flex-wrap w-36 h-36 p-2 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
+                            >
+                                <svg
+                                    className="w-12 h-12 text-gray-400 group-hover:text-text transition-all duration-500 ease-in-out"
+                                    width={24}
+                                    height={24}
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M12 4v16m8-8H4"
+                                    ></path>
+                                </svg>
+                            </div>
+                            {possibilities.map((p) => {
+                                return (
+                                    <div
+                                        onClick={() => {
+                                            setPossibility(p);
+                                            setShowP(true);
+                                        }}
+                                        key={p.id}
+                                        className="relative flex flex-wrap w-36 h-36 max-h-36 overflow-hidden p-2 border-2 border-text rounded-md justify-center content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
+                                    >
+                                        <p className="text-text text-center text-md font-semibold group-hover:text-primary transition-all duration-500 ease-in-out">
+                                            {p.subcriteria}
+                                        </p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )} */
+}
+
+{
+    /* CU dialog questionaire
+            {/* <div
+                className={`xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 h-auto bg-white border-text border-2 text-md font-bold text-text ${
+                    showCQu ? "flex flex-wrap" : "hidden"
+                } justify-between content-center p-2`}
+            ></div> */
+}
+
+{
+    /* Dublicate dialog criteria */
+}
+{
+    /* <Dialog
+                className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
+                header={"Create"}
+                headerClassName="text-md font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
+                contentClassName="p-2"
+                visible={showDQu}
+                onHide={() => {
+                    setShowDQu(false);
+                    setQuestionaire(undefined);
+                }}
+            >
+                <Formik
+                    initialValues={{
+                        id: questionaire?.id ? questionaire?.id : 0,
+                        year: 0,
+                    }}
+                    onSubmit={(values, actions) => {
+                        dublicateQuestionaire(values).then((res) => {
+                            if (res.status === 201) {
+                                setShowDQu(false);
+                                setQuestionaire(undefined);
+                                setShowQu(false);
+                                setQuUpdate(!quUpdate);
+                                actions.resetForm({
+                                    values: {
+                                        id: questionaire?.id
+                                            ? questionaire?.id
+                                            : 0,
+                                        year: 0,
+                                    },
+                                });
+                            }
+                        });
+                    }}
+                >
+                    {(values, errors) => (
+                        <Form className="flex flex-wrap w-full h-full p-4">
+                            <div className="flex flex-col w-full p-2">
+                                <label className="text-text font-semibold">
+                                    Year
+                                </label>
+                                <ErrorMessage
+                                    name="year"
+                                    component="div"
+                                    className="text-red-700 text-md font-semibold"
+                                />
+                                <Field
+                                    type="number"
+                                    name="year"
+                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                />
+                            </div>
+                            <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
+                                <button
+                                    type="submit"
+                                    className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
+                                >
+                                    Create
+                                </button>
+                            </div>
+                        </Form>
+                    )}
+                </Formik>
+            </Dialog> */
+}
+
+{
+    /* CU dialog criteria */
+}
+{
+    /* {questionaire != undefined && (
+                <Dialog
+                    className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
+                    header={"Create"}
+                    headerClassName="text-md font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
+                    contentClassName="p-2"
+                    visible={showCC}
+                    onHide={() => {
+                        setShowCC(false);
+                        setCriteria(undefined);
+                    }}
+                >
+                    
+                </Dialog>
+            )} */
+}
+
+{
+    /* CU dialog question */
+}
+{
+    /* {questionaire != undefined && criteria != undefined && (
+                <Dialog
+                    className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
+                    header={question ? "Update" : "Create"}
+                    headerClassName="text-md font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
+                    contentClassName="p-2"
+                    visible={showCQ}
+                    onHide={() => {
+                        setShowCQ(false);
+                        setQuestion(undefined);
+                    }}
+                >
+                   
+                </Dialog>
+            )} */
+}
+
+{
+    /* CU dialog possibility */
+}
+{
+    /* {questionaire != undefined &&
+                criteria != undefined &&
+                question != undefined && (
+                    <Dialog
+                        className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
+                        header={possibility ? "Update" : "Create"}
+                        headerClassName="text-md font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
+                        contentClassName="p-2"
+                        visible={showP}
+                        onHide={() => {
+                            setShowP(false);
+                            setPossibility(undefined);
+                        }}
+                    >
+                        <Formik
+                            initialValues={possibility}
+                            onSubmit={(values, actions) => {
+                                cuPosibility(values).then((res) => {
+                                    if (res.status === 201) {
+                                        setShowP(false);
+                                        setPossibility(undefined);
+                                        setPUpdate(!pUpdate);
+                                    }
+                                });
+                            }}
+                        >
+                            {(values, errors) => (
+                                <Form className="flex flex-wrap w-full h-full p-4">
+                                    <div className="flex flex-col w-full p-2">
+                                        <label className="text-text font-semibold">
+                                            Subcriteria
+                                        </label>
+                                        <ErrorMessage
+                                            name="subcriteria"
+                                            component="div"
+                                            className="text-red-700 text-md font-semibold"
+                                        />
+                                        <Field
+                                            type="text"
+                                            name="subcriteria"
+                                            className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                        />
+                                    </div>
+                                    {values.initialValues.statements.map(
+                                        (statement, index) => (
+                                            <div
+                                                key={index}
+                                                className="flex flex-col w-full p-2"
+                                            >
+                                                <label className="text-text font-semibold">
+                                                    Statement {index}
+                                                </label>
+                                                <ErrorMessage
+                                                    name={`statements[${index}].statement`}
+                                                    component="div"
+                                                    className="text-red-700 text-md font-semibold"
+                                                />
+                                                <Field
+                                                    type="text"
+                                                    name={`statements[${index}].statement`}
+                                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                                />
+                                            </div>
+                                        )
+                                    )}
+
+                                    <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
+                                        <button
+                                            type="submit"
+                                            className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
+                                        >
+                                            {possibility != undefined &&
+                                            possibility.id != undefined
+                                                ? "Update"
+                                                : "Create"}
+                                        </button>
+                                        {possibility != undefined &&
+                                            possibility.id != undefined && (
+                                                <button
+                                                    onClick={() => {
+                                                        deletePosibility(
+                                                            possibility.id
+                                                        ).then((res) => {
+                                                            if (
+                                                                res.status ===
+                                                                201
+                                                            ) {
+                                                                setShowP(false);
+                                                                setPossibility(
+                                                                    undefined
+                                                                );
+                                                                setPUpdate(
+                                                                    !pUpdate
+                                                                );
+                                                            }
+                                                        });
+                                                    }}
+                                                    type="button"
+                                                    className="sm:w-auto w-full px-10 py-2 bg-red-800 hover:bg-red-600 transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
+                                                >
+                                                    Delete
+                                                </button>
+                                            )}
+                                    </div>
+                                </Form>
+                            )}
+                        </Formik>
+                    </Dialog>
+                )} */
+}

@@ -19,4 +19,14 @@ Question.defineTable("SCHEMALESS", {
     weight: {
         type: DataTypes.FLOAT,
     },
+    number: {
+        type: DataTypes.INTEGER,
+    },
+    calculationType: {
+        type: DataTypes.STRING,
+    },
+    formula: {
+        type: DataTypes.STRING,
+        optional: true,
+    },
 });

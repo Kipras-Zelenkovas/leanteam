@@ -105,6 +105,7 @@ export const Factories = () => {
                                   name: "",
                                   manager: "",
                                   lean: "",
+                                  businessUnit: "",
                               }
                     }
                     onSubmit={(values, actions) => {
@@ -134,6 +135,25 @@ export const Factories = () => {
                                 <Field
                                     id="name"
                                     name="name"
+                                    type="text"
+                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                />
+                            </div>
+                            <div className="flex flex-col w-full p-2">
+                                <label
+                                    htmlFor="businessUnit"
+                                    className="text-lg text-text font-semibold"
+                                >
+                                    Business Unit
+                                </label>
+                                <ErrorMessage
+                                    className="text-red-700 font-semibold text-lg"
+                                    name="businessUnit"
+                                    component="div"
+                                />
+                                <Field
+                                    id="buisinessUnit"
+                                    name="businessUnit"
                                     type="text"
                                     className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
                                 />

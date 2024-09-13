@@ -11,7 +11,7 @@ router.get("/criterias", checkForLogged, async (req, res) => {
         const criteria = await Criteria.selectAll({
             exclude: ["timestamps"],
             where: {
-                questionaire: req.query.questionaire,
+                type: req.query.type,
             },
         });
 
@@ -51,8 +51,16 @@ router.post(
     [checkForLogged, checkForAccess(process.env.LEAN_ADMIN)],
     async (req, res) => {
         try {
-            const { id, name, description, icon, weight, questionaire } =
-                req.body;
+            const {
+                id,
+                name,
+                description,
+                icon,
+                weight,
+                type,
+                calculationType,
+                formula,
+            } = req.body;
 
             const criteria = await Criteria.findByPk({ id });
 
@@ -64,7 +72,9 @@ router.post(
                         weight: weight != undefined ? weight : 100,
                         icon: icon != undefined ? icon : "icon-default",
                         description,
-                        questionaire,
+                        type,
+                        calculationType,
+                        formula,
                     },
                     { type: "SET" }
                 );
@@ -74,7 +84,9 @@ router.post(
                     weight: weight != undefined ? weight : 100,
                     icon: icon != undefined ? icon : "icon-default",
                     description,
-                    questionaire,
+                    type,
+                    calculationType,
+                    formula,
                 });
             }
 

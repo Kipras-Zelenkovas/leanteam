@@ -8,6 +8,7 @@ import { Factory } from "../../../leanteam-main/backend/database/models/Factory.
 import { Answers } from "../database/models/Answers.js";
 import { DataTypes } from "surreality/utils/Typing/DataTypes.js";
 import jwt from "jsonwebtoken";
+import { Type } from "../database/models/Type.js";
 
 export const router = Router();
 
@@ -84,7 +85,7 @@ router.get(
                 id: req.query.id,
             });
 
-            const criterias = await Criteria.selectAll({
+            const types = await Type.selectAll({
                 exclude: ["timestamps", "questionaire"],
                 where: {
                     questionaire:
@@ -94,31 +95,52 @@ router.get(
                 },
             });
 
-            assessment[0]["criterias"] = criterias[0];
-
-            for (let i = 0; i < criterias[0].length; i++) {
-                const questions = await Question.selectAll({
-                    exclude: ["timestamps", "criteria"],
+            for (let type of types[0]) {
+                const criterias = await Criteria.selectAll({
+                    exclude: ["timestamps", "questionaire"],
                     where: {
-                        criteria:
-                            criterias[0][i].id.tb + ":" + criterias[0][i].id.id,
+                        type: type.id.tb + ":" + type.id.id,
                     },
                 });
 
-                criterias[0][i]["questions"] = questions[0];
+                if (assessment[0]["criterias"] == undefined) {
+                    assessment[0]["criterias"] = criterias[0];
+                } else {
+                    assessment[0]["criterias"] = assessment[0][
+                        "criterias"
+                    ].concat(criterias[0]);
+                }
 
-                for (let j = 0; j < questions[0].length; j++) {
-                    const possibilities = await Possibilities.selectAll({
-                        exclude: ["timestamps", "question"],
+                for (let i = 0; i < criterias[0].length; i++) {
+                    const questions = await Question.selectAll({
+                        exclude: ["timestamps", "criteria"],
                         where: {
-                            question:
-                                questions[0][j].id.tb +
+                            criteria:
+                                criterias[0][i].id.tb +
                                 ":" +
-                                questions[0][j].id.id,
+                                criterias[0][i].id.id,
                         },
                     });
 
-                    questions[0][j]["possibilities"] = possibilities[0];
+                    let sortedQuestions = questions[0].sort((a, b) => {
+                        return a.number - b.number;
+                    });
+
+                    criterias[0][i]["questions"] = sortedQuestions;
+
+                    for (let j = 0; j < questions[0].length; j++) {
+                        const possibilities = await Possibilities.selectAll({
+                            exclude: ["timestamps", "question"],
+                            where: {
+                                question:
+                                    questions[0][j].id.tb +
+                                    ":" +
+                                    questions[0][j].id.id,
+                            },
+                        });
+
+                        questions[0][j]["possibilities"] = possibilities[0];
+                    }
                 }
             }
 

@@ -151,6 +151,54 @@ export const Navigation = () => {
                         </li>
                         <li className="w-full border-b-2 border-text p-[0.2rem]">
                             <Link
+                                title="Scores"
+                                to="/scores"
+                                className="hidden sm:flex w-full justify-center"
+                            >
+                                <svg
+                                    width="512"
+                                    height="512"
+                                    viewBox="0 0 512 512"
+                                    className={`w-10 h-10 rounded-md transition-all duration-[800ms] ease-in-out ${
+                                        window.location.pathname === "/scores"
+                                            ? "bg-gradient-to-br from-primary to-text text-white p-1"
+                                            : "text-primary p-0 bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white hover:p-1"
+                                    }`}
+                                >
+                                    <rect
+                                        width="512"
+                                        height="512"
+                                        x="0"
+                                        y="0"
+                                        rx="30"
+                                        fill="transparent"
+                                        stroke="transparent"
+                                        strokeWidth="0"
+                                        strokeOpacity="100%"
+                                        paintOrder="stroke"
+                                    ></rect>
+                                    <svg
+                                        width="420px"
+                                        height="420px"
+                                        viewBox="0 0 24 24"
+                                        fill="currentColor"
+                                        x="50"
+                                        y="45"
+                                        role="img"
+                                        className="inline-block"
+                                    >
+                                        <g fill="currentColor">
+                                            <path
+                                                fill="currentColor"
+                                                d="M7.375 21.025q-.9-.025-1.713-.462t-1.537-1.288q-1-1.2-1.563-2.862T2 13q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 3q2.075 0 3.9.8t3.175 2.175q1.35 1.375 2.138 3.225T22 13.175q0 1.925-.625 3.6T19.6 19.6q-.7.7-1.475 1.063t-1.575.362q-.45 0-.9-.112t-.9-.338l-1.4-.7q-.3-.15-.638-.225T12 19.575q-.375 0-.713.075t-.637.225l-1.4.7q-.475.25-.938.363t-.937.087Zm.05-2q.225 0 .463-.05t.462-.175l1.4-.7q.525-.275 1.088-.4t1.137-.125q.575 0 1.15.125t1.1.4l1.425.7q.225.125.45.175t.45.05q.475 0 .9-.25t.85-.75q.8-.95 1.25-2.275t.45-2.725q0-3.35-2.325-5.687T12 5Q8.65 5 6.325 7.35T4 13.05q0 1.425.462 2.775T5.75 18.1q.425.5.825.713t.85.212ZM12 12Zm0 3q.825 0 1.413-.587T14 13q0-.2-.038-.4t-.112-.4l1.25-1.675q.275.35.45.712t.3.763q.125.4.375.7t.65.3q.5 0 .788-.438t.162-.962q-.5-2.025-2.125-3.312T12 7Q9.9 7 8.287 8.288T6.175 11.6q-.125.525.163.963t.787.437q.4 0 .65-.3t.375-.7q.35-1.325 1.413-2.163T12 9q.4 0 .788.075t.737.225l-1.275 1.725q-.05 0-.125-.013T12 11q-.825 0-1.413.588T10 13q0 .825.588 1.413T12 15Z"
+                                            />
+                                        </g>
+                                    </svg>
+                                </svg>
+                            </Link>
+                        </li>
+                        <li className="w-full border-b-2 border-text p-[0.2rem]">
+                            <Link
                                 title="Assessments"
                                 to="/assessments"
                                 className="hidden sm:flex w-full justify-center"
@@ -362,7 +410,7 @@ export const Navigation = () => {
                                 <div className="flex flex-wrap w-full h-max gap-2">
                                     <li className="w-full border-b-2 border-text p-[0.2rem]">
                                         <Link
-                                            className={`flex flex-wrap sm:hidden items-center text-md font-semibold gap-2 rounded-md transition-all duration-[800ms] ease-in-out pl-1 ${
+                                            className={`group flex flex-wrap sm:hidden items-center text-md font-semibold gap-2 rounded-md transition-all duration-[800ms] ease-in-out pl-1 ${
                                                 window.location.pathname ===
                                                 "/lean/assessments"
                                                     ? "bg-gradient-to-br from-primary to-text text-white"
@@ -374,12 +422,7 @@ export const Navigation = () => {
                                                 width="512"
                                                 height="512"
                                                 viewBox="0 0 512 512"
-                                                className={`w-10 h-10 rounded-md transition-all duration-[800ms] ease-in-out ${
-                                                    window.location.pathname ===
-                                                    "/lean/assessments"
-                                                        ? "bg-gradient-to-br from-primary to-text text-white p-1"
-                                                        : "text-primary p-0 bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white hover:p-1"
-                                                }`}
+                                                className={`w-10 h-10 rounded-md `}
                                             >
                                                 <rect
                                                     width="512"
@@ -412,6 +455,55 @@ export const Navigation = () => {
                                                 </svg>
                                             </svg>
                                             My assessments
+                                        </Link>
+                                    </li>
+                                    <li className="w-full border-b-2 border-text p-[0.2rem]">
+                                        <Link
+                                            className={`flex flex-wrap sm:hidden items-center text-md font-semibold gap-2 rounded-md transition-all duration-[800ms] ease-in-out pl-1 ${
+                                                window.location.pathname ===
+                                                "/scores"
+                                                    ? "bg-gradient-to-br from-primary to-text text-white"
+                                                    : "text-primary bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white"
+                                            }`}
+                                            to="/scores"
+                                        >
+                                            <svg
+                                                width="512"
+                                                height="512"
+                                                viewBox="0 0 512 512"
+                                                className={`w-10 h-10 rounded-md `}
+                                            >
+                                                <rect
+                                                    width="512"
+                                                    height="512"
+                                                    x="0"
+                                                    y="0"
+                                                    rx="30"
+                                                    fill="transparent"
+                                                    stroke="transparent"
+                                                    strokeWidth="0"
+                                                    strokeOpacity="100%"
+                                                    paintOrder="stroke"
+                                                ></rect>
+                                                <svg
+                                                    width="420px"
+                                                    height="420px"
+                                                    viewBox="0 0 24 24"
+                                                    fill="currentColor"
+                                                    x="50"
+                                                    y="45"
+                                                    role="img"
+                                                    className="inline-block"
+                                                >
+                                                    <g fill="currentColor">
+                                                        <path
+                                                            fill="currentColor"
+                                                            d="M7.375 21.025q-.9-.025-1.713-.462t-1.537-1.288q-1-1.2-1.563-2.862T2 13q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 3q2.075 0 3.9.8t3.175 2.175q1.35 1.375 2.138 3.225T22 13.175q0 1.925-.625 3.6T19.6 19.6q-.7.7-1.475 1.063t-1.575.362q-.45 0-.9-.112t-.9-.338l-1.4-.7q-.3-.15-.638-.225T12 19.575q-.375 0-.713.075t-.637.225l-1.4.7q-.475.25-.938.363t-.937.087Zm.05-2q.225 0 .463-.05t.462-.175l1.4-.7q.525-.275 1.088-.4t1.137-.125q.575 0 1.15.125t1.1.4l1.425.7q.225.125.45.175t.45.05q.475 0 .9-.25t.85-.75q.8-.95 1.25-2.275t.45-2.725q0-3.35-2.325-5.687T12 5Q8.65 5 6.325 7.35T4 13.05q0 1.425.462 2.775T5.75 18.1q.425.5.825.713t.85.212ZM12 12Zm0 3q.825 0 1.413-.587T14 13q0-.2-.038-.4t-.112-.4l1.25-1.675q.275.35.45.712t.3.763q.125.4.375.7t.65.3q.5 0 .788-.438t.162-.962q-.5-2.025-2.125-3.312T12 7Q9.9 7 8.287 8.288T6.175 11.6q-.125.525.163.963t.787.437q.4 0 .65-.3t.375-.7q.35-1.325 1.413-2.163T12 9q.4 0 .788.075t.737.225l-1.275 1.725q-.05 0-.125-.013T12 11q-.825 0-1.413.588T10 13q0 .825.588 1.413T12 15Z"
+                                                        />
+                                                    </g>
+                                                </svg>
+                                            </svg>
+                                            Scores
                                         </Link>
                                     </li>
                                     <li className="w-full border-b-2 border-text p-[0.2rem]">

@@ -11,6 +11,8 @@ import { router as criteriaRouter } from "./controllers/criteria.js";
 import { router as questionRouter } from "./controllers/question.js";
 import { router as possibilityRouter } from "./controllers/possibility.js";
 import { router as answerRouter } from "./controllers/answers.js";
+import { router as typeRouter } from "./controllers/type.js";
+import { router as scoresRouter } from "./controllers/scores.js";
 
 DotenvFlow.config();
 
@@ -33,6 +35,8 @@ app.use("/v1/assessment/", [
     possibilityRouter,
     questionaireRouter,
     answerRouter,
+    typeRouter,
+    scoresRouter,
 ]);
 
 const server = https.createServer(

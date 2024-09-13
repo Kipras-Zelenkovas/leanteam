@@ -12,14 +12,21 @@ Criteria.defineTable("SCHEMALESS", {
         type: DataTypes.STRING,
         optional: true,
     },
-    questionaire: {
+    type: {
         type: DataTypes.RECORD,
-        table: "questionaire",
+        table: "type",
     },
     weight: {
         type: DataTypes.FLOAT,
     },
     icon: {
         type: DataTypes.STRING,
+    },
+    calculationType: {
+        type: DataTypes.STRING,
+    },
+    formula: {
+        type: DataTypes.STRING,
+        optional: true,
     },
 });

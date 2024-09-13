@@ -16,6 +16,10 @@ Factory.defineTable("SCHEMALESS", {
         type: DataTypes.STRING,
         optional: true,
     },
+    businessUnit: {
+        type: DataTypes.STRING,
+        optional: true,
+    },
     contactName: {
         type: DataTypes.STRING,
         optional: true,

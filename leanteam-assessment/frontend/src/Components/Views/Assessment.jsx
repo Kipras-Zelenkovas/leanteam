@@ -51,7 +51,7 @@ export const Assessment = () => {
     return (
         <div className="flex flex-wrap w-full h-full overflow-y-auto no-scrollbar">
             {assessment === undefined && answers === undefined && (
-                <div className="flex flex-wrap w-full h-full p-4">
+                <div className="flex flex-wrap w-full h-full p-4 gap-2">
                     {assessments.map((assessment) => (
                         <div
                             onClick={() => {
@@ -117,6 +117,7 @@ export const Assessment = () => {
                             )}
                         </div>
                         {assessment.criterias.map((criteria, index) => {
+                            console.log(criteria);
                             let total = criteria.questions.reduce((acc, q) => {
                                 return acc + q.possibilities.length;
                             }, 0);
@@ -150,10 +151,10 @@ export const Assessment = () => {
                                     onClick={() => {
                                         let sortedQuestions =
                                             criteria.questions.sort((a, b) => {
-                                                if (a.question < b.question) {
+                                                if (a.number < b.number) {
                                                     return -1;
                                                 }
-                                                if (a.question > b.question) {
+                                                if (a.number > b.number) {
                                                     return 1;
                                                 }
                                                 return 0;
@@ -294,11 +295,24 @@ export const Assessment = () => {
                                                 setPossibility(undefined);
                                             }}
                                             className={`flex flex-wrap justify-center w-full h-20 min-h-20 max-h-20 border-2 border-text capitalize text-ellipsis overflow-hidden text-md text-text font-semibold ${
-                                                questionL === question
-                                                    ? // bg-gradient-to-br from-text to-primary text-white
-                                                      "bg-primary text-white scale-95"
-                                                    : // hover:bg-gradient-to-br hover:from-text hover:to-primary
-                                                      "hover:bg-primary hover:text-white scale-95 hover:scale-100"
+                                                answers.reduce((acc, curr) => {
+                                                    return (
+                                                        acc +
+                                                        (curr.question ===
+                                                        questionL.id
+                                                            ? 1
+                                                            : 0)
+                                                    );
+                                                }, 0) ===
+                                                questionL.possibilities.length
+                                                    ? "bg-secondary text-white scale-95 hover:scale-100"
+                                                    : // bg-gradient-to-br from-text to-primary text-white
+                                                      "bg-white text-primary hover:bg-primary hover:text-white scale-95 hover:scale-100"
+                                                // questionL === question
+                                                //     ? // bg-gradient-to-br from-text to-primary text-white
+                                                //       "bg-primary text-white scale-95"
+                                                //     : // hover:bg-gradient-to-br hover:from-text hover:to-primary
+                                                //       "hover:bg-primary hover:text-white scale-95 hover:scale-100"
                                             } transition-all duration-500 ease-in-out cursor-pointer rounded-md p-1`}
                                         >
                                             {questionL.question}
@@ -318,7 +332,7 @@ export const Assessment = () => {
                                             setQuestion(undefined);
                                             setPossibility(undefined);
                                         }}
-                                        className="flex flex-wrap justify-center w-[10%] h-full border-2 border-text rounded-md text-center text-text cursor-pointer hover:bg-text hover:text-white transition-all duration-500 ease-in-out py-1"
+                                        className="flex flex-wrap justify-center w-[10%] h-max border-2 border-text rounded-md text-center text-text cursor-pointer hover:bg-text hover:text-white transition-all duration-500 ease-in-out py-1"
                                     >
                                         Back
                                     </div>
