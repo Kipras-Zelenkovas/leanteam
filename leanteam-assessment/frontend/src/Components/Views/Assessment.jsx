@@ -294,7 +294,7 @@ export const Assessment = () => {
                                                 setQuestion(questionL);
                                                 setPossibility(undefined);
                                             }}
-                                            className={`flex flex-wrap justify-center w-full h-20 min-h-20 max-h-20 border-2 border-text capitalize text-ellipsis overflow-hidden text-md text-text font-semibold ${
+                                            className={`flex flex-wrap justify-between w-full h-20 min-h-20 max-h-20 border-2 border-text capitalize text-ellipsis overflow-hidden text-md text-text font-semibold ${
                                                 answers.reduce((acc, curr) => {
                                                     return (
                                                         acc +
@@ -315,7 +315,75 @@ export const Assessment = () => {
                                                 //       "hover:bg-primary hover:text-white scale-95 hover:scale-100"
                                             } transition-all duration-500 ease-in-out cursor-pointer rounded-md p-1`}
                                         >
-                                            {questionL.question}
+                                            <p className="text-center w-4/5">
+                                                {questionL.question}
+                                            </p>
+                                            <div className="flex flex-wrap w-1/5 justify-center">
+                                                <p className="text-center w-auto">
+                                                    {answers.find((ans) => {
+                                                        return (
+                                                            ans.question ===
+                                                            questionL.id
+                                                        );
+                                                    }).answer !== undefined
+                                                        ? answers.find(
+                                                              (ans) => {
+                                                                  return (
+                                                                      ans.question ===
+                                                                      questionL.id
+                                                                  );
+                                                              }
+                                                          ).answer
+                                                        : "NULL"}
+                                                </p>
+                                                {answers.find((ans) => {
+                                                    return (
+                                                        ans.question ===
+                                                        questionL.id
+                                                    );
+                                                }).evidence.length > 0 && (
+                                                    <svg
+                                                        width="512"
+                                                        height="512"
+                                                        viewBox="0 0 512 512"
+                                                        className="w-8 h-8"
+                                                    >
+                                                        <rect
+                                                            width="512"
+                                                            height="512"
+                                                            x="0"
+                                                            y="0"
+                                                            rx="30"
+                                                            className="fill-transparent"
+                                                            stroke="transparent"
+                                                            strokeWidth="0"
+                                                            strokeOpacity="100%"
+                                                            paintOrder="stroke"
+                                                        ></rect>
+                                                        <svg
+                                                            width="400px"
+                                                            height="400px"
+                                                            viewBox="0 0 32 32"
+                                                            fill="currentColor"
+                                                            x="50"
+                                                            y="50"
+                                                            role="img"
+                                                            className="inline-block"
+                                                        >
+                                                            <g fill="currentColor">
+                                                                <path
+                                                                    fill="currentColor"
+                                                                    d="M26 30H11a2.002 2.002 0 0 1-2-2v-6h2v6h15V6h-9V4h9a2.002 2.002 0 0 1 2 2v22a2.002 2.002 0 0 1-2 2Z"
+                                                                />
+                                                                <path
+                                                                    fill="currentColor"
+                                                                    d="M17 10h7v2h-7zm-1 5h8v2h-8zm-1 5h9v2h-9zm-6-1a5.005 5.005 0 0 1-5-5V3h2v11a3 3 0 0 0 6 0V5a1 1 0 0 0-2 0v10H8V5a3 3 0 0 1 6 0v9a5.005 5.005 0 0 1-5 5z"
+                                                                />
+                                                            </g>
+                                                        </svg>
+                                                    </svg>
+                                                )}
+                                            </div>
                                         </div>
                                     );
                                 })}
@@ -914,7 +982,7 @@ export const Assessment = () => {
                                                                                                         e
                                                                                                     ) =>
                                                                                                         e !==
-                                                                                                        img
+                                                                                                        file
                                                                                                 ),
                                                                                         };
                                                                                     } else {
