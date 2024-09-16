@@ -165,7 +165,7 @@ export const Scores = () => {
                                     });
                                 })}
                             </div>
-                            <div className="flex flex-wrap w-auto h-full gap-1">
+                            <div className="flex flex-wrap w-auto h-full gap-1 max-h-full overflow-y-auto no-scrollbar">
                                 <div className="flex flex-wrap w-full h-10 min-h-10 max-h-10 shadow-md rounded-lg bg-white gap-1">
                                     {assessments.map((assessment) => {
                                         return (
