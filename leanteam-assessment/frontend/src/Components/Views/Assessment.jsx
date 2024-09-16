@@ -325,7 +325,7 @@ export const Assessment = () => {
                                                             ans.question ===
                                                             questionL.id
                                                         );
-                                                    }).answer !== undefined
+                                                    }) !== undefined
                                                         ? answers.find(
                                                               (ans) => {
                                                                   return (

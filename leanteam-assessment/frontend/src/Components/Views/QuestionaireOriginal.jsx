@@ -765,10 +765,13 @@ export const QuestionaireOriginal = () => {
                                                 setCriteria(criteriaL);
                                             }}
                                             key={criteriaL.id}
-                                            className="relative flex flex-wrap w-full min-h-24 h-24 border-2 border-text rounded-md justify-center content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
+                                            className="relative flex flex-wrap w-full min-h-24 h-24 border-2 border-text rounded-md justify-between content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
                                         >
-                                            <p className="text-text text-center text-md font-semibold group-hover:text-primary transition-all duration-500 ease-in-out">
+                                            <p className="text-text text-center text-md font-semibold group-hover:text-primary transition-all duration-500 ease-in-out w-[90%]">
                                                 {criteriaL.name}
+                                            </p>
+                                            <p className="text-text text-center text-md font-semibold group-hover:text-primary transition-all duration-500 ease-in-out w-[10%]">
+                                                {criteriaL.questions}
                                             </p>
                                             {/* <button
                                         onClick={() => {

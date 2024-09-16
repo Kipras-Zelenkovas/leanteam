@@ -3,6 +3,7 @@ import { checkForAccess, checkForLogged } from "../../../middleware.js";
 import { Criteria } from "../database/models/Criteria.js";
 import { Question } from "../database/models/Question.js";
 import { Possibilities } from "../database/models/Possibilities.js";
+import { surreal } from "../database/db.js";
 
 export const router = Router();
 
@@ -14,6 +15,14 @@ router.get("/criterias", checkForLogged, async (req, res) => {
                 type: req.query.type,
             },
         });
+
+        for (let c of criteria[0]) {
+            let questions = await surreal.query(
+                `SELECT name FROM question WHERE criteria = ${c.id}`
+            );
+
+            c.questions = questions[0].length;
+        }
 
         return res.status(200).json({
             status: 200,
