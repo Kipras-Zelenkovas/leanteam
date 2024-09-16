@@ -111,7 +111,7 @@ export const Scores = () => {
                     )}
                     {assessments.length > 0 && (
                         <div className="relative w-auto h-full flex flex-wrap flex-row p-1 bg-white gap-1 overflow-y-auto overflow-x-hidden no-scrollbar max-w-full">
-                            <div className="flex flex-col w-32 h-full gap-1">
+                            <div className="flex flex-col w-60 h-full gap-1">
                                 <div className="flex flex-wrap w-auto h-auto absolute">
                                     <svg
                                         onClick={() => {
@@ -154,11 +154,11 @@ export const Scores = () => {
                                         </svg>
                                     </svg>
                                 </div>
-                                <div className="w-32 h-20 min-h-20 max-h-20 text-center text-text text-sm font-medium p-4 bg-white rounded-lg shadow-md"></div>
+                                <div className="w-60 h-20 min-h-20 max-h-20 text-center text-text text-sm font-medium p-4 bg-white rounded-lg shadow-md"></div>
                                 {assessments[0].types.map((type) => {
                                     return type.criterias.map((criteria) => {
                                         return (
-                                            <div className="flex flex-wrap content-center justify-center text-center w-32 h-10 max-h-10 min-h-10 overflow-hidden text-text text-xs font-medium p-4 bg-white rounded-lg shadow-md">
+                                            <div className="flex flex-wrap content-center justify-center text-center w-60 h-6 max-h-6 min-h-6 overflow-hidden text-text text-xs font-medium p-4 bg-white rounded-lg shadow-md">
                                                 <p>{criteria.name}</p>
                                             </div>
                                         );
@@ -166,7 +166,7 @@ export const Scores = () => {
                                 })}
                             </div>
                             <div className="flex flex-wrap w-auto h-full gap-1 ">
-                                <div className="flex flex-wrap w-full h-10 min-h-10 max-h-10 shadow-md rounded-lg bg-white gap-1">
+                                <div className="flex flex-wrap w-full h-6 min-h-6 max-h-6 shadow-md rounded-lg bg-white gap-1">
                                     {assessments.map((assessment) => {
                                         return (
                                             <div className="flex flex-col w-20 h-full gap-1">
@@ -227,7 +227,7 @@ export const Scores = () => {
                                                             (criteria) => {
                                                                 return (
                                                                     <div
-                                                                        className={`flex flex-wrap content-center justify-center text-center w-20 h-10 max-h-10 min-h-10 overflow-hidden text-text text-xs font-bold p-4 ${
+                                                                        className={`flex flex-wrap content-center justify-center text-center w-20 h-6 max-h-6 min-h-6 overflow-hidden text-text text-xs font-bold p-4 ${
                                                                             criteria.answer <=
                                                                             1
                                                                                 ? "bg-red-400"
