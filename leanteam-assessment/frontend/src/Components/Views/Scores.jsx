@@ -154,7 +154,7 @@ export const Scores = () => {
                                         </svg>
                                     </svg>
                                 </div>
-                                <div className="w-32 h-24 min-h-24 max-h-24 text-center text-text text-sm font-medium p-4 bg-white rounded-lg shadow-md"></div>
+                                <div className="w-32 h-16 min-h-16 max-h-16 text-center text-text text-sm font-medium p-4 bg-white rounded-lg shadow-md"></div>
                                 {assessments[0].types.map((type) => {
                                     return type.criterias.map((criteria) => {
                                         return (
@@ -166,7 +166,7 @@ export const Scores = () => {
                                 })}
                             </div>
                             <div className="flex flex-wrap w-auto h-full gap-1">
-                                <div className="flex flex-wrap w-full h-24 min-h-24 max-h-24 shadow-md rounded-lg bg-white gap-1">
+                                <div className="flex flex-wrap w-full h-16 min-h-16 max-h-16 shadow-md rounded-lg bg-white gap-1">
                                     {assessments.map((assessment) => {
                                         return (
                                             <div className="flex flex-col w-20 h-full gap-1">
