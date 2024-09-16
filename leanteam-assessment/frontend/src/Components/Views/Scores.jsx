@@ -154,11 +154,11 @@ export const Scores = () => {
                                         </svg>
                                     </svg>
                                 </div>
-                                <div className="w-32 h-16 min-h-16 max-h-16 text-center text-text text-sm font-medium p-4 bg-white rounded-lg shadow-md"></div>
+                                <div className="w-32 h-20 min-h-20 max-h-20 text-center text-text text-sm font-medium p-4 bg-white rounded-lg shadow-md"></div>
                                 {assessments[0].types.map((type) => {
                                     return type.criterias.map((criteria) => {
                                         return (
-                                            <div className="flex flex-wrap content-center justify-center text-center w-32 h-12 max-h-12 min-h-12 overflow-hidden text-text text-xs font-medium p-4 bg-white rounded-lg shadow-md">
+                                            <div className="flex flex-wrap content-center justify-center text-center w-32 h-10 max-h-10 min-h-10 overflow-hidden text-text text-xs font-medium p-4 bg-white rounded-lg shadow-md">
                                                 <p>{criteria.name}</p>
                                             </div>
                                         );
@@ -166,7 +166,7 @@ export const Scores = () => {
                                 })}
                             </div>
                             <div className="flex flex-wrap w-auto h-full gap-1">
-                                <div className="flex flex-wrap w-full h-16 min-h-16 max-h-16 shadow-md rounded-lg bg-white gap-1">
+                                <div className="flex flex-wrap w-full h-10 min-h-10 max-h-10 shadow-md rounded-lg bg-white gap-1">
                                     {assessments.map((assessment) => {
                                         return (
                                             <div className="flex flex-col w-20 h-full gap-1">
@@ -208,7 +208,7 @@ export const Scores = () => {
                                                             types: typesData,
                                                         });
                                                     }}
-                                                    className="flex flex-wrap justify-center content-center w-20 h-24 min-h-24 max-h-24 text-center p-4 bg-white hover:bg-text rounded-lg shadow-md hover:text-white text-text text-lg font-medium transition-all duration-500 ease-in-out cursor-pointer"
+                                                    className="flex flex-wrap justify-center content-center w-20 h-20 min-h-20 max-h-20 text-center text-wrap p-4 bg-white hover:bg-text rounded-lg shadow-md hover:text-white text-text text-lg font-medium transition-all duration-500 ease-in-out cursor-pointer"
                                                 >
                                                     <p className=" origin-center -rotate-90 ">
                                                         {assessment.factory_name.includes(
@@ -227,7 +227,7 @@ export const Scores = () => {
                                                             (criteria) => {
                                                                 return (
                                                                     <div
-                                                                        className={`flex flex-wrap content-center justify-center text-center w-20 h-12 max-h-12 min-h-12 overflow-hidden text-text text-xs font-bold p-4 ${
+                                                                        className={`flex flex-wrap content-center justify-center text-center w-20 h-10 max-h-10 min-h-10 overflow-hidden text-text text-xs font-bold p-4 ${
                                                                             criteria.answer <=
                                                                             1
                                                                                 ? "bg-red-400"
