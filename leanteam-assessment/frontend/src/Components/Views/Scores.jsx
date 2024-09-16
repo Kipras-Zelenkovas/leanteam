@@ -110,7 +110,7 @@ export const Scores = () => {
                         </div>
                     )}
                     {assessments.length > 0 && (
-                        <div className="relative w-auto h-full flex flex-wrap flex-row p-1 bg-white gap-1 overflow-y-hidden overflow-x-auto no-scrollbar max-w-full">
+                        <div className="relative w-auto h-full flex flex-wrap flex-row p-1 bg-white gap-1 overflow-y-auto overflow-x-hidden no-scrollbar max-w-full">
                             <div className="flex flex-col w-32 h-full gap-1">
                                 <div className="flex flex-wrap w-auto h-auto absolute">
                                     <svg
@@ -165,7 +165,7 @@ export const Scores = () => {
                                     });
                                 })}
                             </div>
-                            <div className="flex flex-wrap w-auto h-full gap-1 max-h-full overflow-y-auto no-scrollbar">
+                            <div className="flex flex-wrap w-auto h-full gap-1 ">
                                 <div className="flex flex-wrap w-full h-10 min-h-10 max-h-10 shadow-md rounded-lg bg-white gap-1">
                                     {assessments.map((assessment) => {
                                         return (
