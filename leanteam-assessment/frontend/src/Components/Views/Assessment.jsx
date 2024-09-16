@@ -397,12 +397,28 @@ export const Assessment = () => {
                                     </p>
                                     <div
                                         onClick={() => {
-                                            setQuestion(undefined);
-                                            setPossibility(undefined);
+                                            saveAnswer(
+                                                answers.find(
+                                                    (ans) =>
+                                                        ans.question ===
+                                                        question.id
+                                                )
+                                            ).then((res) => {
+                                                if (res.status === 200) {
+                                                    setAnswers(null);
+                                                    setTimeout(() => {
+                                                        setUpdateA(!updateA);
+                                                        setQuestion(undefined);
+                                                        setPossibility(
+                                                            undefined
+                                                        );
+                                                    }, 50);
+                                                }
+                                            });
                                         }}
                                         className="flex flex-wrap justify-center w-[10%] h-max border-2 border-text rounded-md text-center text-text cursor-pointer hover:bg-text hover:text-white transition-all duration-500 ease-in-out py-1"
                                     >
-                                        Back
+                                        Save & Back
                                     </div>
                                 </div>
                                 <div className="flex flex-col w-full h-max border-b-2 max-h-auto overflow-x-hidden overflow-y-auto no-scrollbar border-text capitalize text-sm text-text font-semibold px-4 py-4 ">
