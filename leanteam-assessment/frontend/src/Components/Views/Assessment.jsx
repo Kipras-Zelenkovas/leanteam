@@ -341,7 +341,7 @@ export const Assessment = () => {
                                                         ans.question ===
                                                         questionL.id
                                                     );
-                                                }).evidence.length > 0 && (
+                                                })?.evidence.length > 0 && (
                                                     <svg
                                                         width="512"
                                                         height="512"
