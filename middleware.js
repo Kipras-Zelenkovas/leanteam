@@ -1,7 +1,5 @@
 import jwt from "jsonwebtoken";
 import DotenvFlow from "dotenv-flow";
-import { User } from "./leanteam-main/backend/database/models/User.js";
-import { Role } from "./leanteam-main/backend/database/models/Role.js";
 
 DotenvFlow.config();
 

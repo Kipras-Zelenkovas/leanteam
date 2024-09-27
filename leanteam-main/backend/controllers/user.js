@@ -2,14 +2,14 @@ import { Router } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import fs from "fs";
-import { User } from "../database/models/User.js";
+import { User } from "../../../database/Models/General/User.js";
 import { DataTypes } from "surreality/utils/Typing/DataTypes.js";
 import {
     checkForAccess,
     checkForLogged,
     checkForUser,
 } from "../../../middleware.js";
-import { Role } from "../database/models/Role.js";
+import { Role } from "../../../database/Models/General/Role.js";
 
 export const router = Router();
 
@@ -59,6 +59,29 @@ router.get("/users/any", checkForLogged, async (req, res) => {
 
         return res.status(200).json({
             data: users,
+            status: 200,
+            message: "Users fetched successfully",
+        });
+    } catch (err) {
+        console.error("Error in /users", err);
+        return res
+            .status(500)
+            .json({ status: 500, error: "Internal Server Error" });
+    }
+});
+
+router.get("/users/assessment", async (req, res) => {
+    try {
+        const users = await User.selectAll({
+            exclude: ["password"],
+        });
+
+        const lean_users = users[0].filter((user) => {
+            return user.roles["Lean"] != undefined;
+        });
+
+        return res.status(200).json({
+            data: lean_users,
             status: 200,
             message: "Users fetched successfully",
         });
@@ -340,6 +363,37 @@ router.post("/profile", [checkForLogged, checkForUser], async (req, res) => {
         });
     } catch (err) {
         console.error("Error in /user/update", err);
+        return res
+            .status(500)
+            .json({ status: 500, error: "Internal Server Error" });
+    }
+});
+
+router.get("/user/localdata", checkForLogged, async (req, res) => {
+    try {
+        const userJWT = jwt.decode(req.cookies.token);
+
+        console.log(userJWT);
+
+        if (!userJWT) {
+            return res
+                .status(404)
+                .json({ status: 404, error: "User not found" });
+        }
+
+        const user = {
+            id: userJWT.id,
+            email: userJWT.email,
+            name: userJWT.name + " " + userJWT.surname,
+        };
+
+        return res.status(200).json({
+            data: user,
+            status: 200,
+            message: "User fetched successfully",
+        });
+    } catch (err) {
+        console.error("Error in /user/profile", err);
         return res
             .status(500)
             .json({ status: 500, error: "Internal Server Error" });

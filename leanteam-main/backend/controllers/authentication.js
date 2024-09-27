@@ -1,11 +1,11 @@
 import { Router } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { User } from "../database/models/User.js";
-import { Role } from "../database/models/Role.js";
 import vine from "@vinejs/vine";
 import { LoginV } from "../validations/authenticationV.js";
-import { checkForGuest, checkForLogged } from "../../../middleware.js";
+import { User } from "../../../database/Models/General/User.js";
+
+import { checkForLogged } from "../../../middleware.js";
 
 export const router = Router();
 

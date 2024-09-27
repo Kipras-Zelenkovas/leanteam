@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { checkForAccess, checkForLogged } from "../../../middleware.js";
-import { Factory } from "../database/models/Factory.js";
-import { DataTypes } from "surreality/utils/Typing/DataTypes.js";
 import jwt from "jsonwebtoken";
+import { checkForAccess, checkForLogged } from "../../../middleware.js";
+import { DataTypes } from "surreality/utils/Typing/DataTypes.js";
+import { Factory } from "../../../database/Models/General/Factory.js";
 
 export const router = Router();
 

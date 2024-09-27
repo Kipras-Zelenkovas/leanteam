@@ -1,20 +1,16 @@
-import e, { Router } from "express";
+import { Router } from "express";
 import { checkForAccess, checkForLogged } from "../../../middleware.js";
-import { Answers } from "../database/models/Answers.js";
+import { Answers } from "../../../database/Models/Assessment/Answers.js";
 import * as multer from "multer";
 import * as path from "path";
-import fs from "fs";
 import { randomInt } from "crypto";
+import { DataTypes } from "surreality/utils/Typing/DataTypes.js";
 
 export const router = Router();
 
 router.get(
     "/answers",
-    [
-        checkForLogged,
-        checkForAccess(process.env.LEAN_USER) ||
-            checkForAccess(process.env.LEAN_ADMIN),
-    ],
+    [checkForLogged, checkForAccess(process.env.LEAN_USER)],
     async (req, res) => {
         try {
             const { assessment } = req.query;
@@ -57,11 +53,7 @@ const upload = multer.default({ storage: storage });
 
 router.post(
     "/answer",
-    [
-        checkForLogged,
-        checkForAccess(process.env.LEAN_USER) ||
-            checkForAccess(process.env.LEAN_ADMIN),
-    ],
+    [checkForLogged, checkForAccess(process.env.LEAN_USER)],
     upload.array("new_evidence[]", 20),
     async (req, res) => {
         try {
@@ -74,6 +66,8 @@ router.post(
                 answer,
                 evidence,
                 comment,
+                assessor_answer,
+                assessor_comment,
             } = req.body;
 
             const files = req.files;
@@ -104,6 +98,15 @@ router.post(
                             comment != undefined
                                 ? comment
                                 : existingAnswer.comment,
+                        assessor_answer:
+                            assessor_answer != undefined &&
+                            assessor_answer != null
+                                ? parseInt(assessor_answer)
+                                : DataTypes.NONE,
+                        assessor_comment:
+                            assessor_comment != undefined
+                                ? assessor_comment
+                                : DataTypes.NONE,
                     },
                     { type: "SET" }
                 );
@@ -115,8 +118,15 @@ router.post(
                     possibility,
                     answer: parseInt(answer),
                     evidence: evidenceToSave,
-                    comment:
-                        comment != undefined ? comment : existingAnswer.comment,
+                    comment: comment != undefined ? comment : "",
+                    assessor_answer:
+                        assessor_answer != undefined && assessor_answer != null
+                            ? parseInt(assessor_answer)
+                            : DataTypes.NONE,
+                    assessor_comment:
+                        assessor_comment != undefined
+                            ? assessor_comment
+                            : DataTypes.NONE,
                 });
             }
 
@@ -138,7 +148,7 @@ router.post(
 
 router.delete(
     "/answer",
-    [checkForLogged, checkForAccess(process.env.LEAN_ADMIN)],
+    [checkForLogged, checkForAccess(process.env.LEAN_USER)],
     async (req, res) => {
         try {
             const { id } = req.body;

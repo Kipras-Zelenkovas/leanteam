@@ -1,22 +1,18 @@
 import { Router } from "express";
-import { Questionaire } from "../database/models/Questionaire.js";
 import { checkForAccess, checkForLogged } from "../../../middleware.js";
-import { Criteria } from "../database/models/Criteria.js";
-import { Question } from "../database/models/Question.js";
-import { Possibilities } from "../database/models/Possibilities.js";
-import { Type } from "../database/models/Type.js";
+import { Questionaire } from "../../../database/Models/Assessment/Questionaire.js";
+import { Criteria } from "../../../database/Models/Assessment/Criteria.js";
+import { Question } from "../../../database/Models/Assessment/Question.js";
+import { Possibilities } from "../../../database/Models/Assessment/Possibilities.js";
+import { Type } from "../../../database/Models/Assessment/Type.js";
+import { surreal_assessment } from "../../../database/Connections/assessment_db.js";
+import { DataTypes } from "surreality/utils/Typing/DataTypes.js";
 
 export const router = Router();
 
 router.get(
     "/questionaires",
-    [
-        checkForLogged,
-        [
-            checkForAccess(process.env.LEAN_ADMIN) ||
-                checkForAccess(process.env.LEAN_USER),
-        ],
-    ],
+    [checkForLogged, checkForAccess(process.env.LEAN_USER)],
     async (req, res) => {
         try {
             const questionaires = await Questionaire.selectAll({
@@ -73,134 +69,120 @@ router.post(
         try {
             const { id, year } = req.body;
 
-            const oldQuestionaire = await Questionaire.findByPk({ id: id });
-
-            const newQuestionaire = await Questionaire.create(
-                {
-                    name: oldQuestionaire[0].name.replace(/\d+/g, "") + year,
-                    year,
-                    types: oldQuestionaire[0].types,
-                },
-                { return: "AFTER" }
+            const oldQuestionaire = await surreal_assessment.query(
+                `SELECT *, types FROM ${id} FETCH types.criterias, types.criterias.questions,types.criterias.questions.possibilities,types.criterias.questions.possibilities.*;`
             );
 
-            if (oldQuestionaire[0]) {
-                const oldTypes = await Type.selectAll({
-                    where: {
-                        questionaire: oldQuestionaire[0].id,
-                    },
-                });
+            for (let questionaire of oldQuestionaire[0]) {
+                let types = [];
 
-                if (oldTypes[0].length > 0) {
-                    for (const type of oldTypes[0]) {
-                        const newType = await Type.create(
-                            {
-                                name: type.name,
-                                weight: type.weight,
-                                formula: type.formula,
-                                questionaire:
-                                    newQuestionaire[0][0].id.tb +
-                                    ":" +
-                                    newQuestionaire[0][0].id.id,
-                            },
-                            { return: "AFTER" }
-                        );
+                for (let type of questionaire.types) {
+                    let criterias = [];
 
-                        const oldCriterias = await Criteria.selectAll({
-                            where: {
-                                type: type.id.tb + ":" + type.id.id,
-                            },
-                        });
+                    for (let criteria of type.criterias) {
+                        let questions = [];
 
-                        if (oldCriterias[0].length > 0) {
-                            for (const criteria of oldCriterias[0]) {
-                                const newCriteria = await Criteria.create(
+                        for (let question of criteria.questions) {
+                            let possibilities = [];
+
+                            for (let possibility of question.possibilities) {
+                                let newPossibility = await Possibilities.create(
                                     {
-                                        name: criteria.name,
-                                        description: criteria.description,
-                                        type:
-                                            newType[0][0].id.tb +
-                                            ":" +
-                                            newType[0][0].id.id,
-                                        weight: criteria.weight,
-                                        type: criteria.type,
-                                        calculationType:
-                                            criteria.calculationType,
-                                        formula: criteria.formula,
+                                        statements: possibility.statements,
+                                        subcriteria: possibility.subcriteria,
                                     },
                                     { return: "AFTER" }
                                 );
 
-                                const oldQuestions = await Question.selectAll({
-                                    where: {
-                                        criteria:
-                                            criteria.id.tb +
-                                            ":" +
-                                            criteria.id.id,
-                                    },
-                                });
-
-                                if (oldQuestions[0].length > 0) {
-                                    for (const question of oldQuestions[0]) {
-                                        const newQuestion =
-                                            await Question.create(
-                                                {
-                                                    question: question.question,
-                                                    description:
-                                                        question.description,
-                                                    criteria:
-                                                        newCriteria[0][0].id
-                                                            .tb +
-                                                        ":" +
-                                                        newCriteria[0][0].id.id,
-                                                    weight: question.weight,
-                                                    number: question.number,
-                                                    calculationType:
-                                                        question.calculationType,
-                                                    formula: question.formula,
-                                                },
-                                                { return: "AFTER" }
-                                            );
-
-                                        const oldPossibilities =
-                                            await Possibilities.selectAll({
-                                                where: {
-                                                    question:
-                                                        question.id.tb +
-                                                        ":" +
-                                                        question.id.id,
-                                                },
-                                            });
-
-                                        if (oldPossibilities[0].length > 0) {
-                                            for (const possibility of oldPossibilities[0]) {
-                                                await Possibilities.create({
-                                                    possibilities:
-                                                        possibility.possibilities,
-                                                    question:
-                                                        newQuestion[0][0].id
-                                                            .tb +
-                                                        ":" +
-                                                        newQuestion[0][0].id.id,
-                                                });
-                                            }
-                                        }
-                                    }
-                                }
+                                possibilities.push(
+                                    newPossibility[0][0].id.tb +
+                                        ":" +
+                                        newPossibility[0][0].id.id
+                                );
                             }
+
+                            let newQuestion = await Question.create(
+                                {
+                                    question: {
+                                        data: question.question,
+                                        as: DataTypes.STRING,
+                                    },
+                                    comment: {
+                                        data: question.comment,
+                                        as: DataTypes.STRING,
+                                    },
+                                    number: question.number,
+                                    calculationType: question.calculationType,
+                                    formula: question.formula,
+                                    weight: question.weight,
+                                    possibilities: possibilities,
+                                },
+                                { return: "AFTER" }
+                            );
+
+                            questions.push(
+                                newQuestion[0][0].id.tb +
+                                    ":" +
+                                    newQuestion[0][0].id.id
+                            );
                         }
+
+                        let newCriteria = await Criteria.create(
+                            {
+                                name: {
+                                    data: criteria.name,
+                                    as: DataTypes.STRING,
+                                },
+                                description: {
+                                    data: criteria.description,
+                                    as: DataTypes.STRING,
+                                },
+                                weight: criteria.weight,
+                                calculationType: criteria.calculationType,
+                                formula: criteria.formula,
+                                icon: {
+                                    data: "t",
+                                    as: DataTypes.STRING,
+                                },
+                                questions: questions,
+                            },
+                            { return: "AFTER" }
+                        );
+
+                        criterias.push(
+                            newCriteria[0][0].id.tb +
+                                ":" +
+                                newCriteria[0][0].id.id
+                        );
                     }
+
+                    let newType = await Type.create(
+                        {
+                            name: {
+                                data: type.name,
+                                as: DataTypes.STRING,
+                            },
+                            formula: type.formula,
+                            weight: type.weight,
+                            criterias: criterias,
+                        },
+                        { return: "AFTER" }
+                    );
+
+                    types.push(newType[0][0].id.tb + ":" + newType[0][0].id.id);
                 }
 
-                return res.status(201).json({
-                    status: 201,
-                    message: "Questionaire dublicated successfully",
+                await Questionaire.create({
+                    name: "Questionaire " + year,
+                    year,
+                    types,
                 });
             }
 
-            return res.status(404).json({
-                status: 404,
-                message: "Questionaire not found",
+            return res.status(201).json({
+                status: 201,
+                message: "Questionaire successfully dublicated",
+                data: oldQuestionaire,
             });
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -215,58 +197,41 @@ router.delete(
         try {
             const { id } = req.body;
 
-            const types = await Type.selectAll({
-                where: {
-                    questionaire: id,
-                },
-            });
+            let questionaire = await Questionaire.findByPk({ id });
 
-            if (types.length > 0) {
-                for (const type of types[0]) {
-                    const criterias = await Criteria.selectAll({
-                        where: {
-                            type: type.id,
-                        },
+            for (let type of questionaire[0].types) {
+                let t = await Type.findByPk({
+                    id: type.tb + ":" + type.id,
+                });
+
+                for (let criteria of t[0].criterias) {
+                    let c = await Criteria.findByPk({
+                        id: criteria.tb + ":" + criteria.id,
                     });
 
-                    if (criterias.length > 0) {
-                        for (const criteria of criterias[0]) {
-                            const questions = await Question.selectAll({
-                                where: {
-                                    criteria: criteria.id,
-                                },
-                            });
+                    for (let question of c[0].questions) {
+                        let q = await Question.findByPk({
+                            id: question.tb + ":" + question.id,
+                        });
 
-                            if (questions.length > 0) {
-                                for (const question of questions[0]) {
-                                    const possibilities =
-                                        await Possibilities.selectAll({
-                                            where: {
-                                                question: question.id,
-                                            },
-                                        });
-
-                                    if (possibilities.length > 0) {
-                                        for (const possibility of possibilities[0]) {
-                                            await Possibilities.delete(
-                                                possibility.id,
-                                                { force: true }
-                                            );
-                                        }
-                                    }
-
-                                    await Question.delete(question.id, {
-                                        force: true,
-                                    });
-                                }
-                            }
-
-                            await Criteria.delete(criteria.id, { force: true });
+                        for (let possibility of q[0].possibilities) {
+                            await Possibilities.delete(
+                                possibility.tb + ":" + possibility.id,
+                                { force: true }
+                            );
                         }
+
+                        await Question.delete(question.tb + ":" + question.id, {
+                            force: true,
+                        });
                     }
 
-                    await Type.delete(type.id, { force: true });
+                    await Criteria.delete(criteria.tb + ":" + criteria.id, {
+                        force: true,
+                    });
                 }
+
+                await Type.delete(type.tb + ":" + type.id, { force: true });
             }
 
             await Questionaire.delete(id, { force: true });

@@ -254,8 +254,8 @@ export const Scores = () => {
                                                                                 ? "bg-green-400"
                                                                                 : criteria.answer <=
                                                                                   9
-                                                                                ? "bg-green-600"
-                                                                                : "bg-primary"
+                                                                                ? "bg-green-600 text-white"
+                                                                                : "bg-primary text-white"
                                                                         } rounded-lg shadow-md`}
                                                                     >
                                                                         <p>

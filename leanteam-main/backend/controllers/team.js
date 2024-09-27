@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Team } from "../database/models/Team.js";
+import { Team } from "../../../database/Models/General/Team.js";
 import { checkForAccess, checkForLogged } from "../../../middleware.js";
 
 export const router = Router();

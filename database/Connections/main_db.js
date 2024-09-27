@@ -1,13 +1,13 @@
 import { SurrealityManager } from "surreality";
 
 export const db = new SurrealityManager(
-    "http://localhost:9091",
-    "assessment",
-    "assessment",
+    "http://localhost:4040",
+    "leanteam",
     "main",
-    "assessment"
+    "main",
+    "leanmain"
 );
 
 await db.connect();
 
-export const surreal = db.getSurreal();
+export const surreal_main = db.getSurreal();

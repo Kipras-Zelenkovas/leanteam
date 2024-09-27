@@ -20,9 +20,14 @@ export const cuTypes = async (type) => {
     }
 };
 
-export const deleteType = async (id) => {
+export const deleteType = async (id, questionaire) => {
     try {
-        const response = await http.delete(`/type/${id}`);
+        const response = await http.delete(`/type`, {
+            data: {
+                id: id,
+                questionaire: questionaire,
+            },
+        });
 
         return response.data;
     } catch (error) {

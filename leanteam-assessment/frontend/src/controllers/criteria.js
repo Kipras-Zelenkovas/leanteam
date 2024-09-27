@@ -20,9 +20,11 @@ export const cuCriteria = async (data) => {
     }
 };
 
-export const deleteCriteria = async (id) => {
+export const deleteCriteria = async (id, type) => {
     try {
-        const res = await http.delete("/criteria", { data: { id } });
+        const res = await http.delete("/criteria", {
+            data: { id: id, type: type },
+        });
 
         return res.data;
     } catch (error) {

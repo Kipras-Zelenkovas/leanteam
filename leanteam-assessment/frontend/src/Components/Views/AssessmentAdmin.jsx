@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import {
     cuAssessment,
     deleteAssessment,
-    getAssessments,
+    getAssessmentsPanel,
     getFactoriesAsessment,
+    getUsersAssessment,
 } from "../../controllers/assessment";
 import { Loader } from "../Loader";
 import { Dialog } from "primereact/dialog";
@@ -14,6 +15,7 @@ export const AssessmentAdmin = () => {
     const [assessments, setAssessments] = useState(null);
 
     const [factories, setFactories] = useState(null);
+    const [assessors, setAssessors] = useState(null);
     const [questionaires, setQuestionaires] = useState(null);
 
     const [aUpdate, setAUpdate] = useState(false);
@@ -29,6 +31,14 @@ export const AssessmentAdmin = () => {
             }
         });
 
+        getUsersAssessment().then((res) => {
+            if (res.status === 200) {
+                setAssessors(res.data);
+            } else {
+                setAssessors([]);
+            }
+        });
+
         getQuestionaires().then((res) => {
             if (res.status === 200) {
                 setQuestionaires(res.data[0]);
@@ -39,9 +49,9 @@ export const AssessmentAdmin = () => {
     }, []);
 
     useEffect(() => {
-        getAssessments().then((res) => {
+        getAssessmentsPanel().then((res) => {
             if (res.status === 200) {
-                setAssessments(res.data);
+                setAssessments(res.assessments);
 
                 if (assessment !== undefined) {
                     setAssessment(
@@ -63,7 +73,7 @@ export const AssessmentAdmin = () => {
     return (
         <div className="flex flex-wrap w-full h-full overflow-y-auto no-scrollbar">
             <div
-                className={`flex flex-wrap sm:flex-row flex-col gap-3 w-full h-auto p-4 overflow-y-auto overflow-x-hidden no-scrollbar`}
+                className={`flex flex-wrap sm:flex-row flex-col gap-3 w-full h-max p-4 overflow-y-auto overflow-x-hidden no-scrollbar`}
             >
                 <div
                     onClick={() => setShowCA(true)}
@@ -124,6 +134,7 @@ export const AssessmentAdmin = () => {
                                   factory: "",
                                   questionaire: "",
                                   type: "",
+                                  assessor: "",
                                   status: "in progess",
                               }
                     }
@@ -139,6 +150,7 @@ export const AssessmentAdmin = () => {
                                         factory: "",
                                         questionaire: "",
                                         type: "",
+                                        assessor: "",
                                         status: "in progess",
                                     },
                                 });
@@ -193,6 +205,42 @@ export const AssessmentAdmin = () => {
                                                 value={factory.id}
                                             >
                                                 {factory.name}
+                                            </option>
+                                        );
+                                    })}
+                                </Field>
+                            </div>
+                            <div className="flex flex-col w-full p-2">
+                                <label
+                                    htmlFor="assessor"
+                                    className="text-text font-semibold"
+                                >
+                                    Assessor
+                                </label>
+                                <ErrorMessage
+                                    name="assessor"
+                                    component="div"
+                                    className="text-red-700 text-lg font-semibold"
+                                />
+                                <Field
+                                    as="select"
+                                    name="assessor"
+                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                >
+                                    {assessment === undefined && (
+                                        <option value="" disabled selected>
+                                            Select Assessor
+                                        </option>
+                                    )}
+                                    {assessors.map((assessor) => {
+                                        return (
+                                            <option
+                                                key={assessor.id}
+                                                value={assessor.id}
+                                            >
+                                                {assessor.name +
+                                                    " " +
+                                                    assessor.surname}
                                             </option>
                                         );
                                     })}

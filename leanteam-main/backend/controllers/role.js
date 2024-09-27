@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { Role } from "../database/models/Role.js";
 import { DataTypes } from "surreality/utils/Typing/DataTypes.js";
 import { checkForAccess, checkForLogged } from "../../../middleware.js";
+import { Role } from "../../../database/Models/General/Role.js";
 
 export const router = Router();
 

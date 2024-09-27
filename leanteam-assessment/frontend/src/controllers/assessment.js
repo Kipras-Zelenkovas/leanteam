@@ -10,9 +10,29 @@ export const getFactoriesAsessment = async () => {
     }
 };
 
+export const getUsersAssessment = async () => {
+    try {
+        const res = await httpMain.get("/users/assessment");
+
+        return res.data;
+    } catch (error) {
+        return error.response;
+    }
+};
+
 export const getAssessments = async () => {
     try {
         const res = await http.get("/assessments");
+
+        return res.data;
+    } catch (error) {
+        return error.response;
+    }
+};
+
+export const getAssessmentsPanel = async () => {
+    try {
+        const res = await http.get("/assessments/panel");
 
         return res.data;
     } catch (error) {

@@ -4,7 +4,7 @@ import path from "path";
 import fs from "fs";
 import { checkForLogged, checkForUser } from "../../../middleware.js";
 import jwt from "jsonwebtoken";
-import { User } from "../database/models/User.js";
+import { User } from "../../../database/Models/General/User.js";
 import { randomInt } from "crypto";
 
 export const router = Router();

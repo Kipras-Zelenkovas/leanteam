@@ -29,7 +29,8 @@ export const Assessment = () => {
     useEffect(() => {
         getAssessments().then((res) => {
             if (res.status === 200) {
-                setAssessments(res.data);
+                setAssessments([res.assessments[0], res.assessor[0]]);
+                console.log([res.assessments[0], res.assessor[0]]);
             }
         });
     }, [update]);
@@ -51,35 +52,77 @@ export const Assessment = () => {
     return (
         <div className="flex flex-wrap w-full h-full overflow-y-auto no-scrollbar">
             {assessment === undefined && answers === undefined && (
-                <div className="flex flex-wrap w-full h-full p-4 gap-2">
-                    {assessments.map((assessment) => (
-                        <div
-                            onClick={() => {
-                                getAssessment(assessment.id).then((res) => {
-                                    if (res.status === 200) {
-                                        setAssessment(res.assessment);
-                                        setAnswers(res.answers);
-                                    }
-                                });
-                            }}
-                            className={`flex flex-wrap flex-col justify-between py-2 w-full md:w-1/4 h-32 border-2 border-text capitalize text-md text-white font-semibold ${
-                                assessment.status === "completed"
-                                    ? "bg-primary hover:bg-primary-light"
-                                    : "bg-sky-600 hover:bg-sky-500"
-                            } transition-all duration-500 ease-in-out cursor-pointer rounded-md
+                <div className="w-full h-full">
+                    <p className="flex items-center justify-center text-lg font-semibold text-center text-text border-b-2 border-text h-[5%]">
+                        My assessments
+                    </p>
+                    <div className="flex flex-wrap md:flex-row flex-col w-full h- p-4 gap-2 h-[45%]">
+                        {assessments[0].map((assessment) => (
+                            <div
+                                onClick={() => {
+                                    getAssessment(assessment.id).then((res) => {
+                                        if (res.status === 200) {
+                                            setAssessment(res.assessment);
+                                            setAnswers(res.answers);
+                                        }
+                                    });
+                                }}
+                                className={`flex flex-wrap flex-col justify-between py-2 w-full md:w-1/4 h-32 border-2 border-text capitalize text-md text-white font-semibold ${
+                                    assessment.status === "completed"
+                                        ? "bg-primary hover:bg-primary-light"
+                                        : "bg-sky-600 hover:bg-sky-500"
+                                } transition-all duration-500 ease-in-out cursor-pointer rounded-md
                             `}
-                        >
-                            <div className="flex flex-wrap text-md flex-col w-full h-auto px-3 capitalize">
-                                <p className="text-md">{assessment.status}</p>
-                                <p className="text-xl">{assessment.name}</p>
+                            >
+                                <div className="flex flex-wrap text-md flex-col w-full h-auto px-3 capitalize">
+                                    <p className="text-md">
+                                        {assessment.status}
+                                    </p>
+                                    <p className="text-xl">{assessment.name}</p>
+                                </div>
+                                <div className="flex flex-wrap w-full h-auto px-3">
+                                    <p className="text-md w-full font-semibold">
+                                        {assessment.type + " self assessment"}
+                                    </p>
+                                </div>
                             </div>
-                            <div className="flex flex-wrap w-full h-auto px-3">
-                                <p className="text-md w-full font-semibold">
-                                    {assessment.type + " self assessment"}
-                                </p>
+                        ))}
+                    </div>
+                    <p className="flex items-center justify-center text-lg font-semibold text-center text-text border-b-2 border-t-2 border-text h-[5%]">
+                        My assessments ( as assessor)
+                    </p>
+                    <div className="flex flex-wrap md:flex-row flex-col w-full h- p-4 gap-2 h-[45%]">
+                        {assessments[1].map((assessment) => (
+                            <div
+                                onClick={() => {
+                                    getAssessment(assessment.id).then((res) => {
+                                        if (res.status === 200) {
+                                            setAssessment(res.assessment);
+                                            setAnswers(res.answers);
+                                        }
+                                    });
+                                }}
+                                className={`flex flex-wrap flex-col justify-between py-2 w-full md:w-1/4 h-32 border-2 border-text capitalize text-md text-white font-semibold ${
+                                    assessment.status === "completed"
+                                        ? "bg-primary hover:bg-primary-light"
+                                        : "bg-sky-600 hover:bg-sky-500"
+                                } transition-all duration-500 ease-in-out cursor-pointer rounded-md
+                            `}
+                            >
+                                <div className="flex flex-wrap text-md flex-col w-full h-auto px-3 capitalize">
+                                    <p className="text-md">
+                                        {assessment.status}
+                                    </p>
+                                    <p className="text-xl">{assessment.name}</p>
+                                </div>
+                                <div className="flex flex-wrap w-full h-auto px-3">
+                                    <p className="text-md w-full font-semibold">
+                                        {assessment.type + " self assessment"}
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             )}
             {assessment !== undefined &&
@@ -117,7 +160,6 @@ export const Assessment = () => {
                             )}
                         </div>
                         {assessment.criterias.map((criteria, index) => {
-                            console.log(criteria);
                             let total = criteria.questions.reduce((acc, q) => {
                                 return acc + q.possibilities.length;
                             }, 0);
@@ -126,26 +168,100 @@ export const Assessment = () => {
                                 (ans) => ans.criteria === criteria.id
                             ).length;
 
-                            let overall = (
-                                answers
-                                    .filter(
-                                        (ans) => ans.criteria === criteria.id
-                                    )
-                                    .reduce(
-                                        (acc, ans) =>
-                                            acc +
-                                            (ans.answer !== undefined
-                                                ? ans.answer
-                                                : 0) *
-                                                criteria.questions.find(
-                                                    (q) => q.id === ans.question
-                                                ).weight,
-                                        0
-                                    ) /
-                                (criteria.questions.reduce((acc, q) => {
-                                    return acc + q.possibilities.length;
-                                }, 0) || 1)
-                            ).toFixed(2);
+                            let questionCalculated = criteria.questions.map(
+                                (question) => {
+                                    if (question.calculationType === "AVG") {
+                                        return parseFloat(
+                                            (
+                                                answers
+                                                    .filter(
+                                                        (ans) =>
+                                                            ans.question ===
+                                                            question.id
+                                                    )
+                                                    .reduce(
+                                                        (acc, curr) =>
+                                                            acc +
+                                                            (curr.assessor_answer !==
+                                                            undefined
+                                                                ? curr.assessor_answer
+                                                                : curr.answer),
+                                                        0
+                                                    ) /
+                                                answers.filter(
+                                                    (ans) =>
+                                                        ans.question ===
+                                                        question.id
+                                                ).length
+                                            ).toFixed(2)
+                                        );
+                                    }
+
+                                    if (question.calculationType === "MIN") {
+                                        return Math.min(
+                                            ...answers
+                                                .filter(
+                                                    (ans) =>
+                                                        ans.question ===
+                                                        question.id
+                                                )
+                                                .map((ans) =>
+                                                    ans.assessor_answer !==
+                                                    undefined
+                                                        ? ans.assessor_answer
+                                                        : ans.answer
+                                                )
+                                        );
+                                    }
+
+                                    if (question.calculationType === "MAX") {
+                                        return Math.max(
+                                            ...answers
+                                                .filter(
+                                                    (ans) =>
+                                                        ans.question ===
+                                                        question.id
+                                                )
+                                                .map((ans) =>
+                                                    ans.assessor_answer !==
+                                                    undefined
+                                                        ? ans.assessor_answer
+                                                        : ans.answer
+                                                )
+                                        );
+                                    }
+                                }
+                            );
+
+                            let overall = 0;
+
+                            let formed = questionCalculated.map((q) => {
+                                console.log(q);
+                                if (q == Infinity || isNaN(q)) {
+                                    return 0;
+                                }
+
+                                return q;
+                            });
+
+                            console.log(formed);
+
+                            if (formed.length > 0) {
+                                if (criteria.calculationType === "AVG") {
+                                    overall = parseFloat(
+                                        (
+                                            formed.reduce(
+                                                (acc, curr) => acc + curr
+                                            ) / formed.length
+                                        ).toFixed(2)
+                                    );
+                                } else if (criteria.calculationType === "MIN") {
+                                    overall = Math.min(...formed);
+                                } else if (criteria.calculationType === "MAX") {
+                                    overall = Math.max(...formed);
+                                }
+                            }
+
                             return (
                                 <div
                                     onClick={() => {
@@ -236,7 +352,7 @@ export const Assessment = () => {
                 criteria !== undefined && (
                     <div className="flex flex-wrap w-full h-full pb-20 lg:pb-0">
                         {question === undefined && (
-                            <div className="flex flex-col gap-2 w-full h-64 pb-10 lg:h-full max-h-64 lg:max-h-full overflow-x-hidden overflow-y-auto no-scrollbar border-b-2 lg:border-b-0 lg:border-r-2 border-text px-4 py-2">
+                            <div className="flex flex-col gap-2 w-full h-full max-h-full overflow-x-hidden overflow-y-auto no-scrollbar border-b-2 lg:border-b-0 lg:border-r-2 border-text px-4 py-2">
                                 <p className="text-text text-md font-semibold p-2 border-b-2 border-text text-center">
                                     {criteria.name}
                                 </p>
@@ -299,12 +415,28 @@ export const Assessment = () => {
                                                     return (
                                                         acc +
                                                         (curr.question ===
-                                                        questionL.id
+                                                            questionL.id &&
+                                                        curr.assessor_answer !==
+                                                            undefined
                                                             ? 1
                                                             : 0)
                                                     );
-                                                }, 0) ===
-                                                questionL.possibilities.length
+                                                }, 0) > 0
+                                                    ? "bg-blue-500 text-white scale-95 hover:scale-100"
+                                                    : answers.reduce(
+                                                          (acc, curr) => {
+                                                              return (
+                                                                  acc +
+                                                                  (curr.question ===
+                                                                  questionL.id
+                                                                      ? 1
+                                                                      : 0)
+                                                              );
+                                                          },
+                                                          0
+                                                      ) ===
+                                                      questionL.possibilities
+                                                          .length
                                                     ? "bg-secondary text-white scale-95 hover:scale-100"
                                                     : // bg-gradient-to-br from-text to-primary text-white
                                                       "bg-white text-primary hover:bg-primary hover:text-white scale-95 hover:scale-100"
@@ -320,21 +452,103 @@ export const Assessment = () => {
                                             </p>
                                             <div className="flex flex-wrap w-1/5 justify-center">
                                                 <p className="text-center w-auto">
-                                                    {answers.find((ans) => {
+                                                    {answers.filter((ans) => {
                                                         return (
                                                             ans.question ===
                                                             questionL.id
                                                         );
-                                                    }) !== undefined
-                                                        ? answers.find(
-                                                              (ans) => {
-                                                                  return (
-                                                                      ans.question ===
-                                                                      questionL.id
-                                                                  );
-                                                              }
-                                                          ).answer
-                                                        : "NULL"}
+                                                    }).length > 0
+                                                        ? questionL.calculationType ===
+                                                          "AVG"
+                                                            ? parseFloat(
+                                                                  (
+                                                                      answers
+                                                                          .filter(
+                                                                              (
+                                                                                  ans
+                                                                              ) => {
+                                                                                  return (
+                                                                                      ans.question ===
+                                                                                      questionL.id
+                                                                                  );
+                                                                              }
+                                                                          )
+                                                                          .reduce(
+                                                                              (
+                                                                                  acc,
+                                                                                  curr
+                                                                              ) => {
+                                                                                  return curr.assessor_answer !==
+                                                                                      undefined
+                                                                                      ? acc +
+                                                                                            curr.assessor_answer
+                                                                                      : acc +
+                                                                                            curr.answer;
+                                                                              },
+                                                                              0
+                                                                          ) /
+                                                                      answers.filter(
+                                                                          (
+                                                                              ans
+                                                                          ) => {
+                                                                              return (
+                                                                                  ans.question ===
+                                                                                  questionL.id
+                                                                              );
+                                                                          }
+                                                                      ).length
+                                                                  ).toFixed(2)
+                                                              )
+                                                            : questionL.calculationType ===
+                                                              "MIN"
+                                                            ? Math.min(
+                                                                  ...answers
+                                                                      .filter(
+                                                                          (
+                                                                              ans
+                                                                          ) => {
+                                                                              return (
+                                                                                  ans.question ===
+                                                                                  questionL.id
+                                                                              );
+                                                                          }
+                                                                      )
+                                                                      .map(
+                                                                          (
+                                                                              ans
+                                                                          ) =>
+                                                                              ans.assessor_answer !==
+                                                                              undefined
+                                                                                  ? ans.assessor_answer
+                                                                                  : ans.answer
+                                                                      )
+                                                              )
+                                                            : questionL.calculationType ===
+                                                              "MAX"
+                                                            ? Math.max(
+                                                                  ...answers
+                                                                      .filter(
+                                                                          (
+                                                                              ans
+                                                                          ) => {
+                                                                              return (
+                                                                                  ans.question ===
+                                                                                  questionL.id
+                                                                              );
+                                                                          }
+                                                                      )
+                                                                      .map(
+                                                                          (
+                                                                              ans
+                                                                          ) =>
+                                                                              ans.assessor_answer !==
+                                                                              undefined
+                                                                                  ? ans.assessor_answer
+                                                                                  : ans.answer
+                                                                      )
+                                                              )
+                                                            : "Not Answered"
+                                                        : "Not Answered"}
                                                 </p>
                                                 {answers.find((ans) => {
                                                     return (
@@ -391,43 +605,66 @@ export const Assessment = () => {
                         )}
                         {question !== undefined && (
                             <div className="flex flex-col w-full h-full max-h-full overflow-x-hidden overflow-y-auto no-scrollbar border-r-2 border-text">
-                                <div className="flex flex-wrap w-full h-max border-b-2 max-h-[10%] overflow-x-hidden overflow-y-auto no-scrollbar border-text capitalize text-lg text-primary font-semibold px-4 py-4 ">
+                                <div className="flex flex-wrap w-full h-max border-b-2 min-h-[7%] max-h-[7%] overflow-x-hidden overflow-y-auto no-scrollbar border-text capitalize text-lg text-primary font-semibold px-4 py-4 ">
                                     <p className="w-[90%] h-full">
                                         {question.question}
                                     </p>
                                     <div
                                         onClick={() => {
-                                            saveAnswer(
-                                                answers.find(
-                                                    (ans) =>
-                                                        ans.question ===
-                                                        question.id
-                                                )
-                                            ).then((res) => {
-                                                if (res.status === 200) {
-                                                    setAnswers(null);
-                                                    setTimeout(() => {
-                                                        setUpdateA(!updateA);
-                                                        setQuestion(undefined);
-                                                        setPossibility(
-                                                            undefined
-                                                        );
-                                                    }, 50);
-                                                }
+                                            const saveAnswers = answers.filter(
+                                                (ans) =>
+                                                    ans.question === question.id
+                                            );
+
+                                            saveAnswers.map((ans) => {
+                                                saveAnswer(ans).then((res) => {
+                                                    if (res.status === 200) {
+                                                        setAnswers(null);
+                                                        setTimeout(() => {
+                                                            setUpdateA(
+                                                                !updateA
+                                                            );
+                                                            setQuestion(
+                                                                undefined
+                                                            );
+                                                            setPossibility(
+                                                                undefined
+                                                            );
+                                                        }, 50);
+                                                    }
+                                                });
                                             });
+                                            // saveAnswer(
+                                            //     answers.find(
+                                            //         (ans) =>
+                                            //             ans.question ===
+                                            //             question.id
+                                            //     )
+                                            // ).then((res) => {
+                                            //     if (res.status === 200) {
+                                            //         setAnswers(null);
+                                            //         setTimeout(() => {
+                                            //             setUpdateA(!updateA);
+                                            //             setQuestion(undefined);
+                                            //             setPossibility(
+                                            //                 undefined
+                                            //             );
+                                            //         }, 50);
+                                            //     }
+                                            // });
                                         }}
                                         className="flex flex-wrap justify-center w-[10%] h-max border-2 border-text rounded-md text-center text-text cursor-pointer hover:bg-text hover:text-white transition-all duration-500 ease-in-out py-1"
                                     >
                                         Save & Back
                                     </div>
                                 </div>
-                                <div className="flex flex-col w-full h-max border-b-2 max-h-auto overflow-x-hidden overflow-y-auto no-scrollbar border-text capitalize text-sm text-text font-semibold px-4 py-4 ">
+                                <div className="flex flex-col w-full h-max border-b-2 min-h-[8%] max-h-[8%] overflow-x-hidden overflow-y-auto no-scrollbar border-text capitalize text-sm text-text font-semibold px-4 py-4 ">
                                     <p className="text-text text-md font-medium w-full">
                                         Comments / Expectations
                                     </p>
                                     {question.comment}
                                 </div>
-                                <div className="flex flex-wrap w-full h-max max-h-40 overflow-y-auto no-scrollbar gap-3 border-b-2 border-text px-4 pt-3 pb-4">
+                                <div className="flex flex-wrap w-full h-max min-h-[13%] max-h-[13%] overflow-y-hidden no-scrollbar gap-3 border-b-2 border-text px-4 pt-3 pb-4">
                                     <p className="text-text text-md font-medium w-full">
                                         Criterias
                                     </p>
@@ -457,6 +694,8 @@ export const Assessment = () => {
                                                                 possibility:
                                                                     possibilityL.id,
                                                                 answer: 0,
+                                                                assessor_answer:
+                                                                    null,
                                                                 evidence: [],
                                                                 comment: "",
                                                             },
@@ -487,7 +726,7 @@ export const Assessment = () => {
                                         )
                                     )}
                                 </div>
-                                <div className="flex flex-wrap w-full h-max gap-3 border-b-2 overflow-y-auto no-scrollbar border-text px-4 pt-3 pb-4">
+                                <div className="flex flex-wrap w-full h-max min-h-[37%] max-h-[37%] gap-3 border-b-2 overflow-y-auto no-scrollbar border-text px-4 pt-3 pb-4">
                                     {possibility !== undefined && (
                                         <div className="flex flex-wrap w-full h-max gap-3 px-4 py-2">
                                             <p className="text-text text-md font-medium w-full">
@@ -509,10 +748,26 @@ export const Assessment = () => {
                                                                                     ans.possibility ===
                                                                                     possibility.id
                                                                                 ) {
-                                                                                    return {
-                                                                                        ...ans,
-                                                                                        answer: statementL.score,
-                                                                                    };
+                                                                                    if (
+                                                                                        localStorage.getItem(
+                                                                                            "id"
+                                                                                        ) ===
+                                                                                        assessment.assessor
+                                                                                    ) {
+                                                                                        return {
+                                                                                            ...ans,
+                                                                                            assessor_answer:
+                                                                                                statementL.score,
+                                                                                            answer: ans.answer,
+                                                                                        };
+                                                                                    } else {
+                                                                                        return {
+                                                                                            ...ans,
+                                                                                            answer: statementL.score,
+                                                                                            assessor_answer:
+                                                                                                null,
+                                                                                        };
+                                                                                    }
                                                                                 } else {
                                                                                     return ans;
                                                                                 }
@@ -538,23 +793,69 @@ export const Assessment = () => {
                                                                               ? "cursor-not-allowed"
                                                                               : "cursor-pointer"
                                                                       }`
-                                                                    : //   hover:scale-100
-                                                                      `bg-white text-text ${
+                                                                    : parseInt(
+                                                                          statementL.score
+                                                                      ) ===
+                                                                      parseInt(
+                                                                          answers.find(
+                                                                              (
+                                                                                  ans
+                                                                              ) =>
+                                                                                  ans.possibility ===
+                                                                                  possibility.id
+                                                                          )
+                                                                              ?.assessor_answer
+                                                                      )
+                                                                    ? `bg-blue-500 text-white scale-90 rounded-md ${
                                                                           assessment.status ===
                                                                           "completed"
                                                                               ? "cursor-not-allowed"
+                                                                              : "cursor-pointer"
+                                                                      }` //   hover:scale-100
+                                                                    : `bg-white text-text ${
+                                                                          assessment.status ===
+                                                                          "completed"
+                                                                              ? "cursor-not-allowed"
+                                                                              : assessment.status ===
+                                                                                "completed"
+                                                                              ? "cursor-not-allowed"
+                                                                              : localStorage.getItem(
+                                                                                    "id"
+                                                                                ) ===
+                                                                                assessment.assessor
+                                                                              ? "cursor-pointer hover:bg-blue-500 hover:text-white"
                                                                               : "cursor-pointer hover:bg-primary hover:text-white"
                                                                       } rounded-md scale-90 border-text`
                                                             }  transition-all duration-500 ease-in-out border-b-2 `}
                                                         >
                                                             <p
                                                                 className={`text-md font-semibold ${
-                                                                    statementL.score ===
-                                                                    answers.find(
-                                                                        (ans) =>
-                                                                            ans.possibility ===
-                                                                            possibility.id
-                                                                    )?.answer
+                                                                    parseInt(
+                                                                        statementL.score
+                                                                    ) ===
+                                                                        parseInt(
+                                                                            answers.find(
+                                                                                (
+                                                                                    ans
+                                                                                ) =>
+                                                                                    ans.possibility ===
+                                                                                    possibility.id
+                                                                            )
+                                                                                ?.answer
+                                                                        ) ||
+                                                                    parseInt(
+                                                                        statementL.score
+                                                                    ) ===
+                                                                        parseInt(
+                                                                            answers.find(
+                                                                                (
+                                                                                    ans
+                                                                                ) =>
+                                                                                    ans.possibility ===
+                                                                                    possibility.id
+                                                                            )
+                                                                                ?.assessor_answer
+                                                                        )
                                                                         ? "text-white"
                                                                         : statementL.statement !==
                                                                           undefined
@@ -578,11 +879,10 @@ export const Assessment = () => {
                                                     )
                                                 )}
                                             </div>
-
-                                            <div className="lg:flex lg:flex-wrap hidden w-full gap-2 h-auto justify-evenly">
+                                            <div className="lg:flex lg:flex-wrap hidden w-full h-auto justify-evenly">
                                                 {possibility.statements.map(
                                                     (statementL, index) => (
-                                                        <div className="flex flex-col h-full gap-2 w-[8.5%]">
+                                                        <div className="flex flex-col h-auto w-[8.5%]">
                                                             <p
                                                                 className={`text-md w-full scale-90 py-1 font-semibold text-center text-white rounded-md border-2 border-text ${
                                                                     statementL.score <
@@ -617,10 +917,26 @@ export const Assessment = () => {
                                                                                         ans.possibility ===
                                                                                         possibility.id
                                                                                     ) {
-                                                                                        return {
-                                                                                            ...ans,
-                                                                                            answer: statementL.score,
-                                                                                        };
+                                                                                        if (
+                                                                                            localStorage.getItem(
+                                                                                                "id"
+                                                                                            ) ===
+                                                                                            assessment.assessor
+                                                                                        ) {
+                                                                                            return {
+                                                                                                ...ans,
+                                                                                                assessor_answer:
+                                                                                                    statementL.score,
+                                                                                                answer: ans.answer,
+                                                                                            };
+                                                                                        } else {
+                                                                                            return {
+                                                                                                ...ans,
+                                                                                                answer: statementL.score,
+                                                                                                assessor_answer:
+                                                                                                    null,
+                                                                                            };
+                                                                                        }
                                                                                     } else {
                                                                                         return ans;
                                                                                     }
@@ -649,11 +965,34 @@ export const Assessment = () => {
                                                                                   ? "cursor-not-allowed"
                                                                                   : "cursor-pointer"
                                                                           }`
-                                                                        : //   hover:scale-100
-                                                                          `bg-white text-text rounded-md scale-90 ${
+                                                                        : parseInt(
+                                                                              statementL.score
+                                                                          ) ===
+                                                                          parseInt(
+                                                                              answers.find(
+                                                                                  (
+                                                                                      ans
+                                                                                  ) =>
+                                                                                      ans.possibility ===
+                                                                                      possibility.id
+                                                                              )
+                                                                                  ?.assessor_answer
+                                                                          )
+                                                                        ? `bg-blue-500 text-white scale-90 rounded-md border-text ${
                                                                               assessment.status ===
                                                                               "completed"
                                                                                   ? "cursor-not-allowed"
+                                                                                  : "cursor-pointer"
+                                                                          }` //   hover:scale-100
+                                                                        : `bg-white text-text rounded-md scale-90 ${
+                                                                              assessment.status ===
+                                                                              "completed"
+                                                                                  ? "cursor-not-allowed"
+                                                                                  : localStorage.getItem(
+                                                                                        "id"
+                                                                                    ) ===
+                                                                                    assessment.assessor
+                                                                                  ? "cursor-pointer hover:bg-blue-500 hover:text-white"
                                                                                   : "cursor-pointer hover:bg-primary hover:text-white"
                                                                           } border-text`
                                                                 }  transition-all duration-500 ease-in-out border-2 rounded-md`}
@@ -669,7 +1008,7 @@ export const Assessment = () => {
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex flex-wrap w-full h-max gap-3 overflow-y-auto no-scrollbar px-4 pt-3 pb-4">
+                                <div className="flex flex-wrap w-full h-max min-h-[35%] max-h-[35%] gap-3 overflow-y-auto no-scrollbar px-4 pt-3 pb-4">
                                     {possibility !== undefined && (
                                         <div className="flex flex-wrap w-full h-auto gap-3">
                                             <div className="flex flex-wrap w-full h-auto gap-3">
@@ -677,7 +1016,11 @@ export const Assessment = () => {
                                                     Comments
                                                 </p>
                                                 {assessment.status !==
-                                                "completed" ? (
+                                                    "completed" &&
+                                                assessment.assessor !==
+                                                    localStorage.getItem(
+                                                        "id"
+                                                    ) ? (
                                                     <textarea
                                                         value={
                                                             answers.find(
@@ -718,6 +1061,60 @@ export const Assessment = () => {
                                                                     ans.possibility ===
                                                                     possibility.id
                                                             )?.comment
+                                                        }
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <div className="flex flex-wrap w-full h-auto gap-3">
+                                                <p className="text-text text-md font-medium w-full">
+                                                    Assessor comments
+                                                </p>
+                                                {assessment.status !==
+                                                    "completed" &&
+                                                assessment.assessor ===
+                                                    localStorage.getItem(
+                                                        "id"
+                                                    ) ? (
+                                                    <textarea
+                                                        value={
+                                                            answers.find(
+                                                                (ans) =>
+                                                                    ans.possibility ===
+                                                                    possibility.id
+                                                            )?.assessor_comment
+                                                        }
+                                                        onChange={(e) => {
+                                                            setAnswers(
+                                                                answers.map(
+                                                                    (ans) => {
+                                                                        if (
+                                                                            ans.possibility ===
+                                                                            possibility.id
+                                                                        ) {
+                                                                            return {
+                                                                                ...ans,
+                                                                                assessor_comment:
+                                                                                    e
+                                                                                        .target
+                                                                                        .value,
+                                                                            };
+                                                                        } else {
+                                                                            return ans;
+                                                                        }
+                                                                    }
+                                                                )
+                                                            );
+                                                        }}
+                                                        className="border-2 border-text rounded-md p-2 w-full h-20"
+                                                    ></textarea>
+                                                ) : (
+                                                    <p className="text-text text-md font-medium w-full">
+                                                        {
+                                                            answers.find(
+                                                                (ans) =>
+                                                                    ans.possibility ===
+                                                                    possibility.id
+                                                            )?.assessor_comment
                                                         }
                                                     </p>
                                                 )}

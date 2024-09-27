@@ -1,8 +1,8 @@
-import { surreal } from "../db.js";
+import { surreal_assessment } from "../../Connections/assessment_db.js";
 import { Surreality } from "surreality";
 import { DataTypes } from "surreality/utils/Typing/DataTypes.js";
 
-export const Criteria = new Surreality(surreal, "criteria");
+export const Criteria = new Surreality(surreal_assessment, "criteria");
 
 Criteria.defineTable("SCHEMALESS", {
     name: {
@@ -11,10 +11,6 @@ Criteria.defineTable("SCHEMALESS", {
     description: {
         type: DataTypes.STRING,
         optional: true,
-    },
-    type: {
-        type: DataTypes.RECORD,
-        table: "type",
     },
     weight: {
         type: DataTypes.FLOAT,
@@ -27,6 +23,12 @@ Criteria.defineTable("SCHEMALESS", {
     },
     formula: {
         type: DataTypes.STRING,
+        optional: true,
+    },
+    questions: {
+        type: DataTypes.ARRAY,
+        dataType: DataTypes.RECORD,
+        table: "question",
         optional: true,
     },
 });

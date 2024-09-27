@@ -1,8 +1,8 @@
-import { surreal } from "../db.js";
+import { surreal_assessment } from "../../Connections/assessment_db.js";
 import { Surreality } from "surreality";
 import { DataTypes } from "surreality/utils/Typing/DataTypes.js";
 
-export const Assessment = new Surreality(surreal, "assessment");
+export const Assessment = new Surreality(surreal_assessment, "assessment");
 
 Assessment.defineTable("SCHEMALESS", {
     name: {
@@ -23,6 +23,9 @@ Assessment.defineTable("SCHEMALESS", {
         optional: true,
     },
     type: {
+        type: DataTypes.STRING,
+    },
+    assessor: {
         type: DataTypes.STRING,
     },
 });

@@ -102,55 +102,6 @@ export const Navigation = () => {
                     <div className="flex flex-wrap w-full h-max gap-2">
                         <li className="w-full border-b-2 border-text p-[0.2rem]">
                             <Link
-                                title="My assessments"
-                                to="/lean/assessments"
-                                className="hidden sm:flex w-full justify-center"
-                            >
-                                <svg
-                                    width="512"
-                                    height="512"
-                                    viewBox="0 0 512 512"
-                                    className={`w-10 h-10 rounded-md transition-all duration-[800ms] ease-in-out ${
-                                        window.location.pathname ===
-                                        "/lean/assessments"
-                                            ? "bg-gradient-to-br from-primary to-text text-white p-1"
-                                            : "text-primary p-0 bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white hover:p-1"
-                                    }`}
-                                >
-                                    <rect
-                                        width="512"
-                                        height="512"
-                                        x="0"
-                                        y="0"
-                                        rx="30"
-                                        fill="transparent"
-                                        stroke="transparent"
-                                        strokeWidth="0"
-                                        strokeOpacity="100%"
-                                        paintOrder="stroke"
-                                    ></rect>
-                                    <svg
-                                        width="100%"
-                                        height="100%"
-                                        viewBox="0 0 16 16"
-                                        fill="currentColor"
-                                        x="30"
-                                        y="20"
-                                        role="img"
-                                        className="inline-block"
-                                    >
-                                        <g fill="currentColor">
-                                            <path
-                                                fill="currentColor"
-                                                d="M13 10.085a1.5 1.5 0 0 1 1 1.415v.5a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6.5a1.5 1.5 0 0 1 1-1.415V3.5A1.5 1.5 0 0 1 4.5 2h5A1.5 1.5 0 0 1 11 3.5V10h1V4.085A1.5 1.5 0 0 1 13 5.5v4.585Zm-3-.792V3.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0-.5.5V5h1.086a1.5 1.5 0 0 1 1.06.44L10 9.292ZM3 6.5V12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-.5a.5.5 0 0 0-.5-.5h-1.586a1.5 1.5 0 0 1-1.06-.44L5.439 6.147A.5.5 0 0 0 5.086 6H3.5a.5.5 0 0 0-.5.5Z"
-                                            />
-                                        </g>
-                                    </svg>
-                                </svg>
-                            </Link>
-                        </li>
-                        <li className="w-full border-b-2 border-text p-[0.2rem]">
-                            <Link
                                 title="Scores"
                                 to="/scores"
                                 className="hidden sm:flex w-full justify-center"
@@ -210,18 +161,44 @@ export const Navigation = () => {
                                             ? "bg-gradient-to-br from-primary to-text text-white p-1"
                                             : "text-primary p-0 bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white hover:p-1"
                                     }`}
-                                    width={24}
-                                    height={24}
-                                    viewBox="0 0 24 24"
+                                    width="512"
+                                    height="512"
+                                    viewBox="0 0 512 512"
                                 >
-                                    <g
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth={2}
+                                    <rect
+                                        width="512"
+                                        height="512"
+                                        x="0"
+                                        y="0"
+                                        rx="30"
+                                        fill="transparent"
+                                        stroke="transparent"
+                                        strokeWidth="0"
+                                        strokeOpacity="100%"
+                                        paintOrder="stroke"
+                                    ></rect>
+                                    <svg
+                                        width="512px"
+                                        height="512px"
+                                        viewBox="0 0 48 48"
+                                        fill="currentColor"
+                                        x="0"
+                                        y="0"
+                                        role="img"
+                                        className="inline-block"
                                     >
-                                        <path d="M14.172 21H7c-1.886 0-2.828 0-3.414-.586S3 18.886 3 17V7c0-1.886 0-2.828.586-3.414S5.114 3 7 3h10c1.886 0 2.828 0 3.414.586S21 5.114 21 7v7.172c0 .408 0 .613-.076.797c-.076.183-.22.328-.51.617l-4.828 4.828c-.29.29-.434.434-.617.51c-.184.076-.389.076-.797.076Z"></path>
-                                        <path d="M14 21v-4.667c0-1.1 0-1.65.342-1.991c.341-.342.891-.342 1.991-.342H21"></path>
-                                    </g>
+                                        <g fill="currentColor">
+                                            <g fill="currentColor">
+                                                <path d="M32.707 22.707a1 1 0 0 0-1.414-1.414L24 28.586l-3.293-3.293a1 1 0 0 0-1.414 1.414L24 31.414l8.707-8.707Z" />
+                                                <path
+                                                    fillRule="evenodd"
+                                                    d="M38 15v21a3 3 0 0 1-3 3H17a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3h11l10 10Zm-10 1a1 1 0 0 1-1-1V7H17a1 1 0 0 0-1 1v28a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V16h-8Zm1-7.172L34.172 14H29V8.828Z"
+                                                    clipRule="evenodd"
+                                                />
+                                                <path d="M12 11v27a3 3 0 0 0 3 3h19v2H15a5 5 0 0 1-5-5V11h2Z" />
+                                            </g>
+                                        </g>
+                                    </svg>
                                 </svg>
                             </Link>
                         </li>
@@ -240,16 +217,37 @@ export const Navigation = () => {
                                     }`}
                                     width={24}
                                     height={24}
-                                    viewBox="0 0 24 24"
+                                    viewBox="0 0 512 512"
                                 >
-                                    <path
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M4 5a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0M4 12a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0M4 19a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0"
-                                    ></path>
+                                    <rect
+                                        width="512"
+                                        height="512"
+                                        x="0"
+                                        y="0"
+                                        rx="30"
+                                        fill="transparent"
+                                        stroke="transparent"
+                                        strokeWidth="0"
+                                        strokeOpacity="100%"
+                                        paintOrder="stroke"
+                                    ></rect>
+                                    <svg
+                                        width="512px"
+                                        height="512px"
+                                        viewBox="0 0 24 24"
+                                        fill="currentColor"
+                                        x="0"
+                                        y="0"
+                                        role="img"
+                                        className="inline-block"
+                                    >
+                                        <g fill="currentColor">
+                                            <path
+                                                fill="currentColor"
+                                                d="M5 21q-.825 0-1.413-.588T3 19v-4h2v4h4v2H5Zm14 0h-4v-2h4v-4h2v4q0 .825-.588 1.413T19 21ZM3 5q0-.825.588-1.413T5 3h4v2H5v4H3V5Zm18 0v4h-2V5h-4V3h4q.825 0 1.413.588T21 5Zm-9 13q.525 0 .888-.363t.362-.887q0-.525-.363-.888T12 15.5q-.525 0-.888.363t-.362.887q0 .525.363.888T12 18Zm-.9-3.825h1.825q0-.85.2-1.3T14 11.75q.875-.875 1.163-1.413t.287-1.287q0-1.35-.975-2.2T12 6q-1.25 0-2.15.65T8.55 8.5l1.65.675q.175-.65.663-1.063T12 7.7q.725 0 1.163.388t.437 1.037q0 .5-.237.938t-.813.912q-.825.725-1.137 1.4t-.313 1.8Z"
+                                            />
+                                        </g>
+                                    </svg>
                                 </svg>
                             </Link>
                         </li>
@@ -410,55 +408,6 @@ export const Navigation = () => {
                                 <div className="flex flex-wrap w-full h-max gap-2">
                                     <li className="w-full border-b-2 border-text p-[0.2rem]">
                                         <Link
-                                            className={`group flex flex-wrap sm:hidden items-center text-md font-semibold gap-2 rounded-md transition-all duration-[800ms] ease-in-out pl-1 ${
-                                                window.location.pathname ===
-                                                "/lean/assessments"
-                                                    ? "bg-gradient-to-br from-primary to-text text-white"
-                                                    : "text-primary bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white"
-                                            }`}
-                                            to="/lean/assessments"
-                                        >
-                                            <svg
-                                                width="512"
-                                                height="512"
-                                                viewBox="0 0 512 512"
-                                                className={`w-10 h-10 rounded-md `}
-                                            >
-                                                <rect
-                                                    width="512"
-                                                    height="512"
-                                                    x="0"
-                                                    y="0"
-                                                    rx="30"
-                                                    fill="transparent"
-                                                    stroke="transparent"
-                                                    strokeWidth="0"
-                                                    strokeOpacity="100%"
-                                                    paintOrder="stroke"
-                                                ></rect>
-                                                <svg
-                                                    width="100%"
-                                                    height="100%"
-                                                    viewBox="0 0 16 16"
-                                                    fill="currentColor"
-                                                    x="30"
-                                                    y="20"
-                                                    role="img"
-                                                    className="inline-block"
-                                                >
-                                                    <g fill="currentColor">
-                                                        <path
-                                                            fill="currentColor"
-                                                            d="M13 10.085a1.5 1.5 0 0 1 1 1.415v.5a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6.5a1.5 1.5 0 0 1 1-1.415V3.5A1.5 1.5 0 0 1 4.5 2h5A1.5 1.5 0 0 1 11 3.5V10h1V4.085A1.5 1.5 0 0 1 13 5.5v4.585Zm-3-.792V3.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0-.5.5V5h1.086a1.5 1.5 0 0 1 1.06.44L10 9.292ZM3 6.5V12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-.5a.5.5 0 0 0-.5-.5h-1.586a1.5 1.5 0 0 1-1.06-.44L5.439 6.147A.5.5 0 0 0 5.086 6H3.5a.5.5 0 0 0-.5.5Z"
-                                                        />
-                                                    </g>
-                                                </svg>
-                                            </svg>
-                                            My assessments
-                                        </Link>
-                                    </li>
-                                    <li className="w-full border-b-2 border-text p-[0.2rem]">
-                                        <Link
                                             className={`flex flex-wrap sm:hidden items-center text-md font-semibold gap-2 rounded-md transition-all duration-[800ms] ease-in-out pl-1 ${
                                                 window.location.pathname ===
                                                 "/scores"
@@ -520,16 +469,42 @@ export const Navigation = () => {
                                                 className="w-10 h-10 rounded-md "
                                                 width={24}
                                                 height={24}
-                                                viewBox="0 0 24 24"
+                                                viewBox="0 0 512 512"
                                             >
-                                                <g
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth={2}
+                                                <rect
+                                                    width="512"
+                                                    height="512"
+                                                    x="0"
+                                                    y="0"
+                                                    rx="30"
+                                                    fill="transparent"
+                                                    stroke="transparent"
+                                                    strokeWidth="0"
+                                                    strokeOpacity="100%"
+                                                    paintOrder="stroke"
+                                                ></rect>
+                                                <svg
+                                                    width="512px"
+                                                    height="512px"
+                                                    viewBox="0 0 48 48"
+                                                    fill="currentColor"
+                                                    x="0"
+                                                    y="0"
+                                                    role="img"
+                                                    className="inline-block"
                                                 >
-                                                    <path d="M14.172 21H7c-1.886 0-2.828 0-3.414-.586S3 18.886 3 17V7c0-1.886 0-2.828.586-3.414S5.114 3 7 3h10c1.886 0 2.828 0 3.414.586S21 5.114 21 7v7.172c0 .408 0 .613-.076.797c-.076.183-.22.328-.51.617l-4.828 4.828c-.29.29-.434.434-.617.51c-.184.076-.389.076-.797.076Z"></path>
-                                                    <path d="M14 21v-4.667c0-1.1 0-1.65.342-1.991c.341-.342.891-.342 1.991-.342H21"></path>
-                                                </g>
+                                                    <g fill="currentColor">
+                                                        <g fill="currentColor">
+                                                            <path d="M32.707 22.707a1 1 0 0 0-1.414-1.414L24 28.586l-3.293-3.293a1 1 0 0 0-1.414 1.414L24 31.414l8.707-8.707Z" />
+                                                            <path
+                                                                fillRule="evenodd"
+                                                                d="M38 15v21a3 3 0 0 1-3 3H17a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3h11l10 10Zm-10 1a1 1 0 0 1-1-1V7H17a1 1 0 0 0-1 1v28a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V16h-8Zm1-7.172L34.172 14H29V8.828Z"
+                                                                clipRule="evenodd"
+                                                            />
+                                                            <path d="M12 11v27a3 3 0 0 0 3 3h19v2H15a5 5 0 0 1-5-5V11h2Z" />
+                                                        </g>
+                                                    </g>
+                                                </svg>
                                             </svg>
                                             Assessments
                                         </Link>
@@ -548,16 +523,37 @@ export const Navigation = () => {
                                                 className="w-10 h-10 rounded-md "
                                                 width={24}
                                                 height={24}
-                                                viewBox="0 0 24 24"
+                                                viewBox="0 0 512 512"
                                             >
-                                                <path
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M4 5a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0M4 12a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0M4 19a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0m7 0a1 1 0 1 0 2 0a1 1 0 1 0-2 0"
-                                                ></path>
+                                                <rect
+                                                    width="512"
+                                                    height="512"
+                                                    x="0"
+                                                    y="0"
+                                                    rx="30"
+                                                    fill="transparent"
+                                                    stroke="transparent"
+                                                    strokeWidth="0"
+                                                    strokeOpacity="100%"
+                                                    paintOrder="stroke"
+                                                ></rect>
+                                                <svg
+                                                    width="512px"
+                                                    height="512px"
+                                                    viewBox="0 0 24 24"
+                                                    fill="currentColor"
+                                                    x="0"
+                                                    y="0"
+                                                    role="img"
+                                                    className="inline-block"
+                                                >
+                                                    <g fill="currentColor">
+                                                        <path
+                                                            fill="currentColor"
+                                                            d="M5 21q-.825 0-1.413-.588T3 19v-4h2v4h4v2H5Zm14 0h-4v-2h4v-4h2v4q0 .825-.588 1.413T19 21ZM3 5q0-.825.588-1.413T5 3h4v2H5v4H3V5Zm18 0v4h-2V5h-4V3h4q.825 0 1.413.588T21 5Zm-9 13q.525 0 .888-.363t.362-.887q0-.525-.363-.888T12 15.5q-.525 0-.888.363t-.362.887q0 .525.363.888T12 18Zm-.9-3.825h1.825q0-.85.2-1.3T14 11.75q.875-.875 1.163-1.413t.287-1.287q0-1.35-.975-2.2T12 6q-1.25 0-2.15.65T8.55 8.5l1.65.675q.175-.65.663-1.063T12 7.7q.725 0 1.163.388t.437 1.037q0 .5-.237.938t-.813.912q-.825.725-1.137 1.4t-.313 1.8Z"
+                                                        />
+                                                    </g>
+                                                </svg>
                                             </svg>
                                             Questionaire
                                         </Link>

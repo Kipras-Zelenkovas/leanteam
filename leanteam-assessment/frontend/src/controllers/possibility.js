@@ -20,9 +20,11 @@ export const cuPosibility = async (data) => {
     }
 };
 
-export const deletePosibility = async (id) => {
+export const deletePosibility = async (id, question) => {
     try {
-        const res = await http.delete("/possibility", { data: { id } });
+        const res = await http.delete("/possibility", {
+            data: { id: id, question: question },
+        });
 
         return res.data;
     } catch (error) {

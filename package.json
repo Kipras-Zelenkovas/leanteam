@@ -12,6 +12,8 @@
     "dependencies": {
         "axios": "^1.7.4",
         "dotenv-flow": "^4.1.0",
-        "jsonwebtoken": "^9.0.2"
+        "jsonwebtoken": "^9.0.2",
+        "surrealdb": "^1.0.0",
+        "surreality": "^1.1.0"
     }
 }

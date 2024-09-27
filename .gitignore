@@ -26,3 +26,5 @@ dev.txt
 *.sw?
 .env
 .leanteam-production/*
+database/database.db
+leanteam-production/*

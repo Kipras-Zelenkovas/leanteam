@@ -1,8 +1,8 @@
-import { surreal } from "../db.js";
+import { surreal_main } from "../../Connections/main_db.js";
 import { Surreality } from "surreality";
 import { DataTypes } from "surreality/utils/Typing/DataTypes.js";
 
-export const Factory = new Surreality(surreal, "factory");
+export const Factory = new Surreality(surreal_main, "factory");
 
 Factory.defineTable("SCHEMALESS", {
     name: {

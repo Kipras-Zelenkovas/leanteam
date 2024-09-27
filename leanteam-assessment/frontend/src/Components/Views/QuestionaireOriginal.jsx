@@ -173,15 +173,19 @@ export const QuestionaireOriginal = () => {
         if (questionaire != undefined) {
             getTypes(questionaire.id).then((res) => {
                 if (res.status === 200) {
-                    setCriteriaTypes(res.data[0]);
+                    if (res.data[0] !== null) {
+                        setCriteriaTypes(res.data[0]);
 
-                    if (criteriasType != undefined) {
-                        setCriteriasType(
-                            res.data[0].filter(
-                                (criteriaType) =>
-                                    criteriaType.id === criteriasType.id
-                            )[0]
-                        );
+                        if (criteriasType != undefined) {
+                            setCriteriasType(
+                                res.data[0].filter(
+                                    (criteriaType) =>
+                                        criteriaType.id === criteriasType.id
+                                )[0]
+                            );
+                        }
+                    } else {
+                        setCriteriaTypes([]);
                     }
                 } else {
                     setCriteriaTypes([]);
@@ -194,19 +198,23 @@ export const QuestionaireOriginal = () => {
         if (criteriasType != undefined) {
             getCriterias(criteriasType.id).then((res) => {
                 if (res.status === 200) {
-                    setCriterias(res.data[0]);
+                    if (res.data[0] !== null) {
+                        setCriterias(res.data[0]);
+
+                        if (criteria != undefined) {
+                            setCriteria(
+                                res.data[0].filter(
+                                    (criteriaL) => criteriaL.id === criteria.id
+                                )[0]
+                            );
+                        }
+                    } else {
+                        setCriterias([]);
+                    }
                 } else {
                     setCriterias([]);
                 }
             });
-
-            if (criteria != undefined) {
-                setCriteria(
-                    criterias.filter(
-                        (criteriaL) => criteriaL.id === criteria.id
-                    )[0]
-                );
-            }
         }
     }, [cUpdate, criteriasType]);
 
@@ -214,30 +222,42 @@ export const QuestionaireOriginal = () => {
         if (criteria != undefined) {
             getQuestions(criteria.id).then(async (res) => {
                 if (res.status === 200) {
-                    let questions = [];
-                    let tempQuestions = res.data[0].sort((a, b) => {
-                        return a.number - b.number;
-                    });
-
-                    for (let q of tempQuestions) {
-                        await getPosibility(q.id).then((res) => {
-                            if (res.status === 200) {
-                                let tempQ = {
-                                    ...q,
-                                    possibilities: res.data[0],
-                                };
-                                questions.push(tempQ);
-                            } else {
-                                q.push({
-                                    question: q,
-                                    possibilities: [],
-                                });
-                            }
+                    if (res.data[0] !== null) {
+                        let questions = [];
+                        let tempQuestions = res.data[0].sort((a, b) => {
+                            return a.number - b.number;
                         });
+
+                        for (let q of tempQuestions) {
+                            await getPosibility(q.id).then((res) => {
+                                if (res.status === 200) {
+                                    if (res.data[0] !== null) {
+                                        let tempQ = {
+                                            ...q,
+                                            possibilities: res.data[0],
+                                        };
+                                        questions.push(tempQ);
+                                    } else {
+                                        questions.push({
+                                            ...q,
+                                            possibilities: [],
+                                        });
+                                    }
+                                } else {
+                                    q.push({
+                                        question: q,
+                                        possibilities: [],
+                                    });
+                                }
+                            });
+                        }
+
+                        setQuestions(questions);
+                    } else {
+                        setQuestions([]);
                     }
-                    setQuestions(questions);
                 } else {
-                    setQuestions(null);
+                    setQuestions([]);
                 }
             });
         }
@@ -254,7 +274,7 @@ export const QuestionaireOriginal = () => {
                 showCQu == false &&
                 showCT == false && (
                     <div
-                        className={`flex md:flex-wrap flex-col md:flex-row gap-3 w-full p-4 h-auto max-h-full overflow-y-auto overflow-x-hidden no-scrollbar pb-20`}
+                        className={`flex md:flex-wrap flex-col md:flex-row gap-3 w-full p-4 h-max max-h-full overflow-y-auto overflow-x-hidden no-scrollbar pb-20`}
                     >
                         <div
                             onClick={() => {
@@ -319,6 +339,7 @@ export const QuestionaireOriginal = () => {
                                     });
                                 }
                             });
+                            // console.log(values);
                         }}
                     >
                         {(values, errors) => (
@@ -402,7 +423,16 @@ export const QuestionaireOriginal = () => {
                                 >
                                     Edit
                                 </button>
+                                <button
+                                    onClick={() => {
+                                        setShowDQu(true);
+                                    }}
+                                    className="w-full md:w-40 h-12 bg-purple-800 text-white border-2 border-purple-800 font-semibold rounded-md hover:bg-purple-600 transition-all duration-500 ease-in-out"
+                                >
+                                    Dublicate
+                                </button>
                             </div>
+
                             <div
                                 onClick={() => {
                                     setShowCCT(true);
@@ -693,7 +723,7 @@ export const QuestionaireOriginal = () => {
                 criteriasType != null &&
                 showCC == false && (
                     <div className={`w-full h-full flex flex-col`}>
-                        <div className="flex flex-wrap content-center w-full h-auto py-2 md:py-0 md:h-20 px-4 justify-between gap-2 md:gap-0 md:border-b-2 md:border-text">
+                        <div className="flex flex-wrap content-center w-full h-auto md:h-20 md:min-h-20 px-4 justify-between gap-2 md:gap-0 py-2 md:py-0 border-b-2 border-text">
                             <button
                                 onClick={() => {
                                     setShowQu(false);
@@ -707,15 +737,16 @@ export const QuestionaireOriginal = () => {
                             <div className="flex flex-wrap w-full md:w-auto h-auto gap-2">
                                 <button
                                     onClick={() => {
-                                        deleteType(criteriasType.id).then(
-                                            (res) => {
-                                                if (res.status === 201) {
-                                                    setShowQu(false);
-                                                    setCriteriasType(undefined);
-                                                    setCTUpdate(!ctUpdate);
-                                                }
+                                        deleteType(
+                                            criteriasType.id,
+                                            questionaire.id
+                                        ).then((res) => {
+                                            if (res.status === 201) {
+                                                setShowQu(false);
+                                                setCriteriasType(undefined);
+                                                setCTUpdate(!ctUpdate);
                                             }
-                                        );
+                                        });
                                     }}
                                     className="w-full md:w-40 h-12 bg-red-800 text-white border-2 border-red-800 font-semibold rounded-md hover:bg-red-600 transition-all duration-500 ease-in-out"
                                 >
@@ -758,22 +789,23 @@ export const QuestionaireOriginal = () => {
                         <div className="flex flex-col gap-3 w-full p-4 h-auto max-h-full overflow-y-auto overflow-x-hidden no-scrollbar pb-20">
                             {criterias.map((criteriaL) => {
                                 return (
-                                    criteriaL.type === criteriasType.id && (
-                                        <div
-                                            onClick={() => {
-                                                setShowC(true);
-                                                setCriteria(criteriaL);
-                                            }}
-                                            key={criteriaL.id}
-                                            className="relative flex flex-wrap w-full min-h-24 h-24 border-2 border-text rounded-md justify-between content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
-                                        >
-                                            <p className="text-text text-center text-md font-semibold group-hover:text-primary transition-all duration-500 ease-in-out w-[90%]">
-                                                {criteriaL.name}
-                                            </p>
-                                            <p className="text-text text-center text-md font-semibold group-hover:text-primary transition-all duration-500 ease-in-out w-[10%]">
-                                                {criteriaL.questions}
-                                            </p>
-                                            {/* <button
+                                    <div
+                                        onClick={() => {
+                                            setShowC(true);
+                                            setCriteria(criteriaL);
+                                        }}
+                                        key={criteriaL.id}
+                                        className="relative flex flex-wrap w-full min-h-24 h-24 border-2 border-text rounded-md justify-between content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
+                                    >
+                                        <p className="text-text text-center text-md font-semibold group-hover:text-primary transition-all duration-500 ease-in-out w-[90%]">
+                                            {criteriaL.name}
+                                        </p>
+                                        <p className="text-text text-center text-md font-semibold group-hover:text-primary transition-all duration-500 ease-in-out w-[10%]">
+                                            {criteriaL.questions != undefined
+                                                ? criteriaL.questions.length
+                                                : 0}
+                                        </p>
+                                        {/* <button
                                         onClick={() => {
                                             setShowCC(true);
                                             setCriteria(criteriaL);
@@ -791,8 +823,7 @@ export const QuestionaireOriginal = () => {
                                     >
                                         Enter
                                     </button> */}
-                                        </div>
-                                    )
+                                    </div>
                                 );
                             })}
                         </div>
@@ -1103,14 +1134,15 @@ export const QuestionaireOriginal = () => {
                             <div className="flex flex-wrap w-full md:w-auto h-auto gap-2">
                                 <button
                                     onClick={() => {
-                                        deleteCriteria(criteria.id).then(
-                                            (res) => {
-                                                if (res.status === 201) {
-                                                    setShowC(false);
-                                                    setCUpdate(!cUpdate);
-                                                }
+                                        deleteCriteria(
+                                            criteria.id,
+                                            criteriasType.id
+                                        ).then((res) => {
+                                            if (res.status === 201) {
+                                                setShowC(false);
+                                                setCUpdate(!cUpdate);
                                             }
-                                        );
+                                        });
                                     }}
                                     className="w-full md:w-40 h-12 bg-red-800 text-white border-2 border-red-800 font-semibold rounded-md hover:bg-red-600 transition-all duration-500 ease-in-out"
                                 >
@@ -1187,28 +1219,38 @@ export const QuestionaireOriginal = () => {
                             onClick={() => {
                                 cuQuestion({
                                     id: question.id,
-                                    criteria: question.criteria,
+                                    criteria: criteria.id,
                                     question: question.question,
                                     comment: question.comment,
                                     weight: parseFloat(question.weight),
                                     number: parseInt(question.number),
                                     calculationType: question.calculationType,
                                     formula: "",
-                                }).then((res) => {
-                                    if (res.status === 201) {
+                                }).then(async (resQ) => {
+                                    if (resQ.status === 201) {
                                         if (question.possibilities.length > 0) {
+                                            let len =
+                                                question.possibilities.length;
                                             for (let p of question.possibilities) {
                                                 cuPosibility({
                                                     id: p.id,
-                                                    question: res.data[0].id,
+                                                    question: resQ.data[0].id,
                                                     statements: p.statements,
                                                     subcriteria: p.subcriteria,
-                                                }).then((res) => {
-                                                    if (res.status === 201) {
-                                                        setQUpdate(!qUpdate);
-                                                        setShowCQ(false);
+                                                }).then((resP) => {
+                                                    if (resP.status === 201) {
+                                                        len--;
+                                                        if (len === 0) {
+                                                            setQUpdate(
+                                                                !qUpdate
+                                                            );
+                                                            setShowCQ(false);
+                                                        }
                                                     }
                                                 });
+                                                await new Promise((r) =>
+                                                    setTimeout(r, 50)
+                                                );
                                             }
                                         } else {
                                             setQUpdate(!qUpdate);
@@ -1223,13 +1265,15 @@ export const QuestionaireOriginal = () => {
                         </button>
                         <button
                             onClick={() => {
-                                deleteQuestion(question.id).then((res) => {
-                                    if (res.status === 201) {
-                                        setShowCQ(false);
-                                        setQuestion(undefined);
-                                        setQUpdate(!qUpdate);
+                                deleteQuestion(question.id, criteria.id).then(
+                                    (res) => {
+                                        if (res.status === 201) {
+                                            setShowCQ(false);
+                                            setQuestion(undefined);
+                                            setQUpdate(!qUpdate);
+                                        }
                                     }
-                                });
+                                );
                             }}
                             className="w-full md:w-40 h-12 bg-white text-red-800 border-2 border-red-800 font-semibold rounded-md hover:bg-red-800 hover:text-white transition-all duration-500 ease-in-out"
                         >
@@ -1363,7 +1407,8 @@ export const QuestionaireOriginal = () => {
                                                 <button
                                                     onClick={() => {
                                                         deletePosibility(
-                                                            possibility.id
+                                                            possibility.id,
+                                                            question.id
                                                         ).then((res) => {
                                                             if (
                                                                 res.status ===
@@ -1548,6 +1593,64 @@ export const QuestionaireOriginal = () => {
                     </div>
                 </div>
             )}
+
+            <Dialog
+                className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
+                header={"Dublicate"}
+                headerClassName="text-md font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
+                contentClassName="p-2"
+                visible={showDQu}
+                onHide={() => {
+                    setShowDQu(false);
+                    setQuestionaire(undefined);
+                }}
+            >
+                <Formik
+                    initialValues={{
+                        id: questionaire?.id ? questionaire.id : 0,
+                        year: 0,
+                    }}
+                    onSubmit={(values, actions) => {
+                        dublicateQuestionaire(values).then((res) => {
+                            if (res.status === 201) {
+                                setShowDQu(false);
+                                setShowCT(false);
+                                setQuestionaire(undefined);
+                                setShowQu(false);
+                                setQuUpdate(!quUpdate);
+                            }
+                        });
+                    }}
+                >
+                    {(values, errors) => (
+                        <Form className="flex flex-wrap w-full h-full p-4">
+                            <div className="flex flex-col w-full p-2">
+                                <label className="text-text font-semibold">
+                                    Year
+                                </label>
+                                <ErrorMessage
+                                    name="year"
+                                    component="div"
+                                    className="text-red-700 text-md font-semibold"
+                                />
+                                <Field
+                                    type="number"
+                                    name="year"
+                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                />
+                            </div>
+                            <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
+                                <button
+                                    type="submit"
+                                    className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
+                                >
+                                    Dublicate
+                                </button>
+                            </div>
+                        </Form>
+                    )}
+                </Formik>
+            </Dialog>
         </div>
     );
 };

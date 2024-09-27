@@ -9,3 +9,13 @@ export const getUsers = async () => {
         return error.response;
     }
 };
+
+export const getUserLocal = async () => {
+    try {
+        const res = await httpMain.get("/user/localdata");
+
+        return res.data;
+    } catch (error) {
+        return error.response;
+    }
+};
