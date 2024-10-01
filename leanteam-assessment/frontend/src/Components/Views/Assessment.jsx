@@ -29,8 +29,7 @@ export const Assessment = () => {
     useEffect(() => {
         getAssessments().then((res) => {
             if (res.status === 200) {
-                setAssessments([res.assessments[0], res.assessor[0]]);
-                console.log([res.assessments[0], res.assessor[0]]);
+                setAssessments([res.assessments, res.assessor]);
             }
         });
     }, [update]);
@@ -51,80 +50,96 @@ export const Assessment = () => {
 
     return (
         <div className="flex flex-wrap w-full h-full overflow-y-auto no-scrollbar">
-            {assessment === undefined && answers === undefined && (
-                <div className="w-full h-full">
-                    <p className="flex items-center justify-center text-lg font-semibold text-center text-text border-b-2 border-text h-[5%]">
-                        My assessments
-                    </p>
-                    <div className="flex flex-wrap md:flex-row flex-col w-full h- p-4 gap-2 h-[45%]">
-                        {assessments[0].map((assessment) => (
-                            <div
-                                onClick={() => {
-                                    getAssessment(assessment.id).then((res) => {
-                                        if (res.status === 200) {
-                                            setAssessment(res.assessment);
-                                            setAnswers(res.answers);
-                                        }
-                                    });
-                                }}
-                                className={`flex flex-wrap flex-col justify-between py-2 w-full md:w-1/4 h-32 border-2 border-text capitalize text-md text-white font-semibold ${
-                                    assessment.status === "completed"
-                                        ? "bg-primary hover:bg-primary-light"
-                                        : "bg-sky-600 hover:bg-sky-500"
-                                } transition-all duration-500 ease-in-out cursor-pointer rounded-md
+            {assessments !== null &&
+                assessment === undefined &&
+                answers === undefined && (
+                    <div className="w-full h-full">
+                        <p className="flex items-center justify-center text-lg font-semibold text-center text-text border-b-2 border-text h-[5%]">
+                            My assessments
+                        </p>
+                        <div className="flex flex-wrap md:flex-row flex-col w-full h- p-4 gap-2 h-[45%]">
+                            {assessments[0].map((assessment) => (
+                                <div
+                                    onClick={() => {
+                                        getAssessment(assessment.id).then(
+                                            (res) => {
+                                                if (res.status === 200) {
+                                                    setAssessment(
+                                                        res.assessment
+                                                    );
+                                                    setAnswers(res.answers);
+                                                }
+                                            }
+                                        );
+                                    }}
+                                    className={`flex flex-wrap flex-col justify-between py-2 w-full md:w-1/4 h-32 border-2 border-text capitalize text-md text-white font-semibold ${
+                                        assessment.status === "completed"
+                                            ? "bg-primary hover:bg-primary-light"
+                                            : "bg-sky-600 hover:bg-sky-500"
+                                    } transition-all duration-500 ease-in-out cursor-pointer rounded-md
                             `}
-                            >
-                                <div className="flex flex-wrap text-md flex-col w-full h-auto px-3 capitalize">
-                                    <p className="text-md">
-                                        {assessment.status}
-                                    </p>
-                                    <p className="text-xl">{assessment.name}</p>
+                                >
+                                    <div className="flex flex-wrap text-md flex-col w-full h-auto px-3 capitalize">
+                                        <p className="text-md">
+                                            {assessment.status}
+                                        </p>
+                                        <p className="text-xl">
+                                            {assessment.name}
+                                        </p>
+                                    </div>
+                                    <div className="flex flex-wrap w-full h-auto px-3">
+                                        <p className="text-md w-full font-semibold">
+                                            {assessment.type +
+                                                " self assessment"}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="flex flex-wrap w-full h-auto px-3">
-                                    <p className="text-md w-full font-semibold">
-                                        {assessment.type + " self assessment"}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    <p className="flex items-center justify-center text-lg font-semibold text-center text-text border-b-2 border-t-2 border-text h-[5%]">
-                        My assessments ( as assessor)
-                    </p>
-                    <div className="flex flex-wrap md:flex-row flex-col w-full h- p-4 gap-2 h-[45%]">
-                        {assessments[1].map((assessment) => (
-                            <div
-                                onClick={() => {
-                                    getAssessment(assessment.id).then((res) => {
-                                        if (res.status === 200) {
-                                            setAssessment(res.assessment);
-                                            setAnswers(res.answers);
-                                        }
-                                    });
-                                }}
-                                className={`flex flex-wrap flex-col justify-between py-2 w-full md:w-1/4 h-32 border-2 border-text capitalize text-md text-white font-semibold ${
-                                    assessment.status === "completed"
-                                        ? "bg-primary hover:bg-primary-light"
-                                        : "bg-sky-600 hover:bg-sky-500"
-                                } transition-all duration-500 ease-in-out cursor-pointer rounded-md
+                            ))}
+                        </div>
+                        <p className="flex items-center justify-center text-lg font-semibold text-center text-text border-b-2 border-t-2 border-text h-[5%]">
+                            My assessments ( as assessor)
+                        </p>
+                        <div className="flex flex-wrap md:flex-row flex-col w-full h- p-4 gap-2 h-[45%]">
+                            {assessments[1].map((assessment) => (
+                                <div
+                                    onClick={() => {
+                                        getAssessment(assessment.id).then(
+                                            (res) => {
+                                                if (res.status === 200) {
+                                                    setAssessment(
+                                                        res.assessment
+                                                    );
+                                                    setAnswers(res.answers);
+                                                }
+                                            }
+                                        );
+                                    }}
+                                    className={`flex flex-wrap flex-col justify-between py-2 w-full md:w-1/4 h-32 border-2 border-text capitalize text-md text-white font-semibold ${
+                                        assessment.status === "completed"
+                                            ? "bg-primary hover:bg-primary-light"
+                                            : "bg-sky-600 hover:bg-sky-500"
+                                    } transition-all duration-500 ease-in-out cursor-pointer rounded-md
                             `}
-                            >
-                                <div className="flex flex-wrap text-md flex-col w-full h-auto px-3 capitalize">
-                                    <p className="text-md">
-                                        {assessment.status}
-                                    </p>
-                                    <p className="text-xl">{assessment.name}</p>
+                                >
+                                    <div className="flex flex-wrap text-md flex-col w-full h-auto px-3 capitalize">
+                                        <p className="text-md">
+                                            {assessment.status}
+                                        </p>
+                                        <p className="text-xl">
+                                            {assessment.name}
+                                        </p>
+                                    </div>
+                                    <div className="flex flex-wrap w-full h-auto px-3">
+                                        <p className="text-md w-full font-semibold">
+                                            {assessment.type +
+                                                " self assessment"}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="flex flex-wrap w-full h-auto px-3">
-                                    <p className="text-md w-full font-semibold">
-                                        {assessment.type + " self assessment"}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
             {assessment !== undefined &&
                 answers != undefined &&
                 criteria === undefined && (
@@ -337,8 +352,7 @@ export const Assessment = () => {
                                     </div>
                                     <div className="flex flex-wrap w-full h-auto">
                                         <p className="text-md w-full font-semibold text-center">
-                                            {assessment.type +
-                                                " self assessment"}
+                                            {criteria.type + " self assessment"}
                                         </p>
                                     </div>
                                 </div>

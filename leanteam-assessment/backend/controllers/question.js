@@ -170,13 +170,14 @@ router.delete(
                         : DataTypes.NONE,
             });
 
-            for (let possibility of questionV[0].possibilities) {
-                await Possibilities.delete(
-                    possibility.tb + ":" + possibility.id,
-                    { force: true }
-                );
+            if (questionV[0].possibilities !== undefined) {
+                for (let possibility of questionV[0].possibilities) {
+                    await Possibilities.delete(
+                        possibility.tb + ":" + possibility.id,
+                        { force: true }
+                    );
+                }
             }
-
             await Question.delete(id, { force: true });
 
             return res.status(201).json({

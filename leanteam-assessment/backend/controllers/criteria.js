@@ -163,21 +163,24 @@ router.delete(
                         : DataTypes.NONE,
             });
 
-            for (let question of criteriaV[0].questions) {
-                let q = await Question.findByPk({
-                    id: question.tb + ":" + question.id,
-                });
+            if (criteriaV[0].questions !== undefined) {
+                for (let question of criteriaV[0].questions) {
+                    let q = await Question.findByPk({
+                        id: question.tb + ":" + question.id,
+                    });
+                    if (q[0].possibilities !== undefined) {
+                        for (let possibility of q[0].possibilities) {
+                            await Possibilities.delete(
+                                possibility.tb + ":" + possibility.id,
+                                { force: true }
+                            );
+                        }
+                    }
 
-                for (let possibility of q[0].possibilities) {
-                    await Possibilities.delete(
-                        possibility.tb + ":" + possibility.id,
-                        { force: true }
-                    );
+                    await Question.delete(question.tb + ":" + question.id, {
+                        force: true,
+                    });
                 }
-
-                await Question.delete(question.tb + ":" + question.id, {
-                    force: true,
-                });
             }
 
             await Criteria.delete(id, { force: true });

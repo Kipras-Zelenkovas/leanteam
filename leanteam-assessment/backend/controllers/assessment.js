@@ -27,49 +27,52 @@ router.get(
             const user = jwt.verify(req.cookies.token, process.env.JSONSECRET);
 
             let assessments = [];
+            let assessorAssessment = [];
 
-            // if (user.roles["Superadmin"] || user.roles["Admin"]) {
-            //     const assessmentsRes = await Assessment.selectAll({
-            //         exclude: ["timestamps"],
-            //     });
+            if (user.roles["Superadmin"] || user.roles["Admin"]) {
+                const assessmentsRes = await Assessment.selectAll({
+                    exclude: ["timestamps"],
+                });
 
-            //     assessments = assessmentsRes[0];
-            // } else {
-            const factories = await Factory.selectAll({
-                exclude: ["timestamps"],
-                where: {
-                    lean: user.id,
-                },
-            });
-
-            for (let factory of factories[0]) {
-                const factoryAssessments = await Assessment.selectAll({
+                assessments = assessmentsRes[0];
+            } else {
+                const factories = await Factory.selectAll({
                     exclude: ["timestamps"],
                     where: {
-                        factory: {
-                            data: factory.id,
+                        lean: user.id,
+                    },
+                });
+
+                for (let factory of factories[0]) {
+                    const factoryAssessments = await Assessment.selectAll({
+                        exclude: ["timestamps"],
+                        where: {
+                            factory: {
+                                data: factory.id,
+                                as: DataTypes.STRING,
+                            },
+                        },
+                    });
+
+                    assessments.push(factoryAssessments[0]);
+                }
+
+                let tempAA = await Assessment.selectAll({
+                    exclude: ["timestamps"],
+                    where: {
+                        assessor: {
+                            data: user.id,
                             as: DataTypes.STRING,
                         },
                     },
                 });
 
-                assessments.push(factoryAssessments[0]);
+                assessorAssessment = tempAA[0];
+
+                // for (let assessment of assessorAssessment[0]) {
+                //     assessments[0].push(assessment);
+                // }
             }
-
-            let assessorAssessment = await Assessment.selectAll({
-                exclude: ["timestamps"],
-                where: {
-                    assessor: {
-                        data: user.id,
-                        as: DataTypes.STRING,
-                    },
-                },
-            });
-
-            // for (let assessment of assessorAssessment[0]) {
-            //     assessments[0].push(assessment);
-            // }
-            // }
 
             return res.status(200).json({
                 status: 200,
@@ -81,7 +84,7 @@ router.get(
                 errors: {
                     status: 500,
                     statusText: false,
-                    message: error,
+                    message: error.message,
                 },
             });
         }
@@ -228,6 +231,7 @@ router.get(
                     assessmentsCriterias.push({
                         id: criteria.id,
                         name: criteria.name,
+                        type: type.name,
                         questions: criteria.questions,
                         calculationType: criteria.calculationType,
                         formula: criteria.formula,

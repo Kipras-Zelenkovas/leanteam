@@ -118,31 +118,39 @@ router.delete(
                         : DataTypes.NONE,
             });
 
-            for (let criteria of typeV[0].criterias) {
-                let c = await Criteria.findByPk({
-                    id: criteria.tb + ":" + criteria.id,
-                });
-
-                for (let question of c[0].questions) {
-                    let q = await Question.findByPk({
-                        id: question.tb + ":" + question.id,
+            if (typeV[0].criterias !== undefined) {
+                for (let criteria of typeV[0].criterias) {
+                    let c = await Criteria.findByPk({
+                        id: criteria.tb + ":" + criteria.id,
                     });
+                    if (c[0].questions !== undefined) {
+                        for (let question of c[0].questions) {
+                            let q = await Question.findByPk({
+                                id: question.tb + ":" + question.id,
+                            });
 
-                    for (let possibility of q[0].possibilities) {
-                        await Possibilities.delete(
-                            possibility.tb + ":" + possibility.id,
-                            { force: true }
-                        );
+                            if (q[0].possibilities !== undefined) {
+                                for (let possibility of q[0].possibilities) {
+                                    await Possibilities.delete(
+                                        possibility.tb + ":" + possibility.id,
+                                        { force: true }
+                                    );
+                                }
+                            }
+
+                            await Question.delete(
+                                question.tb + ":" + question.id,
+                                {
+                                    force: true,
+                                }
+                            );
+                        }
                     }
 
-                    await Question.delete(question.tb + ":" + question.id, {
+                    await Criteria.delete(criteria.tb + ":" + criteria.id, {
                         force: true,
                     });
                 }
-
-                await Criteria.delete(criteria.tb + ":" + criteria.id, {
-                    force: true,
-                });
             }
 
             await Type.delete(id, { force: true });

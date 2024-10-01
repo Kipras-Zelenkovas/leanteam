@@ -1,11 +1,11 @@
 import { SurrealityManager } from "surreality";
 
 export const db = new SurrealityManager(
-    "http://localhost:9092",
+    "http://localhost:4040",
     "production",
     "production",
     "main",
-    "production"
+    "leanproduction"
 );
 
 await db.connect();
