@@ -49,7 +49,10 @@ router.get(
                     for (let quest of r[0][0].questionaire.types) {
                         for (let crit of quest.criterias) {
                             for (let ques of crit.questions) {
-                                for (let poss of ques.possibilities) {
+                                let poss = ques?.possibilities
+                                    ? ques.possibilities
+                                    : [];
+                                for (let poss of poss) {
                                     countPossibilities++;
                                 }
                             }
