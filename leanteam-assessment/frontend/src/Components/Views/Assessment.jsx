@@ -396,68 +396,83 @@ export const Assessment = () => {
                                         if (
                                             question.calculationType === "AVG"
                                         ) {
-                                            return parseFloat(
-                                                (
-                                                    answers
-                                                        .filter(
+                                            return {
+                                                id: question.id,
+                                                answer: parseFloat(
+                                                    (
+                                                        answers
+                                                            .filter(
+                                                                (ans) =>
+                                                                    ans.question ===
+                                                                    question.id
+                                                            )
+                                                            .reduce(
+                                                                (acc, curr) =>
+                                                                    acc +
+                                                                    (curr.assessor_answer !==
+                                                                    undefined
+                                                                        ? curr.assessor_answer *
+                                                                          question.weight
+                                                                        : curr.answer *
+                                                                          question.weight),
+                                                                0
+                                                            ) /
+                                                        answers.filter(
                                                             (ans) =>
                                                                 ans.question ===
                                                                 question.id
-                                                        )
-                                                        .reduce(
-                                                            (acc, curr) =>
-                                                                acc +
-                                                                (curr.assessor_answer !==
-                                                                undefined
-                                                                    ? curr.assessor_answer
-                                                                    : curr.answer),
-                                                            0
-                                                        ) /
-                                                    answers.filter(
-                                                        (ans) =>
-                                                            ans.question ===
-                                                            question.id
-                                                    ).length
-                                                ).toFixed(2)
-                                            );
+                                                        ).length
+                                                    ).toFixed(2)
+                                                ),
+                                            };
                                         }
 
                                         if (
                                             question.calculationType === "MIN"
                                         ) {
-                                            return Math.min(
-                                                ...answers
-                                                    .filter(
-                                                        (ans) =>
-                                                            ans.question ===
-                                                            question.id
-                                                    )
-                                                    .map((ans) =>
-                                                        ans.assessor_answer !==
-                                                        undefined
-                                                            ? ans.assessor_answer
-                                                            : ans.answer
-                                                    )
-                                            );
+                                            return {
+                                                id: question.id,
+                                                answer: Math.min(
+                                                    ...answers
+                                                        .filter(
+                                                            (ans) =>
+                                                                ans.question ===
+                                                                question.id
+                                                        )
+                                                        .map((ans) =>
+                                                            ans.assessor_answer !==
+                                                            undefined
+                                                                ? ans.assessor_answer *
+                                                                  question.weight
+                                                                : ans.answer *
+                                                                  question.weight
+                                                        )
+                                                ),
+                                            };
                                         }
 
                                         if (
                                             question.calculationType === "MAX"
                                         ) {
-                                            return Math.max(
-                                                ...answers
-                                                    .filter(
-                                                        (ans) =>
-                                                            ans.question ===
-                                                            question.id
-                                                    )
-                                                    .map((ans) =>
-                                                        ans.assessor_answer !==
-                                                        undefined
-                                                            ? ans.assessor_answer
-                                                            : ans.answer
-                                                    )
-                                            );
+                                            return {
+                                                id: question.id,
+                                                answer: Math.max(
+                                                    ...answers
+                                                        .filter(
+                                                            (ans) =>
+                                                                ans.question ===
+                                                                question.id
+                                                        )
+                                                        .map((ans) =>
+                                                            ans.assessor_answer !==
+                                                            undefined
+                                                                ? ans.assessor_answer *
+                                                                  question.weight
+                                                                : ans.answer *
+                                                                  question.weight
+                                                        )
+                                                ),
+                                            };
                                         }
                                     }
                                 );
@@ -465,8 +480,14 @@ export const Assessment = () => {
                                 let overall = 0;
 
                                 let formed = questionCalculated.map((q) => {
-                                    if (q == Infinity || isNaN(q)) {
-                                        return 0;
+                                    if (
+                                        q.answer == Infinity ||
+                                        isNaN(q.answer)
+                                    ) {
+                                        return {
+                                            id: q.id,
+                                            answer: 0,
+                                        };
                                     }
 
                                     return q;
@@ -477,18 +498,118 @@ export const Assessment = () => {
                                         overall = parseFloat(
                                             (
                                                 formed.reduce(
-                                                    (acc, curr) => acc + curr
+                                                    (acc, curr) =>
+                                                        acc +
+                                                        (curr?.answer
+                                                            ? curr.answer
+                                                            : 0),
+                                                    0
                                                 ) / formed.length
                                             ).toFixed(2)
                                         );
                                     } else if (
                                         criteria.calculationType === "MIN"
                                     ) {
-                                        overall = Math.min(...formed);
+                                        overall = Math.min(
+                                            ...formed.map((q) =>
+                                                q?.answer ? q.answer : 0
+                                            )
+                                        );
                                     } else if (
                                         criteria.calculationType === "MAX"
                                     ) {
-                                        overall = Math.max(...formed);
+                                        overall = Math.max(
+                                            ...formed.map((q) =>
+                                                q?.answer ? q.answer : 0
+                                            )
+                                        );
+                                    } else if (
+                                        criteria.calculationType === "FORMULA"
+                                    ) {
+                                        let formula = criteria.formula.replace(
+                                            / /g,
+                                            ""
+                                        );
+
+                                        let seperatedFormula =
+                                            formula.split("+");
+
+                                        let sum = 0;
+
+                                        seperatedFormula.forEach(
+                                            async (element) => {
+                                                if (element.includes("AVG")) {
+                                                    let avg = element
+                                                        .split("(")[1]
+                                                        .split(")")[0]
+                                                        .split(",");
+
+                                                    console.log(avg);
+                                                    let avgSum = avg.reduce(
+                                                        (a, b) => {
+                                                            let question =
+                                                                formed.find(
+                                                                    (
+                                                                        question
+                                                                    ) =>
+                                                                        question.id ===
+                                                                        b
+                                                                );
+
+                                                            console.log(
+                                                                question
+                                                            );
+
+                                                            return (
+                                                                parseFloat(a) +
+                                                                parseFloat(
+                                                                    question.answer
+                                                                )
+                                                            );
+                                                        },
+                                                        0
+                                                    );
+
+                                                    sum += avgSum / avg.length;
+                                                } else if (
+                                                    element.includes("SUM")
+                                                ) {
+                                                    let sumElements = element
+                                                        .split("(")[1]
+                                                        .split(")")[0]
+                                                        .split(",");
+
+                                                    let sumSum = 0;
+
+                                                    sumElements.forEach(
+                                                        (element) => {
+                                                            let question =
+                                                                formed.find(
+                                                                    (
+                                                                        question
+                                                                    ) =>
+                                                                        question.id ===
+                                                                        element
+                                                                );
+
+                                                            sumSum +=
+                                                                question.answer;
+                                                        }
+                                                    );
+
+                                                    sum += sumSum;
+                                                } else {
+                                                    let question = formed.find(
+                                                        (question) =>
+                                                            question.id ===
+                                                            element
+                                                    );
+                                                    sum += question.answer;
+                                                }
+                                            }
+                                        );
+
+                                        overall = parseFloat(sum.toFixed(2));
                                     }
                                 }
 
@@ -678,7 +799,13 @@ export const Assessment = () => {
                                                                         name: "srh",
                                                                         value:
                                                                             10 -
-                                                                            overall,
+                                                                            (isNaN(
+                                                                                overall
+                                                                            ) ||
+                                                                            overall ===
+                                                                                Infinity
+                                                                                ? 0
+                                                                                : overall),
                                                                         fill: "#CCCCCC",
                                                                     },
                                                                 ]}
