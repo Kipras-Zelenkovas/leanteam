@@ -15,10 +15,7 @@ export const AnimatedRoutes = () => {
                         <Route
                             path="/"
                             element={
-                                <PrivateRoute
-                                    accessLevel={import.meta.env.VITE_LEAN_USER}
-                                    Component={routes.Assessment}
-                                />
+                                <PrivateRoute Component={routes.Assessment} />
                             }
                         />
                         <Route

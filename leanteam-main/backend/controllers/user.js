@@ -70,29 +70,6 @@ router.get("/users/any", checkForLogged, async (req, res) => {
     }
 });
 
-router.get("/users/assessment", async (req, res) => {
-    try {
-        const users = await User.selectAll({
-            exclude: ["password"],
-        });
-
-        const lean_users = users[0].filter((user) => {
-            return user.roles["Lean"] != undefined;
-        });
-
-        return res.status(200).json({
-            data: lean_users,
-            status: 200,
-            message: "Users fetched successfully",
-        });
-    } catch (err) {
-        console.error("Error in /users", err);
-        return res
-            .status(500)
-            .json({ status: 500, error: "Internal Server Error" });
-    }
-});
-
 router.get(
     "/user",
     [
@@ -146,7 +123,8 @@ router.post(
                 force,
             } = req.body;
 
-            const user = await User.findByPk({ id, force });
+            const userReq = await User.findByPk({ id, force });
+            const user = userReq[0];
 
             const rolesUser = {};
 
@@ -164,7 +142,7 @@ router.post(
                 rolesUser[role[0].name] = role[0].accessLevel;
             }
 
-            if (user[0]) {
+            if (user) {
                 await User.update(
                     id,
                     {
@@ -172,13 +150,18 @@ router.post(
                         surname: surname !== undefined ? surname : user.surname,
                         email: email !== undefined ? email : user.email,
                         password:
-                            password !== undefined
+                            password !== undefined &&
+                            password !== null &&
+                            password !== ""
                                 ? bcrypt.hashSync(password, 10)
                                 : user.password,
-                        roles:
-                            Object.keys(rolesUser).length > 0
-                                ? rolesUser
-                                : user.role,
+                        roles: {
+                            data:
+                                Object.keys(rolesUser).length > 0
+                                    ? rolesUser
+                                    : user.role,
+                            as: DataTypes.OBJECT,
+                        },
                         team: team !== undefined ? team : user.team,
                         additional:
                             additional !== undefined
@@ -214,7 +197,7 @@ router.post(
                 message: "User created successfully",
             });
         } catch (err) {
-            console.error("Error in /user", err);
+            console.error("Error in /user", err.message);
             return res
                 .status(500)
                 .json({ status: 500, error: "Internal Server Error" });

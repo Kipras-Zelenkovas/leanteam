@@ -10,6 +10,8 @@ export default {
                 "primary-light": "#78BE20",
                 secondary: "#998fef",
                 accent: "#4935fe",
+                "assessment-bg": "#F0F2F5",
+                "criteria-in-progress": "#FFA524",
             },
             borderWidth: {
                 3: "3px",

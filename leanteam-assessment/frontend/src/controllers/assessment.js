@@ -10,16 +10,6 @@ export const getFactoriesAsessment = async () => {
     }
 };
 
-export const getUsersAssessment = async () => {
-    try {
-        const res = await httpMain.get("/users/assessment");
-
-        return res.data;
-    } catch (error) {
-        return error.response;
-    }
-};
-
 export const getAssessments = async () => {
     try {
         const res = await http.get("/assessments");
@@ -79,6 +69,16 @@ export const cuAssessment = async (data) => {
 export const deleteAssessment = async (id) => {
     try {
         const res = await http.delete("/assessment", { data: { id } });
+
+        return res.data;
+    } catch (error) {
+        return error.response;
+    }
+};
+
+export const referenceAssessment = async (id) => {
+    try {
+        const res = await http.post("/assessment/reference", { id });
 
         return res.data;
     } catch (error) {

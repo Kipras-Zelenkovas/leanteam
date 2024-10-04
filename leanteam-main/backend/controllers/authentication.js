@@ -112,7 +112,7 @@ router.get("/user_access", async (req, res) => {
             let access = false;
 
             Object.keys(userRoles).forEach((key) => {
-                if (parseInt(userRoles[key]) >= 990) {
+                if (parseInt(userRoles[key]) >= 1000) {
                     access = true;
                 } else if (
                     parseInt(userRoles[key]) >= parseInt(req.query.accessLevel)

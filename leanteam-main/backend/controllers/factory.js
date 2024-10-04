@@ -125,39 +125,39 @@ router.post(
                     phone,
                     manager: {
                         data: manager,
-                        as: DataTypes.STRING,
+                        as: DataTypes.RECORD,
                     },
                     lean: {
                         data: lean,
-                        as: DataTypes.STRING,
+                        as: DataTypes.RECORD,
                     },
                     quality: {
                         data: quality,
-                        as: DataTypes.STRING,
+                        as: DataTypes.RECORD,
                     },
                     safety: {
                         data: safety,
-                        as: DataTypes.STRING,
+                        as: DataTypes.RECORD,
                     },
                     environment: {
                         data: environment,
-                        as: DataTypes.STRING,
+                        as: DataTypes.RECORD,
                     },
                     production: {
                         data: production,
-                        as: DataTypes.STRING,
+                        as: DataTypes.RECORD,
                     },
                     maintenance: {
                         data: maintenance,
-                        as: DataTypes.STRING,
+                        as: DataTypes.RECORD,
                     },
                     logistics: {
                         data: logistics,
-                        as: DataTypes.STRING,
+                        as: DataTypes.RECORD,
                     },
                     hr: {
                         data: hr,
-                        as: DataTypes.STRING,
+                        as: DataTypes.RECORD,
                     },
                 });
             } else {
@@ -171,39 +171,39 @@ router.post(
                     phone,
                     manager: {
                         data: manager,
-                        as: DataTypes.STRING,
+                        as: DataTypes.RECORD,
                     },
                     lean: {
                         data: lean,
-                        as: DataTypes.STRING,
+                        as: DataTypes.RECORD,
                     },
                     quality: {
                         data: quality,
-                        as: DataTypes.STRING,
+                        as: DataTypes.RECORD,
                     },
                     safety: {
                         data: safety,
-                        as: DataTypes.STRING,
+                        as: DataTypes.RECORD,
                     },
                     environment: {
                         data: environment,
-                        as: DataTypes.STRING,
+                        as: DataTypes.RECORD,
                     },
                     production: {
                         data: production,
-                        as: DataTypes.STRING,
+                        as: DataTypes.RECORD,
                     },
                     maintenance: {
                         data: maintenance,
-                        as: DataTypes.STRING,
+                        as: DataTypes.RECORD,
                     },
                     logistics: {
                         data: logistics,
-                        as: DataTypes.STRING,
+                        as: DataTypes.RECORD,
                     },
                     hr: {
                         data: hr,
-                        as: DataTypes.STRING,
+                        as: DataTypes.RECORD,
                     },
                 });
             }

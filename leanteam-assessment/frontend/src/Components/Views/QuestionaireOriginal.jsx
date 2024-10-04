@@ -343,7 +343,7 @@ export const QuestionaireOriginal = () => {
                         }}
                     >
                         {(values, errors) => (
-                            <Form className="flex flex-wrap w-1/2 h-max p-4 border-2 border-text rounded-md">
+                            <Form className="flex flex-wrap md:w-1/2 w-3/4 h-max p-4 border-2 border-text rounded-md">
                                 <div className="flex flex-col w-full p-2">
                                     <label className="text-text font-semibold">
                                         Year
@@ -387,18 +387,18 @@ export const QuestionaireOriginal = () => {
                 showCCT == false &&
                 showQu == false && (
                     <div className="flex flex-col gap-2 w-full h-full">
-                        <div className="flex flex-wrap content-center w-full h-auto py-2 md:py-0 md:h-20 px-4 justify-between gap-2 md:gap-0 md:border-b-2 md:border-text">
+                        <div className="flex flex-wrap content-center justify-center w-full h-auto py-2 md:py-0 md:h-16 px-4 md:justify-between gap-2 md:gap-0 border-b-2 border-text">
                             <button
                                 onClick={() => {
                                     setShowCT(false);
                                     setQuestionaire(undefined);
                                     setCriteriaTypes(null);
                                 }}
-                                className="w-full md:w-40 h-12 bg-white text-text border-2 border-text font-semibold rounded-md hover:bg-text hover:text-white transition-all duration-500 ease-in-out"
+                                className="w-[96.8%] md:w-32 lg:w-40 h-10 text-sm bg-white text-text border-2 border-text font-semibold rounded-md hover:bg-text hover:text-white transition-all duration-500 ease-in-out"
                             >
                                 Back
                             </button>
-                            <div className="flex flex-wrap w-full md:w-auto h-auto gap-2">
+                            <div className="flex flex-wrap w-full justify-center md:w-auto h-auto gap-1">
                                 <button
                                     onClick={() => {
                                         deleteQuestionaire(
@@ -411,7 +411,7 @@ export const QuestionaireOriginal = () => {
                                             }
                                         });
                                     }}
-                                    className="w-full md:w-40 h-12 bg-red-800 text-white border-2 border-red-800 font-semibold rounded-md hover:bg-red-600 transition-all duration-500 ease-in-out"
+                                    className="w-[48%] md:w-32 lg:w-40 h-10 text-sm bg-red-800 text-white border-2 border-red-800 font-semibold rounded-md hover:bg-red-600 hover:border-red-600 transition-all duration-500 ease-in-out"
                                 >
                                     Delete
                                 </button>
@@ -419,7 +419,7 @@ export const QuestionaireOriginal = () => {
                                     onClick={() => {
                                         setShowCQu(true);
                                     }}
-                                    className="w-full md:w-40 h-12 bg-blue-800 text-white border-2 border-blue-800 font-semibold rounded-md hover:bg-blue-600 transition-all duration-500 ease-in-out"
+                                    className="w-[48%] md:w-32 lg:w-40 h-10 text-sm bg-blue-800 text-white border-2 border-blue-800 font-semibold rounded-md hover:bg-blue-600 hover:border-blue-600 transition-all duration-500 ease-in-out"
                                 >
                                     Edit
                                 </button>
@@ -427,20 +427,42 @@ export const QuestionaireOriginal = () => {
                                     onClick={() => {
                                         setShowDQu(true);
                                     }}
-                                    className="w-full md:w-40 h-12 bg-purple-800 text-white border-2 border-purple-800 font-semibold rounded-md hover:bg-purple-600 transition-all duration-500 ease-in-out"
+                                    className="w-[48%] md:w-32 lg:w-40 h-10 text-sm bg-text text-white border-2 border-text font-semibold rounded-md hover:bg-white hover:text-text transition-all duration-500 ease-in-out"
                                 >
                                     Dublicate
                                 </button>
+                                <div
+                                    onClick={() => {
+                                        setShowCCT(true);
+                                    }}
+                                    className="flex flex-wrap md:hidden md:w-32 lg:w-40 w-[48%] h-10 text-sm border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
+                                >
+                                    <svg
+                                        className="w-8 h-8 text-gray-400 group-hover:text-text transition-all duration-500 ease-in-out"
+                                        width={24}
+                                        height={24}
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M12 4v16m8-8H4"
+                                        ></path>
+                                    </svg>
+                                </div>
                             </div>
 
                             <div
                                 onClick={() => {
                                     setShowCCT(true);
                                 }}
-                                className="flex flex-wrap md:w-40 w-full h-12 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
+                                className="md:flex md:flex-wrap hidden md:w-32 lg:w-40 w-full h-10 text-sm border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:bg-text hover:border-text transition-all duration-500 ease-in-out"
                             >
                                 <svg
-                                    className="w-8 h-8 text-gray-400 group-hover:text-text transition-all duration-500 ease-in-out"
+                                    className="w-8 h-8 text-gray-400 group-hover:text-white transition-all duration-500 ease-in-out"
                                     width={24}
                                     height={24}
                                     viewBox="0 0 24 24"
@@ -456,7 +478,7 @@ export const QuestionaireOriginal = () => {
                                 </svg>
                             </div>
                         </div>
-                        <div className="flex flex-wrap w-full h-1/3 gap-2 justify-center md:mt-56">
+                        <div className="flex flex-col md:flex-row md:flex-wrap justify-between w-full h-auto gap-2 p-4">
                             {criteriaTypes.map((criteriaType) => {
                                 return (
                                     <div
@@ -465,7 +487,7 @@ export const QuestionaireOriginal = () => {
                                             setShowQu(true);
                                         }}
                                         key={criteriaType.id}
-                                        className="flex flex-wrap w-full md:w-[48%] h-full justify-center content-center text-xl font-semibold text-text bg-white border-2 border-text rounded-md cursor-pointer transition-all duration-500 ease-in-out hover:text-primary hover:border-primary"
+                                        className="flex flex-wrap w-full md:w-[48%] h-16 justify-center content-center text-md font-semibold text-text bg-white border-2 border-text rounded-md cursor-pointer transition-all duration-500 ease-in-out hover:text-white hover:bg-text"
                                     >
                                         {criteriaType.name}
                                     </div>
@@ -515,7 +537,7 @@ export const QuestionaireOriginal = () => {
                         }}
                     >
                         {(values, errors) => (
-                            <Form className="flex flex-wrap w-1/2 h-max p-4 border-2 border-text rounded-md">
+                            <Form className="flex flex-wrap md:w-1/2 w-3/4 h-max p-4 border-2 border-text rounded-md">
                                 <div className="flex flex-col w-full p-2">
                                     <label className="text-text font-semibold">
                                         Name
@@ -723,18 +745,28 @@ export const QuestionaireOriginal = () => {
                 criteriasType != null &&
                 showCC == false && (
                     <div className={`w-full h-full flex flex-col`}>
-                        <div className="flex flex-wrap content-center w-full h-auto md:h-20 md:min-h-20 px-4 justify-between gap-2 md:gap-0 py-2 md:py-0 border-b-2 border-text">
+                        <div className="flex flex-wrap content-center w-full h-auto md:h-16 md:min-h-16 px-4 justify-between gap-2 md:gap-0 py-2 md:py-0 border-b-2 border-text">
                             <button
                                 onClick={() => {
                                     setShowQu(false);
                                     setCriteriasType(null);
                                     setCriterias(null);
                                 }}
-                                className="w-full md:w-40 h-12 bg-white text-text border-2 border-text font-semibold rounded-md hover:bg-text hover:text-white transition-all duration-500 ease-in-out"
+                                className="w-full md:w-40 h-10 text-sm hidden md:block bg-white text-text border-2 border-text font-semibold rounded-md hover:bg-text hover:text-white transition-all duration-500 ease-in-out"
                             >
                                 Back
                             </button>
-                            <div className="flex flex-wrap w-full md:w-auto h-auto gap-2">
+                            <div className="flex flex-wrap w-full md:w-auto justify-center h-auto gap-2">
+                                <button
+                                    onClick={() => {
+                                        setShowQu(false);
+                                        setCriteriasType(null);
+                                        setCriterias(null);
+                                    }}
+                                    className="w-[48%] md:hidden h-10 text-sm bg-white text-text border-2 border-text font-semibold rounded-md hover:bg-text hover:text-white transition-all duration-500 ease-in-out"
+                                >
+                                    Back
+                                </button>
                                 <button
                                     onClick={() => {
                                         deleteType(
@@ -748,7 +780,7 @@ export const QuestionaireOriginal = () => {
                                             }
                                         });
                                     }}
-                                    className="w-full md:w-40 h-12 bg-red-800 text-white border-2 border-red-800 font-semibold rounded-md hover:bg-red-600 transition-all duration-500 ease-in-out"
+                                    className="w-[48%] md:w-40 h-10 text-sm bg-red-800 text-white border-2 border-red-800 font-semibold rounded-md hover:bg-red-600 hover:border-red-600     transition-all duration-500 ease-in-out"
                                 >
                                     Delete
                                 </button>
@@ -758,16 +790,38 @@ export const QuestionaireOriginal = () => {
                                             setShowCCT(true);
                                         }, 100);
                                     }}
-                                    className="w-full md:w-40 h-12 bg-blue-800 text-white border-2 border-blue-800 font-semibold rounded-md hover:bg-blue-600 transition-all duration-500 ease-in-out"
+                                    className="w-[48%] md:w-40 h-10 text-sm bg-blue-800 text-white border-2 border-blue-800 font-semibold rounded-md hover:bg-blue-600 hover:border-blue-600 transition-all duration-500 ease-in-out"
                                 >
                                     Edit
                                 </button>
+                                <div
+                                    onClick={() => {
+                                        setShowCC(true);
+                                    }}
+                                    className="flex flex-wrap md:hidden md:w-40 w-[48%] h-10 text-sm border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text hover:bg-text transition-all duration-500 ease-in-out"
+                                >
+                                    <svg
+                                        className="w-8 h-8 text-gray-400 group-hover:text-white transition-all duration-500 ease-in-out"
+                                        width={24}
+                                        height={24}
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M12 4v16m8-8H4"
+                                        ></path>
+                                    </svg>
+                                </div>
                             </div>
                             <div
                                 onClick={() => {
                                     setShowCC(true);
                                 }}
-                                className="flex flex-wrap md:w-40 w-full h-12 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
+                                className="md:flex md:flex-wrap hidden md:w-40 w-full h-10 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
                             >
                                 <svg
                                     className="w-8 h-8 text-gray-400 group-hover:text-text transition-all duration-500 ease-in-out"
@@ -786,7 +840,7 @@ export const QuestionaireOriginal = () => {
                                 </svg>
                             </div>
                         </div>
-                        <div className="flex flex-col gap-3 w-full p-4 h-auto max-h-full overflow-y-auto overflow-x-hidden no-scrollbar pb-20">
+                        <div className="flex flex-col md:flex-row justify-between md:flex-wrap gap-3 w-full p-4 h-auto max-h-full overflow-y-auto overflow-x-hidden no-scrollbar pb-20">
                             {criterias.map((criteriaL) => {
                                 return (
                                     <div
@@ -795,12 +849,12 @@ export const QuestionaireOriginal = () => {
                                             setCriteria(criteriaL);
                                         }}
                                         key={criteriaL.id}
-                                        className="relative flex flex-wrap w-full min-h-24 h-24 border-2 border-text rounded-md justify-between content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
+                                        className="relative flex flex-wrap w-full md:w-[48%] min-h-16 h-16 border-2 border-text rounded-md justify-between content-center cursor-pointer group hover:bg-text transition-all duration-500 ease-in-out"
                                     >
-                                        <p className="text-text text-center text-md font-semibold group-hover:text-primary transition-all duration-500 ease-in-out w-[90%]">
+                                        <p className="text-text text-center text-md font-semibold group-hover:text-white transition-all duration-500 ease-in-out w-[90%]">
                                             {criteriaL.name}
                                         </p>
-                                        <p className="text-text text-center text-md font-semibold group-hover:text-primary transition-all duration-500 ease-in-out w-[10%]">
+                                        <p className="text-text text-center text-md font-semibold group-hover:text-white transition-all duration-500 ease-in-out w-[10%]">
                                             {criteriaL.questions != undefined
                                                 ? criteriaL.questions.length
                                                 : 0}
@@ -876,7 +930,7 @@ export const QuestionaireOriginal = () => {
                         }}
                     >
                         {(values, errors) => (
-                            <Form className="flex flex-wrap w-1/2 h-max p-4 border-2 border-text rounded-md">
+                            <Form className="flex flex-wrap md:w-1/2 w-4/5 h-max p-4 border-2 border-text rounded-md">
                                 <div className="flex flex-col w-full p-2">
                                     <label className="text-text font-semibold">
                                         Name
@@ -1121,17 +1175,26 @@ export const QuestionaireOriginal = () => {
                 showCQ == false &&
                 showCQu == false && (
                     <div className="flex flex-col w-full h-full">
-                        <div className="flex flex-wrap content-center w-full h-auto md:h-20 px-4 justify-between gap-2 md:gap-0 py-2 md:py-0 border-b-2 border-text">
+                        <div className="flex flex-wrap content-center w-full h-auto md:h-16 min-h-16 px-4 justify-between gap-2 md:gap-0 py-2 md:py-0 border-b-2 border-text">
                             <button
                                 onClick={() => {
                                     setShowC(false);
                                     setCriteria(undefined);
                                 }}
-                                className="w-full md:w-40 h-12 bg-white text-text border-2 border-text font-semibold rounded-md hover:bg-text hover:text-white transition-all duration-500 ease-in-out"
+                                className="hidden md:block text-sm md:w-40 h-10 bg-white text-text border-2 border-text font-semibold rounded-md hover:bg-text hover:text-white transition-all duration-500 ease-in-out"
                             >
                                 Back
                             </button>
                             <div className="flex flex-wrap w-full md:w-auto h-auto gap-2">
+                                <button
+                                    onClick={() => {
+                                        setShowC(false);
+                                        setCriteria(undefined);
+                                    }}
+                                    className="md:hidden text-sm w-[48%] md:w-40 h-10 bg-white text-text border-2 border-text font-semibold rounded-md hover:bg-text hover:text-white transition-all duration-500 ease-in-out"
+                                >
+                                    Back
+                                </button>
                                 <button
                                     onClick={() => {
                                         deleteCriteria(
@@ -1144,7 +1207,7 @@ export const QuestionaireOriginal = () => {
                                             }
                                         });
                                     }}
-                                    className="w-full md:w-40 h-12 bg-red-800 text-white border-2 border-red-800 font-semibold rounded-md hover:bg-red-600 transition-all duration-500 ease-in-out"
+                                    className="w-[48%] text-sm md:w-40 h-10 bg-red-800 text-white border-2 border-red-800 font-semibold rounded-md hover:bg-red-600 hover:border-red-600 transition-all duration-500 ease-in-out"
                                 >
                                     Delete
                                 </button>
@@ -1155,10 +1218,40 @@ export const QuestionaireOriginal = () => {
                                             criteria.calculationType
                                         );
                                     }}
-                                    className="w-full md:w-40 h-12 bg-blue-800 text-white border-2 border-blue-800 font-semibold rounded-md hover:bg-blue-600 transition-all duration-500 ease-in-out"
+                                    className="w-[48%] text-sm md:w-40 h-10 bg-blue-800 text-white border-2 border-blue-800 font-semibold rounded-md hover:bg-blue-600 hover:border-blue-600 transition-all duration-500 ease-in-out"
                                 >
                                     Edit
                                 </button>
+                                <div
+                                    onClick={() => {
+                                        setShowCQ(true);
+                                        setQuestion({
+                                            question: "",
+                                            comment: "",
+                                            weight: 1,
+                                            number: 1,
+                                            criteria: criteria.id,
+                                            possibilities: [],
+                                        });
+                                    }}
+                                    className="md:hidden text-sm flex flex-wrap w-[48%] md:w-40 h-10 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text hover:bg-text transition-all duration-500 ease-in-out"
+                                >
+                                    <svg
+                                        className="w-8 h-8 text-gray-400 group-hover:text-white transition-all duration-500 ease-in-out"
+                                        width={24}
+                                        height={24}
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M12 4v16m8-8H4"
+                                        ></path>
+                                    </svg>
+                                </div>
                             </div>
                             <div
                                 onClick={() => {
@@ -1172,7 +1265,7 @@ export const QuestionaireOriginal = () => {
                                         possibilities: [],
                                     });
                                 }}
-                                className="flex flex-wrap md:w-40 w-full h-12 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
+                                className="hidden md:flex md:flex-wrap md:w-40 w-full h-10 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
                             >
                                 <svg
                                     className="w-8 h-8 text-gray-400 group-hover:text-text transition-all duration-500 ease-in-out"
@@ -1191,7 +1284,7 @@ export const QuestionaireOriginal = () => {
                                 </svg>
                             </div>
                         </div>
-                        <div className="flex flex-col gap-3 w-full p-4 h-auto max-h-full overflow-y-auto overflow-x-hidden no-scrollbar pb-20">
+                        <div className="flex flex-col md:flex-row md:flex-wrap gap-3 w-full p-4 h-auto max-h-full justify-between overflow-y-auto overflow-x-hidden no-scrollbar pb-20">
                             {questions.map((questionL) => {
                                 return (
                                     <div
@@ -1200,9 +1293,9 @@ export const QuestionaireOriginal = () => {
                                             setShowCQ(true);
                                         }}
                                         key={questionL.id}
-                                        className="relative flex flex-wrap w-full h-24 min-h-24 max-h-24 overflow-hidden border-2 border-text rounded-md justify-center content-center text-ellipsis cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
+                                        className="relative flex flex-wrap w-full md:w-[48%] h-24 min-h-24 max-h-24 overflow-hidden border-2 border-text rounded-md justify-center content-center text-ellipsis cursor-pointer group hover:border-text hover:bg-text transition-all duration-500 ease-in-out"
                                     >
-                                        <p className="text-text text-center text-md font-semibold group-hover:text-primary transition-all duration-500 ease-in-out text-elipse">
+                                        <p className="text-text text-center text-md font-semibold group-hover:text-white transition-all duration-500 ease-in-out text-elipse">
                                             {questionL.question}
                                         </p>
                                     </div>
@@ -1217,47 +1310,66 @@ export const QuestionaireOriginal = () => {
                     <div className="flex flex-wrap content-center w-full h-auto md:h-20 md:min-h-20 px-4 justify-between gap-2 md:gap-0 py-2 md:py-0 border-b-2 border-text">
                         <button
                             onClick={() => {
-                                cuQuestion({
-                                    id: question.id,
-                                    criteria: criteria.id,
-                                    question: question.question,
-                                    comment: question.comment,
-                                    weight: parseFloat(question.weight),
-                                    number: parseInt(question.number),
-                                    calculationType: question.calculationType,
-                                    formula: "",
-                                }).then(async (resQ) => {
-                                    if (resQ.status === 201) {
-                                        if (question.possibilities.length > 0) {
-                                            let len =
-                                                question.possibilities.length;
-                                            for (let p of question.possibilities) {
-                                                cuPosibility({
-                                                    id: p.id,
-                                                    question: resQ.data[0].id,
-                                                    statements: p.statements,
-                                                    subcriteria: p.subcriteria,
-                                                }).then((resP) => {
-                                                    if (resP.status === 201) {
-                                                        len--;
-                                                        if (len === 0) {
-                                                            setQUpdate(
-                                                                !qUpdate
-                                                            );
-                                                            setShowCQ(false);
+                                if (
+                                    question.comment === "" ||
+                                    question.question === ""
+                                ) {
+                                    setShowCQ(false);
+                                } else {
+                                    cuQuestion({
+                                        id: question.id,
+                                        criteria: criteria.id,
+                                        question: question.question,
+                                        comment: question.comment,
+                                        weight: parseFloat(question.weight),
+                                        number: parseInt(question.number),
+                                        calculationType:
+                                            question.calculationType,
+                                        formula: "",
+                                    }).then(async (resQ) => {
+                                        if (resQ.status === 201) {
+                                            if (
+                                                question.possibilities.length >
+                                                0
+                                            ) {
+                                                let len =
+                                                    question.possibilities
+                                                        .length;
+                                                for (let p of question.possibilities) {
+                                                    cuPosibility({
+                                                        id: p.id,
+                                                        question:
+                                                            resQ.data[0].id,
+                                                        statements:
+                                                            p.statements,
+                                                        subcriteria:
+                                                            p.subcriteria,
+                                                    }).then((resP) => {
+                                                        if (
+                                                            resP.status === 201
+                                                        ) {
+                                                            len--;
+                                                            if (len === 0) {
+                                                                setQUpdate(
+                                                                    !qUpdate
+                                                                );
+                                                                setShowCQ(
+                                                                    false
+                                                                );
+                                                            }
                                                         }
-                                                    }
-                                                });
-                                                await new Promise((r) =>
-                                                    setTimeout(r, 50)
-                                                );
+                                                    });
+                                                    await new Promise((r) =>
+                                                        setTimeout(r, 50)
+                                                    );
+                                                }
+                                            } else {
+                                                setQUpdate(!qUpdate);
+                                                setShowCQ(false);
                                             }
-                                        } else {
-                                            setQUpdate(!qUpdate);
-                                            setShowCQ(false);
                                         }
-                                    }
-                                });
+                                    });
+                                }
                             }}
                             className="w-full md:w-40 h-12 bg-white text-text border-2 border-text font-semibold rounded-md hover:bg-text hover:text-white transition-all duration-500 ease-in-out"
                         >
@@ -1371,7 +1483,7 @@ export const QuestionaireOriginal = () => {
                             </select>
                         </div>
                     </div>
-                    <div className="flex flex-wrap w-full h-auto p-2">
+                    <div className="flex flex-wrap w-full h-auto p-2 mb-20 md:mb-0">
                         <p className="text-text text-lg font-semibold">
                             Statements
                         </p>

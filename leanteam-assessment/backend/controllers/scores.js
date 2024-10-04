@@ -441,13 +441,13 @@ export const router = Router();
 
 router.get(
     "/assessmentScore",
-    [checkForLogged, checkForAccess(process.env.LEAN_USER)],
+    [checkForLogged, checkForAccess({ access_level: process.env.LEAN_USER })],
     async (req, res) => {
         try {
             const { year } = req.query;
 
             let assessmentsReq =
-                await surreal_assessment.query(`SELECT * FROM assessment WHERE year = ${year} FETCH 
+                await surreal_assessment.query(`SELECT * FROM assessment WHERE year = ${year} AND type = "end-of-year" FETCH 
                 questionaire.types,
                 questionaire.types.criterias, 
                 questionaire.types.criterias.questions,

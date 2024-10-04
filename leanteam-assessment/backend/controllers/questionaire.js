@@ -12,7 +12,7 @@ export const router = Router();
 
 router.get(
     "/questionaires",
-    [checkForLogged, checkForAccess(process.env.LEAN_USER)],
+    [checkForLogged, checkForAccess({ access_level: process.env.LEAN_USER })],
     async (req, res) => {
         try {
             const questionaires = await Questionaire.selectAll({
@@ -31,7 +31,7 @@ router.get(
 
 router.post(
     "/questionaire",
-    [checkForLogged, checkForAccess(process.env.LEAN_ADMIN)],
+    [checkForLogged, checkForAccess({ access_level: process.env.LEAN_ADMIN })],
     async (req, res) => {
         try {
             const { id, year, types } = req.body;
@@ -64,7 +64,7 @@ router.post(
 
 router.post(
     "/questionaire-dublicate",
-    [checkForLogged, checkForAccess(process.env.LEAN_ADMIN)],
+    [checkForLogged, checkForAccess({ access_level: process.env.LEAN_ADMIN })],
     async (req, res) => {
         try {
             const { id, year } = req.body;
@@ -208,7 +208,7 @@ router.post(
 
 router.delete(
     "/questionaire",
-    [checkForLogged, checkForAccess(process.env.LEAN_ADMIN)],
+    [checkForLogged, checkForAccess({ access_level: process.env.LEAN_ADMIN })],
     async (req, res) => {
         try {
             const { id } = req.body;

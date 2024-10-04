@@ -13,6 +13,7 @@ import { router as possibilityRouter } from "./controllers/possibility.js";
 import { router as answerRouter } from "./controllers/answers.js";
 import { router as typeRouter } from "./controllers/type.js";
 import { router as scoresRouter } from "./controllers/scores.js";
+import { router as additionalsRouter } from "./controllers/additionals.js";
 
 DotenvFlow.config();
 
@@ -37,6 +38,7 @@ app.use("/v1/assessment/", [
     answerRouter,
     typeRouter,
     scoresRouter,
+    additionalsRouter,
 ]);
 
 const server = https.createServer(

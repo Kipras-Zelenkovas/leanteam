@@ -13,7 +13,7 @@ export const router = Router();
 
 router.get(
     "/types",
-    [checkForLogged, checkForAccess(process.env.LEAN_USER)],
+    [checkForLogged, checkForAccess({ access_level: process.env.LEAN_USER })],
     async (req, res) => {
         try {
             // const types = await Type.selectAll({
@@ -39,7 +39,7 @@ router.get(
 
 router.post(
     "/type",
-    [checkForLogged, checkForAccess(process.env.LEAN_USER)],
+    [checkForLogged, checkForAccess({ access_level: process.env.LEAN_ADMIN })],
     async (req, res) => {
         try {
             const { id, name, weight, formula, questionaire } = req.body;
@@ -93,7 +93,7 @@ router.post(
 
 router.delete(
     "/type",
-    [checkForLogged, checkForAccess(process.env.LEAN_USER)],
+    [checkForLogged, checkForAccess({ access_level: process.env.LEAN_ADMIN })],
     async (req, res) => {
         try {
             const { id, questionaire } = req.body;

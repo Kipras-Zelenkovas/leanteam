@@ -27,5 +27,9 @@ Assessment.defineTable("SCHEMALESS", {
     },
     assessor: {
         type: DataTypes.STRING,
+        optional: true,
+    },
+    leader: {
+        type: DataTypes.STRING,
     },
 });

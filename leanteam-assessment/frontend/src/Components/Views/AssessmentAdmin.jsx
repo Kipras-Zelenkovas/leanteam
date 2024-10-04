@@ -4,7 +4,6 @@ import {
     deleteAssessment,
     getAssessmentsPanel,
     getFactoriesAsessment,
-    getUsersAssessment,
 } from "../../controllers/assessment";
 import { Loader } from "../Loader";
 import { Dialog } from "primereact/dialog";
@@ -15,12 +14,13 @@ export const AssessmentAdmin = () => {
     const [assessments, setAssessments] = useState(null);
 
     const [factories, setFactories] = useState(null);
-    const [assessors, setAssessors] = useState(null);
+    const [users, setUsers] = useState(null);
     const [questionaires, setQuestionaires] = useState(null);
 
     const [aUpdate, setAUpdate] = useState(false);
 
     const [assessment, setAssessment] = useState(undefined);
+    const [type, setType] = useState("");
 
     const [showCA, setShowCA] = useState(false);
 
@@ -28,14 +28,6 @@ export const AssessmentAdmin = () => {
         getFactoriesAsessment().then((res) => {
             if (res.status === 200) {
                 setFactories(res.data[0]);
-            }
-        });
-
-        getUsersAssessment().then((res) => {
-            if (res.status === 200) {
-                setAssessors(res.data);
-            } else {
-                setAssessors([]);
             }
         });
 
@@ -52,6 +44,7 @@ export const AssessmentAdmin = () => {
         getAssessmentsPanel().then((res) => {
             if (res.status === 200) {
                 setAssessments(res.assessments);
+                setUsers(res.users);
 
                 if (assessment !== undefined) {
                     setAssessment(
@@ -77,10 +70,10 @@ export const AssessmentAdmin = () => {
             >
                 <div
                     onClick={() => setShowCA(true)}
-                    className="flex flex-wrap sm:w-40 w-full h-40 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
+                    className="flex flex-wrap sm:w-40 w-full h-40 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text hover:bg-text transition-all duration-500 ease-in-out"
                 >
                     <svg
-                        className="w-12 h-12 text-gray-400 group-hover:text-text transition-all duration-500 ease-in-out"
+                        className="w-12 h-12 text-gray-400 group-hover:text-white transition-all duration-500 ease-in-out"
                         width={24}
                         height={24}
                         viewBox="0 0 24 24"
@@ -103,9 +96,9 @@ export const AssessmentAdmin = () => {
                                 setShowCA(true);
                             }}
                             key={assessmentL.id}
-                            className="relative flex flex-wrap sm:w-40 w-full h-40 border-2 border-text rounded-md justify-center content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
+                            className="relative flex flex-wrap sm:w-40 w-full h-40 border-2 border-text rounded-md justify-center content-center cursor-pointer group hover:bg-text transition-all duration-500 ease-in-out"
                         >
-                            <p className="text-text text-center text-lg font-semibold group-hover:text-primary transition-all duration-500 ease-in-out">
+                            <p className="text-text text-center text-md leading-5 font-semibold font-sans group-hover:text-white transition-all duration-500 ease-in-out">
                                 {assessmentL.name}
                             </p>
                         </div>
@@ -133,13 +126,16 @@ export const AssessmentAdmin = () => {
                                   year: 0,
                                   factory: "",
                                   questionaire: "",
-                                  type: "",
                                   assessor: "",
+                                  leader: "",
                                   status: "in progess",
                               }
                     }
                     onSubmit={(values, actions) => {
-                        cuAssessment(values).then((res) => {
+                        cuAssessment({
+                            ...values,
+                            type: type,
+                        }).then((res) => {
                             if (res.status === 201) {
                                 setShowCA(false);
                                 setAssessment(undefined);
@@ -149,9 +145,9 @@ export const AssessmentAdmin = () => {
                                         year: 0,
                                         factory: "",
                                         questionaire: "",
-                                        type: "",
                                         assessor: "",
-                                        status: "in progess",
+                                        leader: "",
+                                        status: "in progress",
                                     },
                                 });
                             }
@@ -212,40 +208,39 @@ export const AssessmentAdmin = () => {
                             </div>
                             <div className="flex flex-col w-full p-2">
                                 <label
-                                    htmlFor="assessor"
+                                    htmlFor="leader"
                                     className="text-text font-semibold"
                                 >
-                                    Assessor
+                                    Leader
                                 </label>
                                 <ErrorMessage
-                                    name="assessor"
+                                    name="leader"
                                     component="div"
                                     className="text-red-700 text-lg font-semibold"
                                 />
                                 <Field
                                     as="select"
-                                    name="assessor"
+                                    name="leader"
                                     className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
                                 >
                                     {assessment === undefined && (
                                         <option value="" disabled selected>
-                                            Select Assessor
+                                            Select Leader
                                         </option>
                                     )}
-                                    {assessors.map((assessor) => {
+                                    {users.map((user) => {
                                         return (
                                             <option
-                                                key={assessor.id}
-                                                value={assessor.id}
+                                                key={user.id}
+                                                value={user.id}
                                             >
-                                                {assessor.name +
-                                                    " " +
-                                                    assessor.surname}
+                                                {user.name + " " + user.surname}
                                             </option>
                                         );
                                     })}
                                 </Field>
                             </div>
+
                             <div className="flex flex-col w-full p-2">
                                 <label
                                     htmlFor="questionaire"
@@ -292,8 +287,10 @@ export const AssessmentAdmin = () => {
                                     component="div"
                                     className="text-red-700 text-lg font-semibold"
                                 />
-                                <Field
-                                    as="select"
+                                <select
+                                    onChange={(e) => {
+                                        setType(e.target.value);
+                                    }}
                                     name="type"
                                     className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
                                 >
@@ -306,8 +303,47 @@ export const AssessmentAdmin = () => {
                                     <option value="end-of-year">
                                         End of year
                                     </option>
-                                </Field>
+                                    <option value="baseline">Baseline</option>
+                                </select>
                             </div>
+                            {type === "baseline" || type === "end-of-year" ? (
+                                <div className="flex flex-col w-full p-2">
+                                    <label
+                                        htmlFor="assessor"
+                                        className="text-text font-semibold"
+                                    >
+                                        Assessor
+                                    </label>
+                                    <ErrorMessage
+                                        name="assessor"
+                                        component="div"
+                                        className="text-red-700 text-lg font-semibold"
+                                    />
+                                    <Field
+                                        as="select"
+                                        name="assessor"
+                                        className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                    >
+                                        {assessment === undefined && (
+                                            <option value="" disabled selected>
+                                                Select Assessor
+                                            </option>
+                                        )}
+                                        {users.map((user) => {
+                                            return (
+                                                <option
+                                                    key={user.id}
+                                                    value={user.id}
+                                                >
+                                                    {user.name +
+                                                        " " +
+                                                        user.surname}
+                                                </option>
+                                            );
+                                        })}
+                                    </Field>
+                                </div>
+                            ) : null}
                             <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
                                 <button
                                     type="submit"

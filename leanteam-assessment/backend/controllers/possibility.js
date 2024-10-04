@@ -9,7 +9,7 @@ export const router = Router();
 
 router.get(
     "/possibilities",
-    [checkForLogged, checkForAccess(process.env.LEAN_USER)],
+    [checkForLogged, checkForAccess({ access_level: process.env.LEAN_USER })],
     async (req, res) => {
         try {
             // const possibilities = await Possibilities.selectAll({
@@ -35,7 +35,7 @@ router.get(
 
 router.post(
     "/possibility",
-    [checkForLogged, checkForAccess(process.env.LEAN_ADMIN)],
+    [checkForLogged, checkForAccess({ access_level: process.env.LEAN_ADMIN })],
     async (req, res) => {
         try {
             const { id, subcriteria, statements, weight, question } = req.body;
@@ -100,7 +100,7 @@ router.post(
 
 router.delete(
     "/possibility",
-    [checkForLogged, checkForAccess(process.env.LEAN_ADMIN)],
+    [checkForLogged, checkForAccess({ access_level: process.env.LEAN_ADMIN })],
     async (req, res) => {
         try {
             const { id, question } = req.body;

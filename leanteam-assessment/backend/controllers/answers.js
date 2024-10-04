@@ -8,34 +8,30 @@ import { DataTypes } from "surreality/utils/Typing/DataTypes.js";
 
 export const router = Router();
 
-router.get(
-    "/answers",
-    [checkForLogged, checkForAccess(process.env.LEAN_USER)],
-    async (req, res) => {
-        try {
-            const { assessment } = req.query;
+router.get("/answers", [checkForLogged], async (req, res) => {
+    try {
+        const { assessment } = req.query;
 
-            const answers = await Answers.selectAll({
-                where: {
-                    assessment: assessment,
-                },
-                exclude: ["timestamps"],
-            });
-            return res.status(200).json({
-                status: 200,
-                data: answers[0],
-            });
-        } catch (error) {
-            return res.status(500).json({
-                errors: {
-                    status: 500,
-                    statusText: false,
-                    message: error,
-                },
-            });
-        }
+        const answers = await Answers.selectAll({
+            where: {
+                assessment: assessment,
+            },
+            exclude: ["timestamps"],
+        });
+        return res.status(200).json({
+            status: 200,
+            data: answers[0],
+        });
+    } catch (error) {
+        return res.status(500).json({
+            errors: {
+                status: 500,
+                statusText: false,
+                message: error,
+            },
+        });
     }
-);
+});
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -53,7 +49,7 @@ const upload = multer.default({ storage: storage });
 
 router.post(
     "/answer",
-    [checkForLogged, checkForAccess(process.env.LEAN_USER)],
+    [checkForLogged],
     upload.array("new_evidence[]", 20),
     async (req, res) => {
         try {
@@ -148,7 +144,7 @@ router.post(
 
 router.delete(
     "/answer",
-    [checkForLogged, checkForAccess(process.env.LEAN_USER)],
+    [checkForLogged, checkForAccess({ access_level: process.env.LEAN_USER })],
     async (req, res) => {
         try {
             const { id } = req.body;
