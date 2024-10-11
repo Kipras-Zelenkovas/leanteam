@@ -10,12 +10,16 @@ import {
 } from "../../controllers/usersA";
 import { getRolesAdmin } from "../../controllers/roles.js";
 import { getTeams } from "../../controllers/teamsA.js";
+import { getFactoriesAsessment } from "../../../../../leanteam-assessment/frontend/src/controllers/assessment.js";
 
 export const Users = () => {
     const [users, setUsers] = useState(null);
     const [user, setUser] = useState(undefined);
     const [roles, setRoles] = useState(null);
     const [teams, setTeams] = useState(null);
+    const [factories, setFactories] = useState(null);
+
+    const [sort, setSort] = useState("");
 
     const [showDialogCU, setShowDialogCU] = useState(false);
 
@@ -27,6 +31,9 @@ export const Users = () => {
         });
         getTeams().then((res) => {
             res.status === 200 ? setTeams(res.data[0]) : setTeams([]);
+        });
+        getFactoriesAsessment().then((res) => {
+            res.status === 200 ? setFactories(res.data[0]) : setFactories([]);
         });
     }, []);
 
@@ -41,13 +48,30 @@ export const Users = () => {
     }
 
     return (
-        <div className="flex flex-col h-full w-full overflow-x-hidden">
-            <div className="flex flex-wrap w-full h-max max-h-full p-4 overflow-y-auto no-scrollbar pb-20 gap-x-7 gap-y-3 justify-center">
+        <div className="flex flex-col h-full w-full overflow-x-hidden bg-white">
+            <div className="flex flex-wrap w-full h-auto p-2 bg-white shadow-text shadow">
+                <select
+                    name=""
+                    id=""
+                    className="w-auto px-3 py-1 shadow shadow-gray-400 rounded-md"
+                    onChange={(e) => setSort(e.target.value)}
+                >
+                    <option value="" disabled selected>
+                        Choose
+                    </option>
+                    {factories.map((factory, index) => (
+                        <option key={index} value={factory.id}>
+                            {factory.name}
+                        </option>
+                    ))}
+                </select>
+            </div>
+            <div className="flex flex-wrap w-full h-max max-h-full p-4 overflow-y-auto no-scrollbar pb-20 gap-x-3 gap-y-3">
                 <div
-                    className="flex flex-col group w-full sm:w-72 h-32 justify-center items-center border-2 border-gray-400 rounded-md px-3 py-2 md:py-4 transition-all ease-in-out duration-300 hover:border-black md:hover:scale-110 hover:cursor-pointer"
+                    className="flex flex-col group w-full sm:w-52 h-24 justify-center items-center shadow shadow-text rounded-md px-3 py-2 md:py-4 transition-all ease-in-out duration-300 hover:scale-105 hover:cursor-pointer"
                     onClick={() => setShowDialogCU(true)}
                 >
-                    <svg width="64" height="64" viewBox="0 0 512 512">
+                    <svg width="72" height="72" viewBox="0 0 512 512">
                         <rect
                             width="100%"
                             height="100%"
@@ -61,8 +85,8 @@ export const Users = () => {
                             paintOrder="stroke"
                         ></rect>
                         <svg
-                            width="80%"
-                            height="80%"
+                            width="90%"
+                            height="90%"
                             viewBox="0 0 1024 1024"
                             fill="#1C2033"
                             x="0"
@@ -83,54 +107,57 @@ export const Users = () => {
                         </svg>
                     </svg>
 
-                    <p className="text-lg text-center font-semibold text-gray-400 group-hover:text-black transition-all ease-in-out duration-500">
-                        Pridėti naują
+                    <p className="text-lg text-center font-semibold text-gray-400 group-hover:text-black transition-all ease-in-out duration-500 w-full">
+                        New user
                     </p>
                 </div>
-                {users.map((userL, index) => (
-                    <div
-                        key={index}
-                        className={`flex flex-col group w-full sm:w-72 h-32 justify-center items-center border-2 ${
-                            userL.timestamps?.deleted_at
-                                ? "border-red-600"
-                                : "border-text hover:border-primary"
-                        } rounded-md px-3 py-2 md:py-4 transition-all ease-in-out duration-300  md:hover:scale-110 hover:scale-105 hover:cursor-pointer`}
-                        onClick={() => {
-                            let tempRoles = Object.keys(userL.roles).map(
-                                (key) => {
-                                    return roles.find((role) => {
-                                        return role.name === key;
-                                    }).id;
-                                }
-                            );
-
-                            setUser({
-                                id: userL.id,
-                                name: userL.name,
-                                surname: userL.surname,
-                                email: userL.email,
-                                roles: tempRoles,
-                                password: "",
-                                team: userL.team,
-                                force: userL.timestamps?.deleted_at
-                                    ? true
-                                    : false,
-                                timestamps: userL.timestamps,
-                            });
-                            setShowDialogCU(true);
-                        }}
-                    >
-                        <p
-                            className={`text-lg text-center font-semibold ${
+                {users.map((userL, index) => {
+                    return sort == "" || userL.factory == sort ? (
+                        <div
+                            key={index}
+                            className={`flex flex-col group w-full sm:w-52 h-24 justify-center items-center shadow ${
                                 userL.timestamps?.deleted_at
-                                    ? "text-red-600"
-                                    : "text-text group-hover:text-primary"
-                            }  transition-all ease-in-out duration-500`}
+                                    ? "shadow-red-600"
+                                    : "shadow-text hover:border-primary"
+                            } rounded-md px-3 py-2 md:py-4 transition-all ease-in-out duration-300  hover:scale-105 hover:cursor-pointer`}
+                            onClick={() => {
+                                let tempRoles = Object.keys(userL.roles).map(
+                                    (key) => {
+                                        return roles.find((role) => {
+                                            return role.name === key;
+                                        }).id;
+                                    }
+                                );
+
+                                setUser({
+                                    id: userL.id,
+                                    name: userL.name,
+                                    surname: userL.surname,
+                                    email: userL.email,
+                                    roles: tempRoles,
+                                    password: "",
+                                    team: userL.team,
+                                    force: userL.timestamps?.deleted_at
+                                        ? true
+                                        : false,
+                                    timestamps: userL.timestamps,
+                                    factory: userL.factory,
+                                });
+                                setShowDialogCU(true);
+                            }}
                         >
-                            {userL.name + " " + userL.surname}
-                        </p>
-                    </div>
-                ))}
+                            <p
+                                className={`text-lg text-center font-semibold ${
+                                    userL.timestamps?.deleted_at
+                                        ? "text-red-600"
+                                        : "text-text"
+                                }  transition-all ease-in-out duration-500`}
+                            >
+                                {userL.name + " " + userL.surname}
+                            </p>
+                        </div>
+                    ) : null;
+                })}
             </div>
 
             {/* CREATE & UPDATE & DELETE */}
@@ -157,6 +184,7 @@ export const Users = () => {
                                       password: "",
                                       roles: [],
                                       team: "",
+                                      factory: "",
                                   }
                         }
                         onSubmit={(values, actions) => {
@@ -170,6 +198,7 @@ export const Users = () => {
                                         email: "",
                                         password: "",
                                         role: "",
+                                        factory: "",
                                     });
                                     setUser(undefined);
                                     setShowDialogCU(false);
@@ -326,6 +355,46 @@ export const Users = () => {
                                                     {team.name}
                                                 </option>
                                             ))}
+                                        </Field>
+                                    </div>
+                                    <div className="md:w-full mx-2 px-2 w-full flex flex-wrap mt-2 border-text border-2 rounded-md p-2 h-auto max-h-48 overflow-y-auto no-scrollbar">
+                                        <label
+                                            htmlFor="factory"
+                                            className="text-lg font-bold w-full"
+                                        >
+                                            Factory
+                                        </label>
+                                        <ErrorMessage
+                                            name="factory"
+                                            component="div"
+                                            className="text-red-500"
+                                        />
+                                        <Field
+                                            as="select"
+                                            id="factory"
+                                            name="factory"
+                                            value={values.factory}
+                                            className="w-full p-2 text-md border-2 border-text rounded-md"
+                                        >
+                                            {values.factory === "" && (
+                                                <option value="">None</option>
+                                            )}
+                                            {factories.map(
+                                                (factorieL, index) => (
+                                                    <option
+                                                        key={index}
+                                                        value={factorieL.id}
+                                                        selected={
+                                                            factorieL.id ===
+                                                            values.factory
+                                                        }
+                                                    >
+                                                        {factorieL.name +
+                                                            " - " +
+                                                            factorieL.businessUnit}
+                                                    </option>
+                                                )
+                                            )}
                                         </Field>
                                     </div>
                                 </div>

@@ -85,3 +85,25 @@ export const referenceAssessment = async (id) => {
         return error.response;
     }
 };
+
+export const completeAssessment = async (id) => {
+    try {
+        const res = await http.post("/assessment/complete", { id });
+
+        return res.data;
+    } catch (error) {
+        return error.response;
+    }
+};
+
+export const getAssessmentsToReview = async (data) => {
+    try {
+        const res = await http.get("/assessments/review", {
+            params: data,
+        });
+
+        return res.data;
+    } catch (error) {
+        return error.response;
+    }
+};

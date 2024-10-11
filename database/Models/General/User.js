@@ -34,4 +34,9 @@ User.defineTable("SCHEMALESS", {
         table: "team",
         optional: true,
     },
+    factory: {
+        type: DataTypes.RECORD,
+        table: "factory",
+        optional: true,
+    },
 });

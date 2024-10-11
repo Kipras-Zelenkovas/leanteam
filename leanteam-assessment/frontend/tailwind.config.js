@@ -12,6 +12,7 @@ export default {
                 accent: "#4935fe",
                 "assessment-bg": "#F0F2F5",
                 "criteria-in-progress": "#FFA524",
+                main: "#7fafb5",
             },
             borderWidth: {
                 3: "3px",

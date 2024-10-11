@@ -5,6 +5,8 @@ import * as multer from "multer";
 import * as path from "path";
 import { randomInt } from "crypto";
 import { DataTypes } from "surreality/utils/Typing/DataTypes.js";
+import { Assessment } from "../../../database/Models/Assessment/Assessment.js";
+import { Criteria } from "../../../database/Models/Assessment/Criteria.js";
 
 export const router = Router();
 
@@ -78,12 +80,6 @@ router.post(
                     ? evidence
                     : new_evidence;
 
-            // for (let e of existingAnswer[0].evidence) {
-            //     if (!evidenceToSave.includes(e)) {
-            //         fs.unlinkSync(`./public/uploads/evidence/${e}`);
-            //     }
-            // }
-
             if (existingAnswer[0]) {
                 await Answers.update(
                     id,
@@ -154,6 +150,80 @@ router.delete(
             return res.status(200).json({
                 status: 200,
                 message: "Answer deleted successfully",
+            });
+        } catch (error) {
+            return res.status(500).json({
+                errors: {
+                    status: 500,
+                    statusText: false,
+                    message: error,
+                },
+            });
+        }
+    }
+);
+
+router.get(
+    "/assessment/evidance",
+    [checkForLogged, checkForAccess({ access_level: process.env.LEAN_ADMIN })],
+    async (req, res) => {
+        try {
+            const { year, factory } = req.query;
+
+            const assessment = await Assessment.findOne({
+                where: {
+                    year: parseInt(year),
+                    factory: {
+                        value: factory,
+                        as: DataTypes.STRING,
+                    },
+                    status: "completed",
+                },
+            });
+
+            if (!assessment[0]) {
+                return res.status(404).json({
+                    status: 404,
+                    message: "Assessment not found",
+                });
+            }
+
+            const answers = await Answers.selectAll({
+                where: {
+                    assessment: assessment[0].id.tb + ":" + assessment[0].id.id,
+                },
+                exclude: [
+                    "timestamps",
+                    "assessment",
+                    "question",
+                    "possibility",
+                ],
+            });
+
+            for (let answer of answers[0]) {
+                const criteria = await Criteria.findByPk({
+                    id: answer.criteria,
+                });
+
+                answer.criteria = criteria[0].name;
+            }
+
+            const filteredAnswers = answers[0].filter(
+                (answer) => answer.evidence.length > 0
+            );
+
+            const filteredImg = filteredAnswers.map((answer) => {
+                return {
+                    ...answer,
+                    evidence: answer.evidence.filter((evidence) =>
+                        evidence.match(/\.(jpeg|jpg|png|gif)$/)
+                    ),
+                };
+            });
+
+            return res.status(200).json({
+                status: 200,
+                data: filteredImg,
             });
         } catch (error) {
             return res.status(500).json({

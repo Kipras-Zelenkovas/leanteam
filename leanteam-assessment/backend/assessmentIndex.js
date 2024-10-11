@@ -14,13 +14,15 @@ import { router as answerRouter } from "./controllers/answers.js";
 import { router as typeRouter } from "./controllers/type.js";
 import { router as scoresRouter } from "./controllers/scores.js";
 import { router as additionalsRouter } from "./controllers/additionals.js";
+import { router as graphMainRouter } from "./controllers/graph_main.js";
+import { router as displayRouter } from "./controllers/display_controller.js";
 
 DotenvFlow.config();
 
 const app = express();
 app.use(
     cors({
-        origin: process.env.CLIENT_URL,
+        origin: [process.env.DOMAIN_1, process.env.DOMAIN_2],
         credentials: true,
     })
 );
@@ -39,6 +41,8 @@ app.use("/v1/assessment/", [
     typeRouter,
     scoresRouter,
     additionalsRouter,
+    graphMainRouter,
+    displayRouter,
 ]);
 
 const server = https.createServer(

@@ -121,6 +121,7 @@ router.post(
                 additional,
                 picture,
                 force,
+                factory,
             } = req.body;
 
             const userReq = await User.findByPk({ id, force });
@@ -161,6 +162,7 @@ router.post(
                                     ? rolesUser
                                     : user.role,
                             as: DataTypes.OBJECT,
+                            dataAs: DataTypes.NUMBER,
                         },
                         team: team !== undefined ? team : user.team,
                         additional:
@@ -168,6 +170,7 @@ router.post(
                                 ? additional
                                 : user.additional,
                         picture: picture !== undefined ? picture : user.picture,
+                        factory: factory !== undefined ? factory : user.factory,
                     },
                     { return: "AFTER", force: force, type: "SET" }
                 );
@@ -183,11 +186,16 @@ router.post(
                     surname: surname,
                     email: email,
                     password: bcrypt.hashSync(password, 10),
-                    roles: rolesUser,
+                    roles: {
+                        data: rolesUser,
+                        as: DataTypes.OBJECT,
+                        dataAs: DataTypes.NUMBER,
+                    },
                     team: team != undefined ? team : DataTypes.NONE,
                     additional:
                         additional != undefined ? additional : DataTypes.NONE,
                     picture: picture != undefined ? picture : DataTypes.NONE,
+                    factory: factory != undefined ? factory : DataTypes.NONE,
                 },
                 { return: "AFTER" }
             );

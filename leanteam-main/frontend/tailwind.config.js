@@ -10,6 +10,7 @@ export default {
                 "primary-light": "#78BE20",
                 secondary: "#998fef",
                 accent: "#4935fe",
+                main: "#7fafb5",
             },
             borderWidth: {
                 3: "3px",

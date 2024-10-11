@@ -51,7 +51,7 @@ export const Factories = () => {
                 onClick={() => {
                     setShowCU(true);
                 }}
-                className="flex flex-wrap sm:w-32 w-full h-32 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
+                className="flex flex-wrap sm:w-44 w-full h-32 shadow shadow-gray-400 rounded-md justify-center content-center cursor-pointer group hover:scale-105 hover:shadow-text transition-all duration-500 ease-in-out"
             >
                 <svg
                     className="w-12 h-12 text-gray-400 group-hover:text-text transition-all duration-500 ease-in-out"
@@ -68,6 +68,9 @@ export const Factories = () => {
                         d="M12 4v16m8-8H4"
                     ></path>
                 </svg>
+                <p className="text-lg text-center font-semibold text-gray-400 group-hover:text-text transition-all ease-in-out duration-500 w-full">
+                    New factory
+                </p>
             </div>
             {factories.map((factory) => {
                 return (
@@ -77,9 +80,9 @@ export const Factories = () => {
                             setFactory(factory);
                             setShowCU(true);
                         }}
-                        className="flex flex-wrap sm:w-32 w-full h-32 border-2 border-text rounded-md justify-center content-center cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
+                        className="flex flex-wrap sm:w-44 w-full h-32 shadow shadow-text rounded-md justify-center content-center cursor-pointer group hover:scale-105 transition-all duration-500 ease-in-out"
                     >
-                        <p className="text-text text-lg font-semibold group-hover:text-primary transition-all duration-500 ease-in-out">
+                        <p className="text-text text-lg font-semibold transition-all duration-500 ease-in-out">
                             {factory.name}
                         </p>
                     </div>
@@ -87,9 +90,9 @@ export const Factories = () => {
             })}
 
             <Dialog
-                className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
+                className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white shadow shadow-text"
                 header={factory ? "Update/Delete" : "Create"}
-                headerClassName="text-lg font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
+                headerClassName="text-lg font-bold h-10 bg-main text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
                 contentClassName="p-2"
                 visible={showCU}
                 onHide={() => {
@@ -136,7 +139,7 @@ export const Factories = () => {
                                     id="name"
                                     name="name"
                                     type="text"
-                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                    className="shadow shadow-gray-400 rounded-md w-full p-2 focus:border-text"
                                 />
                             </div>
                             <div className="flex flex-col w-full p-2">
@@ -155,7 +158,7 @@ export const Factories = () => {
                                     id="buisinessUnit"
                                     name="businessUnit"
                                     type="text"
-                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                    className="shadow shadow-gray-400 rounded-md w-full p-2 focus:border-text"
                                 />
                             </div>
                             <div className="flex flex-col w-full p-2">
@@ -174,7 +177,7 @@ export const Factories = () => {
                                     id="manager"
                                     name="manager"
                                     as="select"
-                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                    className="shadow shadow-gray-400 rounded-md w-full p-2 focus:border-text"
                                 >
                                     {factory === undefined && (
                                         <option value="" disabled selected>
@@ -209,7 +212,7 @@ export const Factories = () => {
                                     id="lean"
                                     name="lean"
                                     as="select"
-                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                    className="shadow shadow-gray-400 rounded-md w-full p-2 focus:border-text"
                                 >
                                     {factory === undefined && (
                                         <option value="" disabled selected>
@@ -230,14 +233,14 @@ export const Factories = () => {
                             </div>
                             <div className="flex flex-wrap gap-2 sm:gap-0 w-full p-2 justify-between">
                                 <button
-                                    className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
+                                    className="sm:w-auto w-full px-10 py-2 shadow shadow-primary bg-primary hover:shadow-primary-light hover:bg-primary-light transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
                                     type="submit"
                                 >
                                     {factory ? "Update" : "Create"}
                                 </button>
                                 {factory && (
                                     <button
-                                        className={`sm:w-auto w-full px-10 py-2 bg-red-800 hover:bg-red-600 transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md`}
+                                        className={`sm:w-auto w-full px-10 py-2 shadow shadow-red-800 bg-red-800 hover:shadow-red-600 hover:bg-red-600 transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md`}
                                         type="button"
                                         onClick={() => {
                                             deleteFactory(factory.id).then(

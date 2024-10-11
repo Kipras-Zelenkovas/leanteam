@@ -43,18 +43,27 @@ export const AnimatedRoutes = () => {
                                     accessLevel={
                                         import.meta.env.VITE_LEAN_ADMIN
                                     }
-                                    Component={routes.Questionaire}
+                                    Component={routes.QuestionaireOriginal}
                                 />
                             }
                         />
                         <Route
-                            path="/administrator/questionaire2"
+                            path="/assessments/review"
+                            element={
+                                <PrivateRoute
+                                    accessLevel={import.meta.env.VITE_LEAN_USER}
+                                    Component={routes.AssessmentsToReview}
+                                />
+                            }
+                        />
+                        <Route
+                            path="/display"
                             element={
                                 <PrivateRoute
                                     accessLevel={
                                         import.meta.env.VITE_LEAN_ADMIN
                                     }
-                                    Component={routes.QuestionaireOriginal}
+                                    Component={routes.AssessmentDisplay}
                                 />
                             }
                         />

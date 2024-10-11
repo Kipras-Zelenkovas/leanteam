@@ -30,10 +30,10 @@ export const Teams = () => {
     }
 
     return (
-        <div className="w-full h-full flex flex-wrap justify-center gap-5 px-3 py-5">
+        <div className="w-full h-full flex flex-wrap gap-3 px-3 py-3">
             <div
                 onClick={() => setShowDialog(true)}
-                className="group flex flex-wrap h-28 w-44    p-5 justify-center rounded-md content-center bg-white border-slate-500 hover:border-text border-2 cursor-pointer hover:scale-110 transition-all duration-500 ease-in-out"
+                className="group flex flex-wrap h-28 w-52 p-5 justify-center rounded-md content-center bg-white shadow-gray-400 hover:shadow-text shadow cursor-pointer hover:scale-105 transition-all duration-500 ease-in-out"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -55,7 +55,7 @@ export const Teams = () => {
                         />
                     </svg>{" "}
                 </svg>
-                <p className="text-slate-500 group-hover:text-text text-center font-bold text-lg transition-all duration-500 ease-in-out">
+                <p className="text-slate-500 group-hover:text-text text-center font-semibold text-lg transition-all duration-500 ease-in-out w-full">
                     New Team
                 </p>
             </div>
@@ -64,14 +64,14 @@ export const Teams = () => {
                     teamL.length != 0 && (
                         <div
                             key={teamL.id}
-                            className="group flex flex-wrap justify-center content-center h-28 w-44  rounded-md p-5 border-text hover:border-primary border-2 cursor-pointer hover:scale-110 transition-all ease-in-out duration-500"
+                            className="group flex flex-wrap justify-center content-center h-28 w-52 rounded-md p-5 shadow shadow-gray-400 hover:shadow-text cursor-pointer hover:scale-105 transition-all ease-in-out duration-500"
                             onClick={() => {
                                 setTeam(teamL);
                                 setShowDialog(true);
                             }}
                         >
                             <p
-                                className={`text-lg text-center font-semibold text-text group-hover:text-primary  transition-all ease-in-out duration-500`}
+                                className={`text-lg text-center font-semibold text-text  transition-all ease-in-out duration-500`}
                             >
                                 {teamL.name}
                             </p>
@@ -83,8 +83,8 @@ export const Teams = () => {
             <Dialog
                 header="Header"
                 visible={showDialog}
-                className="lg:w-1/3 md:w-1/2 w-4/5 border-2 border-text"
-                headerClassName="text-lg font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
+                className="lg:w-1/3 md:w-1/2 w-4/5 shadow shadow-text"
+                headerClassName="text-lg font-bold h-10 bg-main text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
                 contentClassName="p-2"
                 onHide={() => {
                     setShowDialog(false);
@@ -132,7 +132,7 @@ export const Teams = () => {
                                     <Field
                                         type="text"
                                         name="name"
-                                        className="w-full h-10 border-slate-500 border-2 rounded-md px-3"
+                                        className="w-full h-10 shadow shadow-text rounded-md px-3"
                                     />
                                 </div>
                                 <div className="flex flex-wrap w-full px-2">
@@ -150,7 +150,7 @@ export const Teams = () => {
                                     <Field
                                         as="select"
                                         name="leader"
-                                        className="w-full h-10 border-slate-500 border-2 rounded-md px-3"
+                                        className="w-full h-10 shadow shadow-text rounded-md px-3"
                                     >
                                         <option value="">Select Leader</option>
                                         {users.map((user) => {
@@ -170,7 +170,7 @@ export const Teams = () => {
                                 <div className="flex flex-wrap w-full px-2 gap-3 justify-center">
                                     <button
                                         type="submit"
-                                        className="px-6 py-2 rounded-md text-lg font-semibold text-white bg-primary hover:bg-primary-light transition-all ease-in-out duration-500"
+                                        className="px-6 py-2 rounded-md text-lg font-semibold text-white shadow shadow-primary bg-primary hover:shadow-primary-light hover:bg-primary-light transition-all ease-in-out duration-500"
                                     >
                                         {team != undefined
                                             ? "Update"
@@ -179,7 +179,7 @@ export const Teams = () => {
                                     {team != undefined && (
                                         <button
                                             type="button"
-                                            className="px-6 py-2 rounded-md text-lg font-semibold text-white bg-red-800 hover:bg-red-500 transition-all ease-in-out duration-500"
+                                            className="px-6 py-2 rounded-md text-lg font-semibold text-white shadow shadow-red-800 bg-red-800 hover:shadow-red-500 hover:bg-red-500 transition-all ease-in-out duration-500"
                                             onClick={() => {
                                                 deleteTeam(team.id).then(
                                                     (res) => {

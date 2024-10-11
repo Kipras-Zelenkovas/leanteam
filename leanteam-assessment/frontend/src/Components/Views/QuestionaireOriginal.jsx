@@ -268,7 +268,7 @@ export const QuestionaireOriginal = () => {
     }
 
     return (
-        <div className="flex flex-wrap w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
+        <div className="flex flex-wrap w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar bg-assessment-bg">
             {showQu == false &&
                 showC == false &&
                 showCQu == false &&
@@ -280,7 +280,7 @@ export const QuestionaireOriginal = () => {
                             onClick={() => {
                                 setShowCQu(true);
                             }}
-                            className="flex flex-wrap sm:w-40 w-full h-40 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
+                            className="flex flex-wrap sm:w-40 w-full h-28 shadow shadow-gray-400 bg-white rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
                         >
                             <svg
                                 className="w-12 h-12 text-gray-400 group-hover:text-text transition-all duration-500 ease-in-out"
@@ -306,7 +306,7 @@ export const QuestionaireOriginal = () => {
                                         setShowCT(true);
                                     }}
                                     key={questionaireL.id}
-                                    className="relative flex flex-wrap sm:w-40 w-full h-40 border-2 border-text rounded-md justify-center content-center group hover:bg-text transition-all duration-500 ease-in-out px-2 cursor-pointer"
+                                    className="relative flex flex-wrap sm:w-40 w-full h-28 shadow shadow-gray-400 bg-white rounded-md justify-center content-center group hover:bg-main transition-all duration-500 ease-in-out px-2 cursor-pointer"
                                 >
                                     <p className="text-text text-center text-md font-semibold group-hover:text-white">
                                         {questionaireL.name}
@@ -343,7 +343,7 @@ export const QuestionaireOriginal = () => {
                         }}
                     >
                         {(values, errors) => (
-                            <Form className="flex flex-wrap md:w-1/2 w-3/4 h-max p-4 border-2 border-text rounded-md">
+                            <Form className="flex flex-wrap md:w-1/2 w-3/4 h-max p-4 shadow shadow-text bg-white rounded-md">
                                 <div className="flex flex-col w-full p-2">
                                     <label className="text-text font-semibold">
                                         Year
@@ -356,13 +356,13 @@ export const QuestionaireOriginal = () => {
                                     <Field
                                         type="number"
                                         name="year"
-                                        className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                        className="shadow shadow-gray-400 rounded-md w-full p-2 focus:border-text"
                                     />
                                 </div>
                                 <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
                                     <button
                                         type="submit"
-                                        className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
+                                        className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light shadow shadow-primary hover:shadow-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
                                     >
                                         {questionaire ? "Update" : "Create"}
                                     </button>
@@ -371,7 +371,7 @@ export const QuestionaireOriginal = () => {
                                             setShowCQu(false);
                                         }}
                                         type="button"
-                                        className="sm:w-auto w-full px-10 py-2 bg-white hover:bg-text border-2 border-text text-text hover:text-white rounded-md text-md font-semibold transition-all duration-500 ease-in-out"
+                                        className="sm:w-auto w-full px-10 py-2 bg-white hover:bg-main shadow shadow-text text-text hover:text-white rounded-md text-md font-semibold transition-all duration-500 ease-in-out"
                                     >
                                         Cancel
                                     </button>
@@ -387,14 +387,14 @@ export const QuestionaireOriginal = () => {
                 showCCT == false &&
                 showQu == false && (
                     <div className="flex flex-col gap-2 w-full h-full">
-                        <div className="flex flex-wrap content-center justify-center w-full h-auto py-2 md:py-0 md:h-16 px-4 md:justify-between gap-2 md:gap-0 border-b-2 border-text">
+                        <div className="flex flex-wrap content-center justify-center w-full h-auto py-2 md:py-0 md:h-16 px-4 md:justify-between gap-2 md:gap-0 shadow shadow-text bg-white">
                             <button
                                 onClick={() => {
                                     setShowCT(false);
                                     setQuestionaire(undefined);
                                     setCriteriaTypes(null);
                                 }}
-                                className="w-[96.8%] md:w-32 lg:w-40 h-10 text-sm bg-white text-text border-2 border-text font-semibold rounded-md hover:bg-text hover:text-white transition-all duration-500 ease-in-out"
+                                className="w-[96.8%] md:w-32 lg:w-40 h-10 text-sm bg-white text-text shadow shadow-text font-semibold rounded-md hover:bg-main hover:text-white transition-all duration-500 ease-in-out"
                             >
                                 Back
                             </button>
@@ -411,7 +411,7 @@ export const QuestionaireOriginal = () => {
                                             }
                                         });
                                     }}
-                                    className="w-[48%] md:w-32 lg:w-40 h-10 text-sm bg-red-800 text-white border-2 border-red-800 font-semibold rounded-md hover:bg-red-600 hover:border-red-600 transition-all duration-500 ease-in-out"
+                                    className="w-[48%] md:w-32 lg:w-40 h-10 text-sm bg-red-800 text-white shadow shadow-red-800 font-semibold rounded-md hover:bg-red-600 hover:shadow-red-600 transition-all duration-500 ease-in-out"
                                 >
                                     Delete
                                 </button>
@@ -419,7 +419,7 @@ export const QuestionaireOriginal = () => {
                                     onClick={() => {
                                         setShowCQu(true);
                                     }}
-                                    className="w-[48%] md:w-32 lg:w-40 h-10 text-sm bg-blue-800 text-white border-2 border-blue-800 font-semibold rounded-md hover:bg-blue-600 hover:border-blue-600 transition-all duration-500 ease-in-out"
+                                    className="w-[48%] md:w-32 lg:w-40 h-10 text-sm bg-blue-800 text-white shadow shadow-blue-800 font-semibold rounded-md hover:bg-blue-600 hover:shadow-blue-600 transition-all duration-500 ease-in-out"
                                 >
                                     Edit
                                 </button>
@@ -427,7 +427,7 @@ export const QuestionaireOriginal = () => {
                                     onClick={() => {
                                         setShowDQu(true);
                                     }}
-                                    className="w-[48%] md:w-32 lg:w-40 h-10 text-sm bg-text text-white border-2 border-text font-semibold rounded-md hover:bg-white hover:text-text transition-all duration-500 ease-in-out"
+                                    className="w-[48%] md:w-32 lg:w-40 h-10 text-sm bg-white text-text shadow shadow-text font-semibold rounded-md hover:bg-main hover:text-white transition-all duration-500 ease-in-out"
                                 >
                                     Dublicate
                                 </button>
@@ -435,7 +435,7 @@ export const QuestionaireOriginal = () => {
                                     onClick={() => {
                                         setShowCCT(true);
                                     }}
-                                    className="flex flex-wrap md:hidden md:w-32 lg:w-40 w-[48%] h-10 text-sm border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
+                                    className="flex flex-wrap md:hidden md:w-32 lg:w-40 w-[48%] h-10 text-sm shadow shadow-gray-400 rounded-md justify-center content-center cursor-pointer group hover:shadow-text transition-all duration-500 ease-in-out"
                                 >
                                     <svg
                                         className="w-8 h-8 text-gray-400 group-hover:text-text transition-all duration-500 ease-in-out"
@@ -459,7 +459,7 @@ export const QuestionaireOriginal = () => {
                                 onClick={() => {
                                     setShowCCT(true);
                                 }}
-                                className="md:flex md:flex-wrap hidden md:w-32 lg:w-40 w-full h-10 text-sm border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:bg-text hover:border-text transition-all duration-500 ease-in-out"
+                                className="md:flex md:flex-wrap hidden md:w-32 lg:w-40 w-full h-10 text-sm shadow shadow-gray-400 rounded-md justify-center content-center cursor-pointer group hover:bg-main hover:shadow-text transition-all duration-500 ease-in-out"
                             >
                                 <svg
                                     className="w-8 h-8 text-gray-400 group-hover:text-white transition-all duration-500 ease-in-out"
@@ -487,7 +487,7 @@ export const QuestionaireOriginal = () => {
                                             setShowQu(true);
                                         }}
                                         key={criteriaType.id}
-                                        className="flex flex-wrap w-full md:w-[48%] h-16 justify-center content-center text-md font-semibold text-text bg-white border-2 border-text rounded-md cursor-pointer transition-all duration-500 ease-in-out hover:text-white hover:bg-text"
+                                        className="flex flex-wrap w-full md:w-[48%] h-16 justify-center content-center text-md font-semibold text-text bg-white shadow shadow-text rounded-md cursor-pointer transition-all duration-500 ease-in-out hover:text-white hover:bg-main"
                                     >
                                         {criteriaType.name}
                                     </div>
@@ -537,7 +537,7 @@ export const QuestionaireOriginal = () => {
                         }}
                     >
                         {(values, errors) => (
-                            <Form className="flex flex-wrap md:w-1/2 w-3/4 h-max p-4 border-2 border-text rounded-md">
+                            <Form className="flex flex-wrap md:w-1/2 w-3/4 h-max p-4 shadow shadow-text bg-white rounded-md">
                                 <div className="flex flex-col w-full p-2">
                                     <label className="text-text font-semibold">
                                         Name
@@ -550,7 +550,7 @@ export const QuestionaireOriginal = () => {
                                     <Field
                                         type="text"
                                         name="name"
-                                        className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                        className="shadow shadow-gray-400 rounded-md w-full p-2 focus:border-text"
                                     />
                                 </div>
                                 <div className="flex flex-col w-full p-2">
@@ -565,7 +565,7 @@ export const QuestionaireOriginal = () => {
                                     <Field
                                         type="number"
                                         name="weight"
-                                        className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                        className="shadow shadow-gray-400 rounded-md w-full p-2 focus:border-text"
                                     />
                                 </div>
                                 {criterias != null ? (
@@ -591,7 +591,7 @@ export const QuestionaireOriginal = () => {
                                                                 key={
                                                                     formulaFunction.id
                                                                 }
-                                                                className="flex flex-wrap w-12 min-w-12 max-w-12 h-16 min-h-16 max-h-16 overflow-hidden border-2 border-text rounded-md justify-center content-center text-ellipsis cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
+                                                                className="flex flex-wrap w-12 min-w-12 max-w-12 h-16 min-h-16 max-h-16 overflow-hidden shadow shadow-text rounded-md justify-center content-center text-ellipsis cursor-pointer group hover:border-primary transition-all duration-500 ease-in-out"
                                                             >
                                                                 <p className="text-text text-center text-md font-semibold group-hover:text-primary transition-all duration-500 ease-in-out text-elipse">
                                                                     {
@@ -669,7 +669,7 @@ export const QuestionaireOriginal = () => {
                                                 }}
                                                 swap={true}
                                                 animation={150}
-                                                className="flex flex-wrap w-full h-auto min-h-20 gap-2 justify-center content-center border-2 border-text"
+                                                className="flex flex-wrap w-full h-auto min-h-20 gap-2 justify-center content-center border-2 border-text rounded-md"
                                                 list={criteriasDublicate}
                                                 setList={setCriteriasDublicate}
                                             >
@@ -717,7 +717,7 @@ export const QuestionaireOriginal = () => {
                                 <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
                                     <button
                                         type="submit"
-                                        className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
+                                        className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light shadow shadow-primary hover:shadow-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
                                     >
                                         {criteriasType ? "Update" : "Create"}
                                     </button>
@@ -728,7 +728,7 @@ export const QuestionaireOriginal = () => {
                                             setShowCCT(false);
                                         }}
                                         type="button"
-                                        className="sm:w-auto w-full px-10 py-2 bg-white hover:bg-text border-2 border-text text-text hover:text-white rounded-md text-md font-semibold transition-all duration-500 ease-in-out"
+                                        className="sm:w-auto w-full px-10 py-2 bg-white hover:bg-main shadow shadow-text hover:text-white rounded-md text-md font-semibold transition-all duration-500 ease-in-out"
                                     >
                                         Cancel
                                     </button>
@@ -745,14 +745,14 @@ export const QuestionaireOriginal = () => {
                 criteriasType != null &&
                 showCC == false && (
                     <div className={`w-full h-full flex flex-col`}>
-                        <div className="flex flex-wrap content-center w-full h-auto md:h-16 md:min-h-16 px-4 justify-between gap-2 md:gap-0 py-2 md:py-0 border-b-2 border-text">
+                        <div className="flex flex-wrap content-center w-full h-auto md:h-16 md:min-h-16 px-4 justify-between gap-2 md:gap-0 py-2 md:py-0 bg-white shadow shadow-text">
                             <button
                                 onClick={() => {
                                     setShowQu(false);
                                     setCriteriasType(null);
                                     setCriterias(null);
                                 }}
-                                className="w-full md:w-40 h-10 text-sm hidden md:block bg-white text-text border-2 border-text font-semibold rounded-md hover:bg-text hover:text-white transition-all duration-500 ease-in-out"
+                                className="w-full md:w-40 h-10 text-sm hidden md:block bg-white text-text shadow shadow-text font-semibold rounded-md hover:bg-main hover:text-white transition-all duration-500 ease-in-out"
                             >
                                 Back
                             </button>
@@ -763,7 +763,7 @@ export const QuestionaireOriginal = () => {
                                         setCriteriasType(null);
                                         setCriterias(null);
                                     }}
-                                    className="w-[48%] md:hidden h-10 text-sm bg-white text-text border-2 border-text font-semibold rounded-md hover:bg-text hover:text-white transition-all duration-500 ease-in-out"
+                                    className="w-[48%] md:hidden h-10 text-sm bg-white text-text border-2 border-text font-semibold rounded-md hover:bg-main hover:text-white transition-all duration-500 ease-in-out"
                                 >
                                     Back
                                 </button>
@@ -780,7 +780,7 @@ export const QuestionaireOriginal = () => {
                                             }
                                         });
                                     }}
-                                    className="w-[48%] md:w-40 h-10 text-sm bg-red-800 text-white border-2 border-red-800 font-semibold rounded-md hover:bg-red-600 hover:border-red-600     transition-all duration-500 ease-in-out"
+                                    className="w-[48%] md:w-40 h-10 text-sm bg-red-800 text-white shadow shadow-red-800 font-semibold rounded-md hover:bg-red-600 hover:shadow-red-600 transition-all duration-500 ease-in-out"
                                 >
                                     Delete
                                 </button>
@@ -790,7 +790,7 @@ export const QuestionaireOriginal = () => {
                                             setShowCCT(true);
                                         }, 100);
                                     }}
-                                    className="w-[48%] md:w-40 h-10 text-sm bg-blue-800 text-white border-2 border-blue-800 font-semibold rounded-md hover:bg-blue-600 hover:border-blue-600 transition-all duration-500 ease-in-out"
+                                    className="w-[48%] md:w-40 h-10 text-sm bg-blue-800 text-white shadow shadow-blue-800 font-semibold rounded-md hover:bg-blue-600 hover:shadow-blue-600 transition-all duration-500 ease-in-out"
                                 >
                                     Edit
                                 </button>
@@ -798,7 +798,7 @@ export const QuestionaireOriginal = () => {
                                     onClick={() => {
                                         setShowCC(true);
                                     }}
-                                    className="flex flex-wrap md:hidden md:w-40 w-[48%] h-10 text-sm border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text hover:bg-text transition-all duration-500 ease-in-out"
+                                    className="flex flex-wrap md:hidden md:w-40 w-[48%] h-10 text-sm shadow shadow-gray-400 rounded-md justify-center content-center cursor-pointer group hover:shadow-text hover:bg-main transition-all duration-500 ease-in-out"
                                 >
                                     <svg
                                         className="w-8 h-8 text-gray-400 group-hover:text-white transition-all duration-500 ease-in-out"
@@ -821,7 +821,7 @@ export const QuestionaireOriginal = () => {
                                 onClick={() => {
                                     setShowCC(true);
                                 }}
-                                className="md:flex md:flex-wrap hidden md:w-40 w-full h-10 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
+                                className="md:flex md:flex-wrap hidden md:w-40 w-full h-10 shadow shadow-gray-400 rounded-md justify-center content-center cursor-pointer group hover:shadow-text transition-all duration-500 ease-in-out"
                             >
                                 <svg
                                     className="w-8 h-8 text-gray-400 group-hover:text-text transition-all duration-500 ease-in-out"
@@ -849,7 +849,7 @@ export const QuestionaireOriginal = () => {
                                             setCriteria(criteriaL);
                                         }}
                                         key={criteriaL.id}
-                                        className="relative flex flex-wrap w-full md:w-[48%] min-h-16 h-16 border-2 border-text rounded-md justify-between content-center cursor-pointer group hover:bg-text transition-all duration-500 ease-in-out"
+                                        className="relative flex flex-wrap w-full md:w-[48%] min-h-16 h-16 bg-white shadow shadow-text rounded-md justify-between content-center cursor-pointer group hover:bg-main transition-all duration-500 ease-in-out"
                                     >
                                         <p className="text-text text-center text-md font-semibold group-hover:text-white transition-all duration-500 ease-in-out w-[90%]">
                                             {criteriaL.name}
@@ -864,7 +864,7 @@ export const QuestionaireOriginal = () => {
                                             setShowCC(true);
                                             setCriteria(criteriaL);
                                         }}
-                                        className="hidden group-hover:flex justify-center absolute top-8 z-10 w-4/5 text-text text-center text-md font-semibold border-2 border-text rounded-md bg-white hover:bg-text hover:text-white transition-all duration-500 ease-in-out py-1"
+                                        className="hidden group-hover:flex justify-center absolute top-8 z-10 w-4/5 text-text text-center text-md font-semibold border-2 border-text rounded-md bg-white hover:bg-main hover:text-white transition-all duration-500 ease-in-out py-1"
                                     >
                                         Edit
                                     </button>
@@ -873,7 +873,7 @@ export const QuestionaireOriginal = () => {
                                             setShowC(true);
                                             setCriteria(criteriaL);
                                         }}
-                                        className="hidden group-hover:flex justify-center absolute top-24 z-10 w-4/5 text-text text-center text-md font-semibold border-2 border-text rounded-md bg-white hover:bg-text hover:text-white transition-all duration-500 ease-in-out py-1"
+                                        className="hidden group-hover:flex justify-center absolute top-24 z-10 w-4/5 text-text text-center text-md font-semibold border-2 border-text rounded-md bg-white hover:bg-main hover:text-white transition-all duration-500 ease-in-out py-1"
                                     >
                                         Enter
                                     </button> */}
@@ -930,7 +930,7 @@ export const QuestionaireOriginal = () => {
                         }}
                     >
                         {(values, errors) => (
-                            <Form className="flex flex-wrap md:w-1/2 w-4/5 h-max p-4 border-2 border-text rounded-md">
+                            <Form className="flex flex-wrap md:w-1/2 w-4/5 h-max p-4 bg-white shadow shadow-text rounded-md">
                                 <div className="flex flex-col w-full p-2">
                                     <label className="text-text font-semibold">
                                         Name
@@ -943,7 +943,7 @@ export const QuestionaireOriginal = () => {
                                     <Field
                                         type="text"
                                         name="name"
-                                        className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                        className="shadow shadow-gray-400 rounded-md w-full p-2"
                                     />
                                 </div>
                                 <div className="flex flex-col w-full p-2">
@@ -958,7 +958,7 @@ export const QuestionaireOriginal = () => {
                                     <Field
                                         as="textarea"
                                         name="description"
-                                        className="border-2 h-24 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                        className="shadow h-24 shadow-gray-400 rounded-md w-full p-2"
                                     />
                                 </div>
                                 <div className="flex flex-col w-full p-2">
@@ -974,7 +974,7 @@ export const QuestionaireOriginal = () => {
                                         type="number"
                                         step="1"
                                         name="weight"
-                                        className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                        className="shadow shadow-gray-400 rounded-md w-full p-2"
                                     />
                                 </div>
                                 <div className="flex flex-col w-full p-2">
@@ -989,7 +989,7 @@ export const QuestionaireOriginal = () => {
                                     <Field
                                         as="select"
                                         name="type"
-                                        className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                        className="shadow shadow-gray-400 rounded-md w-full p-2 focus:border-text"
                                     >
                                         <option value="-" disabled selected>
                                             Select type
@@ -1017,7 +1017,7 @@ export const QuestionaireOriginal = () => {
                                                 e.target.value
                                             );
                                         }}
-                                        className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                        className="shadow shadow-gray-400 rounded-md w-full p-2 focus:border-text"
                                     >
                                         <option value="-" disabled selected>
                                             Select type
@@ -1102,7 +1102,7 @@ export const QuestionaireOriginal = () => {
                                                     }}
                                                     swap={true}
                                                     animation={150}
-                                                    className="flex flex-wrap w-full h-auto min-h-20 gap-2 justify-center content-center border-2 border-text"
+                                                    className="flex flex-wrap w-full h-auto min-h-20 gap-2 justify-center content-center border-2 border-text rounded-md"
                                                     list={questionsDublicate}
                                                     setList={
                                                         setQuestionsDublicate
@@ -1143,7 +1143,7 @@ export const QuestionaireOriginal = () => {
                                 <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
                                     <button
                                         type="submit"
-                                        className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
+                                        className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light shadow shadow-primary hover:shadow-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
                                     >
                                         {criteria != undefined
                                             ? "Update"
@@ -1157,7 +1157,7 @@ export const QuestionaireOriginal = () => {
                                             setQuestionsDublicate([]);
                                         }}
                                         type="button"
-                                        className="sm:w-auto w-full px-10 py-2 bg-white hover:bg-text border-2 border-text text-text hover:text-white rounded-md text-md font-semibold transition-all duration-500 ease-in-out"
+                                        className="sm:w-auto w-full px-10 py-2 bg-white hover:bg-main shadow shadow-text text-text hover:text-white rounded-md text-md font-semibold transition-all duration-500 ease-in-out"
                                     >
                                         Cancel
                                     </button>
@@ -1175,13 +1175,13 @@ export const QuestionaireOriginal = () => {
                 showCQ == false &&
                 showCQu == false && (
                     <div className="flex flex-col w-full h-full">
-                        <div className="flex flex-wrap content-center w-full h-auto md:h-16 min-h-16 px-4 justify-between gap-2 md:gap-0 py-2 md:py-0 border-b-2 border-text">
+                        <div className="flex flex-wrap content-center w-full h-auto md:h-16 min-h-16 px-4 justify-between gap-2 md:gap-0 py-2 md:py-0 bg-white shadow shadow-text">
                             <button
                                 onClick={() => {
                                     setShowC(false);
                                     setCriteria(undefined);
                                 }}
-                                className="hidden md:block text-sm md:w-40 h-10 bg-white text-text border-2 border-text font-semibold rounded-md hover:bg-text hover:text-white transition-all duration-500 ease-in-out"
+                                className="hidden md:block text-sm md:w-40 h-10 bg-white text-text shadow shadow-text font-semibold rounded-md hover:bg-main hover:text-white transition-all duration-500 ease-in-out"
                             >
                                 Back
                             </button>
@@ -1191,7 +1191,7 @@ export const QuestionaireOriginal = () => {
                                         setShowC(false);
                                         setCriteria(undefined);
                                     }}
-                                    className="md:hidden text-sm w-[48%] md:w-40 h-10 bg-white text-text border-2 border-text font-semibold rounded-md hover:bg-text hover:text-white transition-all duration-500 ease-in-out"
+                                    className="md:hidden text-sm w-[48%] md:w-40 h-10 bg-white text-text border-2 border-text font-semibold rounded-md hover:bg-main hover:text-white transition-all duration-500 ease-in-out"
                                 >
                                     Back
                                 </button>
@@ -1207,7 +1207,7 @@ export const QuestionaireOriginal = () => {
                                             }
                                         });
                                     }}
-                                    className="w-[48%] text-sm md:w-40 h-10 bg-red-800 text-white border-2 border-red-800 font-semibold rounded-md hover:bg-red-600 hover:border-red-600 transition-all duration-500 ease-in-out"
+                                    className="w-[48%] text-sm md:w-40 h-10 bg-red-800 text-white shadow shadow-red-800 font-semibold rounded-md hover:bg-red-600 hover:shadow-red-600 transition-all duration-500 ease-in-out"
                                 >
                                     Delete
                                 </button>
@@ -1218,7 +1218,7 @@ export const QuestionaireOriginal = () => {
                                             criteria.calculationType
                                         );
                                     }}
-                                    className="w-[48%] text-sm md:w-40 h-10 bg-blue-800 text-white border-2 border-blue-800 font-semibold rounded-md hover:bg-blue-600 hover:border-blue-600 transition-all duration-500 ease-in-out"
+                                    className="w-[48%] text-sm md:w-40 h-10 bg-blue-800 text-white shadow shadow-blue-800 font-semibold rounded-md hover:bg-blue-600 hover:shadow-blue-600 transition-all duration-500 ease-in-out"
                                 >
                                     Edit
                                 </button>
@@ -1234,7 +1234,7 @@ export const QuestionaireOriginal = () => {
                                             possibilities: [],
                                         });
                                     }}
-                                    className="md:hidden text-sm flex flex-wrap w-[48%] md:w-40 h-10 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text hover:bg-text transition-all duration-500 ease-in-out"
+                                    className="md:hidden text-sm flex flex-wrap w-[48%] md:w-40 h-10 shadow shadow-gray-400 rounded-md justify-center content-center cursor-pointer group hover:shadow-text hover:bg-main transition-all duration-500 ease-in-out"
                                 >
                                     <svg
                                         className="w-8 h-8 text-gray-400 group-hover:text-white transition-all duration-500 ease-in-out"
@@ -1265,7 +1265,7 @@ export const QuestionaireOriginal = () => {
                                         possibilities: [],
                                     });
                                 }}
-                                className="hidden md:flex md:flex-wrap md:w-40 w-full h-10 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text transition-all duration-500 ease-in-out"
+                                className="hidden md:flex md:flex-wrap md:w-40 w-full h-10 shadow shadow-gray-400 rounded-md justify-center content-center cursor-pointer group hover:shadow-text transition-all duration-500 ease-in-out"
                             >
                                 <svg
                                     className="w-8 h-8 text-gray-400 group-hover:text-text transition-all duration-500 ease-in-out"
@@ -1293,7 +1293,7 @@ export const QuestionaireOriginal = () => {
                                             setShowCQ(true);
                                         }}
                                         key={questionL.id}
-                                        className="relative flex flex-wrap w-full md:w-[48%] h-24 min-h-24 max-h-24 overflow-hidden border-2 border-text rounded-md justify-center content-center text-ellipsis cursor-pointer group hover:border-text hover:bg-text transition-all duration-500 ease-in-out"
+                                        className="relative flex flex-wrap w-full md:w-[48%] h-24 min-h-24 max-h-24 overflow-hidden bg-white shadow shadow-text rounded-md justify-center content-center text-ellipsis cursor-pointer group hover:border-text hover:bg-main transition-all duration-500 ease-in-out"
                                     >
                                         <p className="text-text text-center text-md font-semibold group-hover:text-white transition-all duration-500 ease-in-out text-elipse">
                                             {questionL.question}
@@ -1306,8 +1306,8 @@ export const QuestionaireOriginal = () => {
                 )}
 
             {showCQ == true && (
-                <div className="flex flex-col w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
-                    <div className="flex flex-wrap content-center w-full h-auto md:h-20 md:min-h-20 px-4 justify-between gap-2 md:gap-0 py-2 md:py-0 border-b-2 border-text">
+                <div className="flex flex-col w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar bg-white">
+                    <div className="flex flex-wrap content-center w-full h-auto md:h-20 md:min-h-20 px-4 justify-between gap-2 md:gap-0 py-2 md:py-0  shadow shadow-text">
                         <button
                             onClick={() => {
                                 if (
@@ -1371,7 +1371,7 @@ export const QuestionaireOriginal = () => {
                                     });
                                 }
                             }}
-                            className="w-full md:w-40 h-12 bg-white text-text border-2 border-text font-semibold rounded-md hover:bg-text hover:text-white transition-all duration-500 ease-in-out"
+                            className="w-full md:w-40 h-12 bg-white text-text shadow shadow-text font-semibold rounded-md hover:bg-main hover:text-white transition-all duration-500 ease-in-out"
                         >
                             Save & Back
                         </button>
@@ -1387,18 +1387,18 @@ export const QuestionaireOriginal = () => {
                                     }
                                 );
                             }}
-                            className="w-full md:w-40 h-12 bg-white text-red-800 border-2 border-red-800 font-semibold rounded-md hover:bg-red-800 hover:text-white transition-all duration-500 ease-in-out"
+                            className="w-full md:w-40 h-12 bg-white text-red-800 shadow shadow-red-800 font-semibold rounded-md hover:bg-red-800 hover:text-white transition-all duration-500 ease-in-out"
                         >
                             Delete
                         </button>
                     </div>
-                    <div className="flex flex-wrap w-full h-auto">
-                        <div className="flex flex-col w-full md:w-1/2 h-auto p-2 border-b-2 border-text">
+                    <div className="flex flex-wrap w-full h-auto shadow shadow-text ">
+                        <div className="flex flex-col w-full md:w-1/2 h-auto p-2">
                             <p className="text-text text-lg font-semibold">
                                 Question
                             </p>
                             <textarea
-                                className="border-2 border-text p-1 rounded-md resize-none no-scrollbar min-h-48 max-h-48"
+                                className="shadow shadow-text p-1 rounded-md resize-none no-scrollbar min-h-48 max-h-48"
                                 value={question.question}
                                 onChange={(e) => {
                                     setQuestion({
@@ -1408,12 +1408,12 @@ export const QuestionaireOriginal = () => {
                                 }}
                             ></textarea>
                         </div>
-                        <div className="flex flex-col w-full md:w-1/2 h-auto p-2 border-b-2 border-text">
+                        <div className="flex flex-col w-full md:w-1/2 h-auto p-2">
                             <p className="text-text text-lg font-semibold">
                                 Comment / Expectations
                             </p>
                             <textarea
-                                className="border-2 border-text p-1 rounded-md resize-none no-scrollbar min-h-48 max-h-48"
+                                className="shadow shadow-text p-1 rounded-md resize-none no-scrollbar min-h-48 max-h-48"
                                 value={question.comment}
                                 onChange={(e) => {
                                     setQuestion({
@@ -1424,14 +1424,14 @@ export const QuestionaireOriginal = () => {
                             ></textarea>
                         </div>
                     </div>
-                    <div className="flex flex-wrap w-full h-auto p-2 border-b-2 border-text justify-between">
+                    <div className="flex flex-wrap w-full h-auto p-2 shadow shadow-text  justify-between">
                         <div className="flex flex-col w-full md:w-[48%]">
                             <p className="text-text text-lg font-semibold">
                                 Weight
                             </p>
                             <input
                                 type="number"
-                                className="border-2 border-text p-1 rounded-md w-full"
+                                className="shadow shadow-text p-1 rounded-md w-full"
                                 value={question.weight}
                                 onChange={(e) => {
                                     setQuestion({
@@ -1447,7 +1447,7 @@ export const QuestionaireOriginal = () => {
                             </p>
                             <input
                                 type="number"
-                                className="border-2 border-text p-1 rounded-md w-full"
+                                className="shadow shadow-text p-1 rounded-md w-full"
                                 value={question.number}
                                 onChange={(e) => {
                                     setQuestion({
@@ -1458,14 +1458,14 @@ export const QuestionaireOriginal = () => {
                             />
                         </div>
                     </div>
-                    <div className="flex flex-wrap w-full h-auto p-2 border-b-2 border-text justify-between">
+                    <div className="flex flex-wrap w-full h-auto p-2 shadow shadow-text  justify-between">
                         <div className="flex flex-col w-full md:w-[48%]">
                             <p className="text-text text-lg font-semibold">
                                 Calculation type
                             </p>
                             <select
                                 type="number"
-                                className="border-2 border-text p-1 rounded-md w-full"
+                                className="shadow shadow-text p-1 rounded-md w-full"
                                 value={question.calculationType}
                                 onChange={(e) => {
                                     setQuestion({
@@ -1483,7 +1483,7 @@ export const QuestionaireOriginal = () => {
                             </select>
                         </div>
                     </div>
-                    <div className="flex flex-wrap w-full h-auto p-2 mb-20 md:mb-0">
+                    <div className="flex flex-wrap w-full h-auto p-2 mb-20 md:mb-0 ">
                         <p className="text-text text-lg font-semibold">
                             Statements
                         </p>
@@ -1514,7 +1514,7 @@ export const QuestionaireOriginal = () => {
                                                                 tempPossibilities,
                                                         });
                                                     }}
-                                                    className="text-text text-md font-semibold w-1/3 border-2 border-text rounded-md p-1"
+                                                    className="text-text text-md font-semibold w-1/3 shadow shadow-text rounded-md p-1"
                                                 />
                                                 <button
                                                     onClick={() => {
@@ -1544,7 +1544,7 @@ export const QuestionaireOriginal = () => {
                                                             }
                                                         });
                                                     }}
-                                                    className="w-32 h-auto p-1 bg-white text-red-800 border-red-800 border-2 rounded-md hover:bg-red-800 hover:text-white transition-all duration-500 ease-in-out "
+                                                    className="w-32 h-auto p-1 bg-white text-red-800 shadow-red-800 shadow rounded-md hover:bg-red-800 hover:text-white transition-all duration-500 ease-in-out "
                                                 >
                                                     Delete
                                                 </button>
@@ -1707,14 +1707,13 @@ export const QuestionaireOriginal = () => {
             )}
 
             <Dialog
-                className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
+                className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white shadow-text shadow"
                 header={"Dublicate"}
                 headerClassName="text-md font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
                 contentClassName="p-2"
                 visible={showDQu}
                 onHide={() => {
                     setShowDQu(false);
-                    setQuestionaire(undefined);
                 }}
             >
                 <Formik
@@ -1748,13 +1747,13 @@ export const QuestionaireOriginal = () => {
                                 <Field
                                     type="number"
                                     name="year"
-                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                    className="shadow shadow-gray-400 rounded-md w-full p-2 focus:border-text"
                                 />
                             </div>
-                            <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
+                            <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-center">
                                 <button
                                     type="submit"
-                                    className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
+                                    className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light shadow shadow-primary hover:shadow-primary-light transition-all duration-500 ease-in-out text-md font-semibold text-white rounded-md"
                                 >
                                     Dublicate
                                 </button>

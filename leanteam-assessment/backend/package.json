@@ -21,6 +21,8 @@
         "dotenv-flow": "^4.1.0",
         "express": "^4.19.2",
         "jsonwebtoken": "^9.0.2",
+        "jspdf": "^2.5.2",
+        "mammoth": "^1.8.0",
         "multer": "^1.4.5-lts.1",
         "nodemailer": "^6.9.15",
         "zod": "^3.23.8"

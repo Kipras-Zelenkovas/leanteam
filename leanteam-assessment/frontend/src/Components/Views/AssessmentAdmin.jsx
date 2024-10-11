@@ -64,13 +64,13 @@ export const AssessmentAdmin = () => {
     }
 
     return (
-        <div className="flex flex-wrap w-full h-full overflow-y-auto no-scrollbar">
+        <div className="flex flex-wrap w-full h-full overflow-y-auto no-scrollbar bg-assessment-bg">
             <div
                 className={`flex flex-wrap sm:flex-row flex-col gap-3 w-full h-max p-4 overflow-y-auto overflow-x-hidden no-scrollbar`}
             >
                 <div
                     onClick={() => setShowCA(true)}
-                    className="flex flex-wrap sm:w-40 w-full h-40 border-2 border-gray-400 rounded-md justify-center content-center cursor-pointer group hover:border-text hover:bg-text transition-all duration-500 ease-in-out"
+                    className="flex flex-wrap sm:w-40 w-full h-28 shadow shadow-gray-400  bg-white rounded-md justify-center content-center cursor-pointer group  hover:bg-main transition-all duration-500 ease-in-out"
                 >
                     <svg
                         className="w-12 h-12 text-gray-400 group-hover:text-white transition-all duration-500 ease-in-out"
@@ -93,10 +93,11 @@ export const AssessmentAdmin = () => {
                         <div
                             onClick={() => {
                                 setAssessment(assessmentL);
+                                setType(assessmentL.type);
                                 setShowCA(true);
                             }}
                             key={assessmentL.id}
-                            className="relative flex flex-wrap sm:w-40 w-full h-40 border-2 border-text rounded-md justify-center content-center cursor-pointer group hover:bg-text transition-all duration-500 ease-in-out"
+                            className="relative flex flex-wrap sm:w-40 w-full h-28 bg-white shadow-gray-400 shadow rounded-md justify-center content-center cursor-pointer group hover:bg-main transition-all duration-500 ease-in-out"
                         >
                             <p className="text-text text-center text-md leading-5 font-semibold font-sans group-hover:text-white transition-all duration-500 ease-in-out">
                                 {assessmentL.name}
@@ -108,9 +109,9 @@ export const AssessmentAdmin = () => {
 
             {/* CU dialog assessment */}
             <Dialog
-                className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-white border-text border-2"
+                className="xl:w-2/5 lg:w-3/5 md:w-4/5 w-10/12 bg-assessment-bg shadow shadow-text"
                 header={"Create"}
-                headerClassName="text-lg font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
+                headerClassName="text-lg font-bold h-10 bg-main text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
                 contentClassName="p-2"
                 visible={showCA}
                 onHide={() => {
@@ -168,7 +169,7 @@ export const AssessmentAdmin = () => {
                                 <Field
                                     type="number"
                                     name="year"
-                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                    className="shadow shadow-gray-400 rounded-md w-full p-2 focus:border-text"
                                 />
                             </div>
 
@@ -187,7 +188,7 @@ export const AssessmentAdmin = () => {
                                 <Field
                                     as="select"
                                     name="factory"
-                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                    className="shadow shadow-gray-400 bg-white rounded-md w-full p-2 focus:border-text"
                                 >
                                     {assessment === undefined && (
                                         <option value="" disabled selected>
@@ -221,7 +222,7 @@ export const AssessmentAdmin = () => {
                                 <Field
                                     as="select"
                                     name="leader"
-                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                    className="shadow shadow-gray-400 bg-white rounded-md w-full p-2 focus:border-text"
                                 >
                                     {assessment === undefined && (
                                         <option value="" disabled selected>
@@ -256,7 +257,7 @@ export const AssessmentAdmin = () => {
                                 <Field
                                     as="select"
                                     name="questionaire"
-                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                    className="shadow shadow-gray-400 bg-white rounded-md w-full p-2 focus:border-text"
                                 >
                                     {assessment === undefined && (
                                         <option value="" disabled selected>
@@ -292,18 +293,31 @@ export const AssessmentAdmin = () => {
                                         setType(e.target.value);
                                     }}
                                     name="type"
-                                    className="border-2 border-gray-400 rounded-md w-full p-2 focus:border-text"
+                                    className="shadow shadow-gray-400 bg-white rounded-md w-full p-2 focus:border-text"
                                 >
                                     {assessment === undefined && (
                                         <option value="" disabled selected>
                                             Select Type
                                         </option>
                                     )}
-                                    <option value="mid-year">Mid Year</option>
-                                    <option value="end-of-year">
+                                    <option
+                                        value="mid-year"
+                                        selected={type === "mid-year"}
+                                    >
+                                        Mid Year
+                                    </option>
+                                    <option
+                                        value="end-of-year"
+                                        selected={type === "end-of-year"}
+                                    >
                                         End of year
                                     </option>
-                                    <option value="baseline">Baseline</option>
+                                    <option
+                                        value="baseline"
+                                        selected={type === "baseline"}
+                                    >
+                                        Baseline
+                                    </option>
                                 </select>
                             </div>
                             {type === "baseline" || type === "end-of-year" ? (
@@ -347,7 +361,7 @@ export const AssessmentAdmin = () => {
                             <div className="flex flex-wrap w-full p-2 gap-2 sm:gap-0 justify-between">
                                 <button
                                     type="submit"
-                                    className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
+                                    className="sm:w-auto w-full px-10 py-2 bg-primary hover:bg-primary-light shadow-primary shadow hover:shadow-primary-light transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
                                 >
                                     {assessment ? "Update" : "Create"}
                                 </button>
@@ -365,7 +379,7 @@ export const AssessmentAdmin = () => {
                                             });
                                         }}
                                         type="button"
-                                        className="sm:w-auto w-full px-10 py-2 bg-red-700 hover:bg-red-500 transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
+                                        className="sm:w-auto w-full px-10 py-2 bg-red-700 hover:bg-red-500 shadow-red-700 shadow hover:shadow-red-500 transition-all duration-500 ease-in-out text-lg font-semibold text-white rounded-md"
                                     >
                                         Delete
                                     </button>

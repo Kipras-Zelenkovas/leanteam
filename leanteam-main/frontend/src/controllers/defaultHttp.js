@@ -19,3 +19,11 @@ export const defaultHttpFormData = axios.create({
 export const defaultHttpImage = axios.create({
     baseURL: import.meta.env.VITE_MAIN_IMAGE_URL,
 });
+
+export const assessmentHttp = axios.create({
+    baseURL: import.meta.env.VITE_ASSESSMENT_BACKEND_URL,
+    withCredentials: true,
+    headers: {
+        "Content-Type": "application/json",
+    },
+});

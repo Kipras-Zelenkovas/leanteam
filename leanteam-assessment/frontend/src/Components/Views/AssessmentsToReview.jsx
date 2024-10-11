@@ -2,274 +2,163 @@ import { ErrorMessage, Field, Form, Formik } from "formik";
 import { Loader } from "../Loader.jsx";
 import { useEffect, useState } from "react";
 import {
-    completeAssessment,
-    cuAssessment,
-    getAssessment,
-    getAssessments,
+    getAssessmentsToReview,
     getFactoriesAsessment,
-    referenceAssessment,
 } from "../../controllers/assessment.js";
-import { getAnswers, saveAnswer } from "../../controllers/answers.js";
 import { ResponsiveContainer, PieChart, Pie, Tooltip, Label } from "recharts";
-import { Dialog } from "primereact/dialog";
-import { cuAdditional } from "../../controllers/additional.js";
 import { useSearchParams } from "react-router-dom";
+import {
+    cDisplay,
+    deleteDisplay,
+    getDisplay,
+} from "../../controllers/display.js";
 
-export const Assessment = () => {
-    const [assessments, setAssessments] = useState(null);
+export const AssessmentsToReview = () => {
+    const [factories, setFactories] = useState(null);
     const [assessment, setAssessment] = useState(undefined);
     const [answers, setAnswers] = useState(undefined);
 
-    const [users, setUsers] = useState(null);
+    const [display, setDisplay] = useState([]);
 
     const [criteria, setCriteria] = useState(undefined);
     const [question, setQuestion] = useState(undefined);
     const [possibility, setPossibility] = useState(undefined);
 
-    const [answerImgPreview, setAnswerImgPreview] = useState([]);
-
-    const [updateA, setUpdateA] = useState(false);
     const [update, setUpdate] = useState(false);
-    const [updateAssessment, setUpdateAssessment] = useState(false);
-
-    const [showAdditional, setShowAdditional] = useState(false);
-    const [criteriaAdditional, setCriteriaAdditional] = useState(undefined);
-
-    const [completeDialog, setCompleteDialog] = useState(false);
-
-    const [assessmentLoader, setAssessmentLoader] = useState(false);
 
     const [searchParams] = useSearchParams();
+    const [error, setError] = useState(false);
 
     useEffect(() => {
-        if (searchParams.get("assessment") !== null) {
-            getAssessment(searchParams.get("assessment")).then((res) => {
+        getFactoriesAsessment().then((res) => {
+            if (res.status === 200) {
+                setFactories(res.data[0]);
+            }
+        });
+        if (
+            searchParams.get("factory") !== null &&
+            searchParams.get("year") !== null
+        ) {
+            getAssessmentsToReview({
+                factory: searchParams.get("factory"),
+                year: searchParams.get("year"),
+            }).then((res) => {
                 if (res.status === 200) {
                     setAssessment(res.assessment);
-                    setUsers(res.users);
                     setAnswers(res.answers);
-                    setAssessments([]);
-                }
-            });
-        } else {
-            getAssessments().then((res) => {
-                if (res.status === 200) {
-                    setAssessments([res.assessments, res.assessor]);
                 }
             });
         }
+        getDisplay().then((res) => {
+            if (res.status === 200) {
+                console.log(res.data);
+                setDisplay(res.data);
+            }
+        });
     }, [update]);
 
-    useEffect(() => {
-        if (assessment !== undefined) {
-            setAssessmentLoader(true);
-            getAssessment(assessment.id).then((res) => {
-                if (res.status === 200) {
-                    setAssessment(res.assessment);
-                    setUsers(res.users);
-                    setAnswers(res.answers);
-                    setAssessmentLoader(false);
-                }
-            });
-        }
-    }, [updateAssessment]);
-
-    useEffect(() => {
-        if (assessment != undefined) {
-            getAnswers(assessment.id).then((res) => {
-                if (res.status === 200) {
-                    setAnswers(res.data);
-                }
-            });
-        }
-    }, [updateA]);
-
-    if (assessments === null || answers === null || assessmentLoader) {
+    if (factories === null) {
         return <Loader />;
     }
 
     return (
         <div className="flex flex-wrap w-full h-full overflow-y-auto no-scrollbar bg-assessment-bg">
-            {assessments !== null &&
-                assessment === undefined &&
-                answers === undefined && (
-                    <div className="w-full h-full bg-assessment-bg overflow-y-auto no-scrollbar">
-                        <div className="flex flex-wrap justify-center w-full px-4 py-2">
-                            <p className="flex items-center justify-center w-full rounded-md p-2 text-lg font-semibold text-center text-text bg-white shadow-sm shadow-gray-400 h-[5%]">
-                                My assessments
-                            </p>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 w-full p-4 gap-2 h-auto">
-                            {assessments[0].map((assessment) => (
-                                <div
-                                    onClick={() => {
-                                        getAssessment(assessment.id).then(
-                                            (res) => {
-                                                if (res.status === 200) {
-                                                    setAssessment(
-                                                        res.assessment
-                                                    );
-                                                    setUsers(res.users);
-                                                    setAnswers(res.answers);
-                                                }
-                                            }
-                                        );
-                                    }}
-                                    className={`flex flex-wrap justify-between py-2 w-full h-auto  ${
-                                        assessment.status == "in progress"
-                                            ? "bg-[#D6F6FF] hover:bg-[#8392c8]"
-                                            : "bg-[#B3F5BC] hover:bg-main"
-                                    } shadow shadow-gray-400 hover:text-white  capitalize text-md text-text font-semibold transition-all duration-500 ease-in-out cursor-pointer rounded-md`}
-                                >
-                                    <div className="flex flex-col w-[80%] h-auto">
-                                        <div className="flex flex-wrap text-md flex-col w-full h-auto px-3 capitalize">
-                                            <div className="flex flex-wrap w-full justify-between">
-                                                <p className={`text-sm `}>
-                                                    {assessment.status}
+            {assessment === undefined && answers === undefined && (
+                <div className="flex flex-wrap w-full h-full bg-assessment-bg overflow-y-auto no-scrollbar justify-center content-center">
+                    <div className="flex flex-wrap w-max h-auto p-3 rounded-md bg-white shadow-sm shadow-gray-400">
+                        <Formik
+                            initialValues={{
+                                year: new Date().getFullYear(),
+                                factory: "",
+                            }}
+                            onSubmit={(values) => {
+                                getAssessmentsToReview(values).then((res) => {
+                                    if (res.status === 200) {
+                                        setAssessment(res.assessment);
+                                        setAnswers(res.answers);
+                                        setError(false);
+                                    } else if (res.status === 404) {
+                                        setError(true);
+                                    }
+                                });
+                            }}
+                        >
+                            {(values) => (
+                                <Form className="flex flex-wrap w-full h-auto gap-3">
+                                    <div className="flex flex-wrap w-full h-auto gap-2">
+                                        <div className="flex flex-col w-full h-auto gap-1 items-center">
+                                            <label className="text-text text-lg font-semibold">
+                                                Search for assessment
+                                            </label>
+                                            {error && (
+                                                <p className="text-red-500 text-md">
+                                                    No assessment found /
+                                                    completed
                                                 </p>
-                                                <p className="text-md">
-                                                    {assessment.answers +
-                                                        "/" +
-                                                        assessment.total}
-                                                </p>
-                                            </div>
-                                            <p className="text-md">
-                                                {assessment.name}
-                                            </p>
+                                            )}
                                         </div>
-                                        <div className="flex flex-wrap w-full h-auto px-3">
-                                            <p
-                                                className={`text-sm w-full font-semibold`}
+                                        <div className="flex flex-wrap w-full h-auto gap-3">
+                                            <label className="text-text text-md font-semibold">
+                                                Year
+                                            </label>
+                                            <Field
+                                                name="year"
+                                                type="number"
+                                                className="w-full h-10 p-2 text-text text-md font-semibold bg-white shadow-sm shadow-gray-400 rounded-md"
+                                            />
+                                            <ErrorMessage
+                                                name="year"
+                                                component="div"
+                                                className="text-red-500 text-md"
+                                            />
+                                        </div>
+                                        <div className="flex flex-wrap w-full h-auto gap-3">
+                                            <label className="text-text text-md font-semibold">
+                                                Factory
+                                            </label>
+                                            <Field
+                                                as="select"
+                                                name="factory"
+                                                type="text"
+                                                className="w-full h-10 p-2 text-text text-md font-semibold bg-white shadow-sm shadow-gray-400 rounded-md"
                                             >
-                                                {assessment.type +
-                                                    " self assessment"}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-wrap w-[20%] h-auto">
-                                        <ResponsiveContainer
-                                            width="100%"
-                                            height="100%"
-                                        >
-                                            <PieChart width={20} height={20}>
-                                                <Pie
-                                                    dataKey="value"
-                                                    data={[
-                                                        {
-                                                            name: "Completed",
-                                                            value: assessment.answers,
-                                                            fill: "#B3F5BC",
-                                                        },
-                                                        {
-                                                            name: "Remaining",
-                                                            value:
-                                                                assessment.total -
-                                                                assessment.answers,
-                                                            fill: "#FA9189",
-                                                        },
-                                                    ]}
-                                                    cx="50%"
-                                                    cy="50%"
-                                                    fill="#8884d8"
-                                                    innerRadius={15}
-                                                    outerRadius={30}
-                                                />
-                                                <Tooltip />
-                                            </PieChart>
-                                        </ResponsiveContainer>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="flex flex-wrap justify-center w-full px-4 py-2">
-                            <p className="flex items-center justify-center w-full rounded-md p-2 text-lg font-semibold text-center text-text bg-white shadow-sm shadow-gray-400 h-[5%]">
-                                My assessments ( as assessor)
-                            </p>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 w-full p-4 gap-2 h-auto">
-                            {assessments[1].map((assessment) => (
-                                <div
-                                    onClick={() => {
-                                        getAssessment(assessment.id).then(
-                                            (res) => {
-                                                if (res.status === 200) {
-                                                    setAssessment(
-                                                        res.assessment
+                                                <option
+                                                    value=""
+                                                    selected
+                                                    disabled
+                                                >
+                                                    Select factory
+                                                </option>
+                                                {factories.map((factory) => {
+                                                    return (
+                                                        <option
+                                                            value={factory.id}
+                                                        >
+                                                            {factory.name}
+                                                        </option>
                                                     );
-                                                    setAnswers(res.answers);
-                                                }
-                                            }
-                                        );
-                                    }}
-                                    className={`flex flex-wrap justify-between py-2 w-full h-auto  ${
-                                        assessment.status == "in progress"
-                                            ? "bg-[#D6F6FF] hover:bg-[#8392c8]"
-                                            : "bg-[#B3F5BC] hover:bg-main"
-                                    } shadow shadow-gray-400 hover:text-white  capitalize text-md text-text font-semibold transition-all duration-500 ease-in-out cursor-pointer rounded-md`}
-                                >
-                                    <div className="flex flex-col w-[80%] h-auto">
-                                        <div className="flex flex-wrap text-md flex-col w-full h-auto px-3 capitalize">
-                                            <div className="flex flex-wrap w-full justify-between">
-                                                <p className={`text-sm `}>
-                                                    {assessment.status}
-                                                </p>
-                                                <p className="text-md">
-                                                    {assessment.answers +
-                                                        "/" +
-                                                        assessment.total}
-                                                </p>
-                                            </div>
+                                                })}
+                                            </Field>
+                                            <ErrorMessage
+                                                name="factory"
+                                                component="div"
+                                                className="text-red-500 text-md"
+                                            />
+                                        </div>
 
-                                            <p className="text-md">
-                                                {assessment.name}
-                                            </p>
-                                        </div>
-                                        <div className="flex flex-wrap w-full h-auto px-3">
-                                            <p
-                                                className={`text-sm w-full font-semibold`}
-                                            >
-                                                {assessment.type +
-                                                    " self assessment"}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-wrap w-[20%] h-auto">
-                                        <ResponsiveContainer
-                                            width="100%"
-                                            height="100%"
+                                        <button
+                                            type="submit"
+                                            className="w-full h-10 bg-primary shadow shadow-primary hover:bg-primary-light hover:shadow-primary-light duration-500 ease-in-out transition-all text-white text-md font-semibold rounded-md"
                                         >
-                                            <PieChart width={20} height={20}>
-                                                <Pie
-                                                    dataKey="value"
-                                                    data={[
-                                                        {
-                                                            name: "Completed",
-                                                            value: assessment.answers,
-                                                            fill: "#B3F5BC",
-                                                        },
-                                                        {
-                                                            name: "Remaining",
-                                                            value:
-                                                                assessment.total -
-                                                                assessment.answers,
-                                                            fill: "#FA9189",
-                                                        },
-                                                    ]}
-                                                    cx="50%"
-                                                    cy="50%"
-                                                    fill="#8884d8"
-                                                    innerRadius={15}
-                                                    outerRadius={30}
-                                                />
-                                                <Tooltip />
-                                            </PieChart>
-                                        </ResponsiveContainer>
+                                            Search
+                                        </button>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
+                                </Form>
+                            )}
+                        </Formik>
                     </div>
-                )}
+                </div>
+            )}
             {assessment !== undefined &&
                 answers != undefined &&
                 criteria === undefined && (
@@ -277,13 +166,10 @@ export const Assessment = () => {
                         <div className="w-[10%] left-[-4px] flex flex-wrap h-auto absolute">
                             <svg
                                 onClick={() => {
-                                    setAssessments(null);
                                     setAnswers(undefined);
                                     setAssessment(undefined);
-                                    setAnswerImgPreview([]);
                                     setCriteria(undefined);
                                     setQuestion(undefined);
-                                    setUpdate(!update);
                                 }}
                                 className="w-12 h-12 group cursor-pointer"
                                 width="512"
@@ -321,125 +207,6 @@ export const Assessment = () => {
                                 </svg>
                             </svg>
                         </div>
-                        {assessment.type === "baseline" && (
-                            <div className="flex flex-wrap absolute h-auto w-[10%] top-16 left-[-4px]">
-                                <svg
-                                    width="512"
-                                    height="512"
-                                    viewBox="0 0 512 512"
-                                    className="w-12 h-12 group cursor-pointer"
-                                    onClick={() => {
-                                        referenceAssessment(assessment.id).then(
-                                            (res) => {
-                                                console.log(res);
-                                            }
-                                        );
-                                    }}
-                                >
-                                    <rect
-                                        width="512"
-                                        height="512"
-                                        x="0"
-                                        y="0"
-                                        rx="30"
-                                        fill="transparent"
-                                        stroke="transparent"
-                                        strokeWidth="0"
-                                        strokeOpacity="100%"
-                                        paintOrder="stroke"
-                                    ></rect>
-                                    <svg
-                                        width="330px"
-                                        height="330px"
-                                        viewBox="0 0 24 24"
-                                        x="110"
-                                        y="100"
-                                        role="img"
-                                        className="inline-block"
-                                    >
-                                        <g className="fill-transparent">
-                                            <g
-                                                stroke="currentColor"
-                                                strokeWidth="2"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    d="m8 12.5l3 3l5-6"
-                                                />
-                                                <circle
-                                                    cx="12"
-                                                    cy="12"
-                                                    r="10"
-                                                />
-                                            </g>
-                                        </g>
-                                    </svg>
-                                </svg>
-                            </div>
-                        )}
-                        {assessment.assessor === localStorage.getItem("id") && (
-                            <div className="flex flex-wrap absolute h-auto w-[10%] top-16 left-[-4px]">
-                                <svg
-                                    width="512"
-                                    height="512"
-                                    viewBox="0 0 512 512"
-                                    className="w-12 h-12 group cursor-pointer"
-                                    onClick={() => {
-                                        completeAssessment(assessment.id).then(
-                                            (res) => {
-                                                if (res.status === 201) {
-                                                    setAssessments(null);
-                                                    setAnswers(undefined);
-                                                    setAssessment(undefined);
-                                                    setUpdate(!update);
-                                                }
-                                            }
-                                        );
-                                    }}
-                                >
-                                    <rect
-                                        width="512"
-                                        height="512"
-                                        x="0"
-                                        y="0"
-                                        rx="30"
-                                        fill="transparent"
-                                        stroke="transparent"
-                                        strokeWidth="0"
-                                        strokeOpacity="100%"
-                                        paintOrder="stroke"
-                                    ></rect>
-                                    <svg
-                                        width="330px"
-                                        height="330px"
-                                        viewBox="0 0 24 24"
-                                        x="110"
-                                        y="100"
-                                        role="img"
-                                        className="inline-block"
-                                    >
-                                        <g className="fill-transparent">
-                                            <g
-                                                stroke="currentColor"
-                                                strokeWidth="2"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    d="m8 12.5l3 3l5-6"
-                                                />
-                                                <circle
-                                                    cx="12"
-                                                    cy="12"
-                                                    r="10"
-                                                />
-                                            </g>
-                                        </g>
-                                    </svg>
-                                </svg>
-                            </div>
-                        )}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full p-4 gap-2 h-auto justify-items-center">
                             {assessment.criterias.map((criteria, index) => {
                                 let total = criteria.questions.reduce(
@@ -716,92 +483,6 @@ export const Assessment = () => {
                                             <div className="flex w-full h-auto justify-between">
                                                 <div className="flex flex-col w-auto h-auto gap-1 py-1">
                                                     <div className="flex flex-row w-auto text-start h-auto gap-1">
-                                                        <svg
-                                                            onClick={(
-                                                                event
-                                                            ) => {
-                                                                if (
-                                                                    criteria
-                                                                        .additionals
-                                                                        ?.additionals !=
-                                                                    undefined
-                                                                ) {
-                                                                    setCriteriaAdditional(
-                                                                        {
-                                                                            id: criteria
-                                                                                .additionals
-                                                                                .id,
-                                                                            additional:
-                                                                                criteria
-                                                                                    .additionals
-                                                                                    .additionals,
-                                                                            criteria:
-                                                                                criteria.id,
-                                                                            assessment:
-                                                                                assessment.id,
-                                                                        }
-                                                                    );
-                                                                    setShowAdditional(
-                                                                        true
-                                                                    );
-                                                                } else {
-                                                                    setCriteriaAdditional(
-                                                                        {
-                                                                            id: undefined,
-                                                                            assessment:
-                                                                                assessment.id,
-                                                                            criteria:
-                                                                                criteria.id,
-                                                                            additional:
-                                                                                [],
-                                                                        }
-                                                                    );
-                                                                    setShowAdditional(
-                                                                        true
-                                                                    );
-                                                                }
-
-                                                                event.stopPropagation();
-                                                            }}
-                                                            width="50"
-                                                            height="50"
-                                                            viewBox="0 0 1024 1024"
-                                                            className="h-8 w-8 min-h-8 min-w-8 cursor-pointer hover:scale-110 z-50 border-2 rounded-md"
-                                                        >
-                                                            <rect
-                                                                width="24px"
-                                                                height="24px"
-                                                                x="0"
-                                                                y="0"
-                                                                rx="30"
-                                                                fill="transparent"
-                                                                stroke="transparent"
-                                                                strokeWidth="0"
-                                                                strokeOpacity="100%"
-                                                                paintOrder="stroke"
-                                                            ></rect>
-                                                            <svg
-                                                                width="512px"
-                                                                height="512px"
-                                                                viewBox="0 0 21 21"
-                                                                fill="currentColor"
-                                                                x="210px"
-                                                                y="210px"
-                                                                role="img"
-                                                                className="inline-block cursor-pointer"
-                                                            >
-                                                                <g fill="currentColor">
-                                                                    <path
-                                                                        fill="none"
-                                                                        stroke="currentColor"
-                                                                        strokeLinecap="round"
-                                                                        strokeWidth="2"
-                                                                        d="M12 20v-8m0 0V4m0 8h8m-8 0H4"
-                                                                    />
-                                                                </g>
-                                                            </svg>
-                                                        </svg>
-
                                                         <p className="text-md">
                                                             {criteria.name}
                                                         </p>
@@ -964,51 +645,6 @@ export const Assessment = () => {
                                     <div className="w-[10%] flex flex-wrap h-auto absolute">
                                         <svg
                                             onClick={() => {
-                                                if (
-                                                    assessment.status !==
-                                                    "completed"
-                                                ) {
-                                                    for (let question of criteria.questions) {
-                                                        for (let possibility of question.possibilities) {
-                                                            let ans =
-                                                                answers.find(
-                                                                    (ans) =>
-                                                                        ans.possibility ===
-                                                                        possibility.id
-                                                                );
-
-                                                            if (
-                                                                ans !==
-                                                                undefined
-                                                            ) {
-                                                                saveAnswer(
-                                                                    ans
-                                                                ).then(
-                                                                    (res) => {
-                                                                        if (
-                                                                            res.status ===
-                                                                            200
-                                                                        ) {
-                                                                            setAnswers(
-                                                                                null
-                                                                            );
-                                                                            setTimeout(
-                                                                                () => {
-                                                                                    setUpdateA(
-                                                                                        !updateA
-                                                                                    );
-                                                                                },
-                                                                                50
-                                                                            );
-                                                                        }
-                                                                    }
-                                                                );
-                                                            }
-                                                        }
-                                                    }
-                                                    setAnswerImgPreview([]);
-                                                }
-
                                                 setCriteria(undefined);
                                                 setQuestion(undefined);
                                             }}
@@ -1247,44 +883,8 @@ export const Assessment = () => {
                                 <div className="w-auto left-[-5px] md:left-0 flex flex-wrap h-auto absolute">
                                     <svg
                                         onClick={() => {
-                                            const saveAnswers = answers.filter(
-                                                (ans) =>
-                                                    ans.question === question.id
-                                            );
-
-                                            if (saveAnswer.length > 0) {
-                                                saveAnswers.map((ans) => {
-                                                    saveAnswer(ans).then(
-                                                        (res) => {
-                                                            if (
-                                                                res.status ===
-                                                                200
-                                                            ) {
-                                                                setAnswers(
-                                                                    null
-                                                                );
-                                                                setTimeout(
-                                                                    () => {
-                                                                        setUpdateA(
-                                                                            !updateA
-                                                                        );
-                                                                        setQuestion(
-                                                                            undefined
-                                                                        );
-                                                                        setPossibility(
-                                                                            undefined
-                                                                        );
-                                                                    },
-                                                                    50
-                                                                );
-                                                            }
-                                                        }
-                                                    );
-                                                });
-                                            } else {
-                                                setQuestion(undefined);
-                                                setPossibility(undefined);
-                                            }
+                                            setQuestion(undefined);
+                                            setPossibility(undefined);
                                         }}
                                         className="w-12 h-12 group cursor-pointer"
                                         width="512"
@@ -1345,41 +945,6 @@ export const Assessment = () => {
                                                         setPossibility(
                                                             possibilityL
                                                         );
-                                                        let exists =
-                                                            answers.find(
-                                                                (ans) =>
-                                                                    ans.possibility ===
-                                                                    possibilityL.id
-                                                            );
-
-                                                        if (
-                                                            exists === undefined
-                                                        ) {
-                                                            setAnswers(
-                                                                (prev) => [
-                                                                    ...prev,
-                                                                    {
-                                                                        assessment:
-                                                                            assessment.id,
-                                                                        criteria:
-                                                                            criteria.id,
-                                                                        question:
-                                                                            question.id,
-                                                                        possibility:
-                                                                            possibilityL.id,
-                                                                        answer: 0,
-                                                                        assessor_answer:
-                                                                            null,
-                                                                        evidence:
-                                                                            [],
-                                                                        comment:
-                                                                            "",
-                                                                    },
-                                                                ]
-                                                            );
-                                                        }
-
-                                                        setAnswerImgPreview([]);
                                                     }}
                                                     className={`flex flex-wrap w-full h-auto justify-between py-2 px-2 text-text text-sm capitalize font-semibold rounded-md border border-gray-200 content-center ${
                                                         `text-white ${
@@ -1494,48 +1059,6 @@ export const Assessment = () => {
                                                     {possibility.statements.map(
                                                         (statementL, index) => (
                                                             <div
-                                                                onClick={() => {
-                                                                    assessment.status !==
-                                                                        "completed" &&
-                                                                        setAnswers(
-                                                                            answers.map(
-                                                                                (
-                                                                                    ans
-                                                                                ) => {
-                                                                                    if (
-                                                                                        ans.possibility ===
-                                                                                        possibility.id
-                                                                                    ) {
-                                                                                        if (
-                                                                                            localStorage.getItem(
-                                                                                                "id"
-                                                                                            ) ===
-                                                                                            assessment.assessor
-                                                                                        ) {
-                                                                                            return {
-                                                                                                ...ans,
-                                                                                                assessor_answer:
-                                                                                                    statementL.score,
-                                                                                                answer: ans.answer,
-                                                                                            };
-                                                                                        } else {
-                                                                                            return {
-                                                                                                ...ans,
-                                                                                                answer: statementL.score,
-                                                                                                assessor_answer:
-                                                                                                    ans.assessor_answer !=
-                                                                                                    undefined
-                                                                                                        ? ans.assessor_answer
-                                                                                                        : null,
-                                                                                            };
-                                                                                        }
-                                                                                    } else {
-                                                                                        return ans;
-                                                                                    }
-                                                                                }
-                                                                            )
-                                                                        );
-                                                                }}
                                                                 className={`group flex flex-wrap gap-2 w-full h-auto py-2 px-2 ${
                                                                     parseInt(
                                                                         statementL.score
@@ -1551,12 +1074,7 @@ export const Assessment = () => {
                                                                             ?.answer
                                                                     )
                                                                         ? // bg-gradient-to-br from-text to-primary text-white scale:100
-                                                                          `bg-primary text-white scale-90 rounded-md ${
-                                                                              assessment.status ===
-                                                                              "completed"
-                                                                                  ? "cursor-not-allowed"
-                                                                                  : "cursor-pointer"
-                                                                          }`
+                                                                          `bg-primary text-white scale-90 rounded-md`
                                                                         : parseInt(
                                                                               statementL.score
                                                                           ) ===
@@ -1570,26 +1088,8 @@ export const Assessment = () => {
                                                                               )
                                                                                   ?.assessor_answer
                                                                           )
-                                                                        ? `bg-blue-500 text-white scale-90 rounded-md ${
-                                                                              assessment.status ===
-                                                                              "completed"
-                                                                                  ? "cursor-not-allowed"
-                                                                                  : "cursor-pointer"
-                                                                          }` //   hover:scale-100
-                                                                        : `bg-white text-text ${
-                                                                              assessment.status ===
-                                                                              "completed"
-                                                                                  ? "cursor-not-allowed"
-                                                                                  : assessment.status ===
-                                                                                    "completed"
-                                                                                  ? "cursor-not-allowed"
-                                                                                  : localStorage.getItem(
-                                                                                        "id"
-                                                                                    ) ===
-                                                                                    assessment.assessor
-                                                                                  ? "cursor-pointer hover:bg-blue-500 hover:text-white"
-                                                                                  : "cursor-pointer hover:bg-primary hover:text-white"
-                                                                          } rounded-md scale-90 border-text`
+                                                                        ? `bg-blue-500 text-white scale-90 rounded-md ` //   hover:scale-100
+                                                                        : `bg-white text-text rounded-md scale-90 border-text`
                                                                 }  transition-all duration-500 ease-in-out border-b-2 `}
                                                             >
                                                                 <p
@@ -1623,12 +1123,7 @@ export const Assessment = () => {
                                                                             ? "text-white"
                                                                             : statementL.statement !==
                                                                               undefined
-                                                                            ? `text-text ${
-                                                                                  assessment.status ===
-                                                                                  "completed"
-                                                                                      ? ""
-                                                                                      : "group-hover:text-white"
-                                                                              }`
+                                                                            ? `text-text `
                                                                             : "text-white  "
                                                                     } px-2`}
                                                                 >
@@ -1669,48 +1164,6 @@ export const Assessment = () => {
                                                                     }
                                                                 </p>
                                                                 <div
-                                                                    onClick={() => {
-                                                                        assessment.status !==
-                                                                            "completed" &&
-                                                                            setAnswers(
-                                                                                answers.map(
-                                                                                    (
-                                                                                        ans
-                                                                                    ) => {
-                                                                                        if (
-                                                                                            ans.possibility ===
-                                                                                            possibility.id
-                                                                                        ) {
-                                                                                            if (
-                                                                                                localStorage.getItem(
-                                                                                                    "id"
-                                                                                                ) ===
-                                                                                                assessment.assessor
-                                                                                            ) {
-                                                                                                return {
-                                                                                                    ...ans,
-                                                                                                    assessor_answer:
-                                                                                                        statementL.score,
-                                                                                                    answer: ans.answer,
-                                                                                                };
-                                                                                            } else {
-                                                                                                return {
-                                                                                                    ...ans,
-                                                                                                    answer: statementL.score,
-                                                                                                    assessor_answer:
-                                                                                                        ans.assessor_answer !=
-                                                                                                        undefined
-                                                                                                            ? ans.assessor_answer
-                                                                                                            : null,
-                                                                                                };
-                                                                                            }
-                                                                                        } else {
-                                                                                            return ans;
-                                                                                        }
-                                                                                    }
-                                                                                )
-                                                                            );
-                                                                    }}
                                                                     className={`flex flex-col gap-2 w-full h-full py-2 px-2 ${
                                                                         parseInt(
                                                                             statementL.score
@@ -1726,12 +1179,7 @@ export const Assessment = () => {
                                                                                 ?.answer
                                                                         )
                                                                             ? // bg-gradient-to-br from-text to-primary text-white scale:100
-                                                                              `bg-primary text-white scale-[98%] rounded-md ${
-                                                                                  assessment.status ===
-                                                                                  "completed"
-                                                                                      ? "cursor-not-allowed"
-                                                                                      : "cursor-pointer"
-                                                                              }`
+                                                                              `bg-primary text-white scale-[98%] rounded-md `
                                                                             : parseInt(
                                                                                   statementL.score
                                                                               ) ===
@@ -1745,23 +1193,8 @@ export const Assessment = () => {
                                                                                   )
                                                                                       ?.assessor_answer
                                                                               )
-                                                                            ? `bg-blue-500 text-white scale-[98%] rounded-md ${
-                                                                                  assessment.status ===
-                                                                                  "completed"
-                                                                                      ? "cursor-not-allowed"
-                                                                                      : "cursor-pointer"
-                                                                              }` //   hover:scale-100
-                                                                            : `bg-white text-text rounded-md scale-[98%] ${
-                                                                                  assessment.status ===
-                                                                                  "completed"
-                                                                                      ? "cursor-not-allowed"
-                                                                                      : localStorage.getItem(
-                                                                                            "id"
-                                                                                        ) ===
-                                                                                        assessment.assessor
-                                                                                      ? "cursor-pointer hover:bg-blue-500 hover:text-white"
-                                                                                      : "cursor-pointer hover:bg-primary hover:text-white"
-                                                                              } `
+                                                                            ? `bg-blue-500 text-white scale-[98%] rounded-md ` //   hover:scale-100
+                                                                            : `bg-white text-text rounded-md scale-[98%]  `
                                                                     }  transition-all duration-500 ease-in-out border text-center content-center justify-center rounded-md`}
                                                                 >
                                                                     {
@@ -1784,181 +1217,34 @@ export const Assessment = () => {
                                                     <p className="text-text text-md font-medium w-full">
                                                         Comments
                                                     </p>
-                                                    {assessment.status !==
-                                                        "completed" &&
-                                                    assessment.assessor !==
-                                                        localStorage.getItem(
-                                                            "id"
-                                                        ) ? (
-                                                        <textarea
-                                                            value={
-                                                                answers.find(
-                                                                    (ans) =>
-                                                                        ans.possibility ===
-                                                                        possibility.id
-                                                                )?.comment
-                                                            }
-                                                            onChange={(e) => {
-                                                                setAnswers(
-                                                                    answers.map(
-                                                                        (
-                                                                            ans
-                                                                        ) => {
-                                                                            if (
-                                                                                ans.possibility ===
-                                                                                possibility.id
-                                                                            ) {
-                                                                                return {
-                                                                                    ...ans,
-                                                                                    comment:
-                                                                                        e
-                                                                                            .target
-                                                                                            .value,
-                                                                                };
-                                                                            } else {
-                                                                                return ans;
-                                                                            }
-                                                                        }
-                                                                    )
-                                                                );
-                                                            }}
-                                                            className="border border-gray-200 rounded-md p-2 w-full h-20"
-                                                        ></textarea>
-                                                    ) : (
-                                                        <p className="text-text text-md font-medium w-full">
-                                                            {
-                                                                answers.find(
-                                                                    (ans) =>
-                                                                        ans.possibility ===
-                                                                        possibility.id
-                                                                )?.comment
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    <p className="text-text text-md font-medium w-full">
+                                                        {
+                                                            answers.find(
+                                                                (ans) =>
+                                                                    ans.possibility ===
+                                                                    possibility.id
+                                                            )?.comment
+                                                        }
+                                                    </p>
                                                 </div>
                                                 <div className="flex flex-wrap w-full h-auto gap-3">
                                                     <p className="text-text text-md font-medium w-full">
                                                         Assessor comments
                                                     </p>
-                                                    {assessment.status !==
-                                                        "completed" &&
-                                                    assessment.assessor ===
-                                                        localStorage.getItem(
-                                                            "id"
-                                                        ) ? (
-                                                        <textarea
-                                                            value={
-                                                                answers.find(
-                                                                    (ans) =>
-                                                                        ans.possibility ===
-                                                                        possibility.id
-                                                                )
-                                                                    ?.assessor_comment
-                                                            }
-                                                            onChange={(e) => {
-                                                                setAnswers(
-                                                                    answers.map(
-                                                                        (
-                                                                            ans
-                                                                        ) => {
-                                                                            if (
-                                                                                ans.possibility ===
-                                                                                possibility.id
-                                                                            ) {
-                                                                                return {
-                                                                                    ...ans,
-                                                                                    assessor_comment:
-                                                                                        e
-                                                                                            .target
-                                                                                            .value,
-                                                                                };
-                                                                            } else {
-                                                                                return ans;
-                                                                            }
-                                                                        }
-                                                                    )
-                                                                );
-                                                            }}
-                                                            className="border border-gray-200 rounded-md p-2 w-full h-20"
-                                                        ></textarea>
-                                                    ) : (
-                                                        <p className="text-text text-md font-medium w-full">
-                                                            {
-                                                                answers.find(
-                                                                    (ans) =>
-                                                                        ans.possibility ===
-                                                                        possibility.id
-                                                                )
-                                                                    ?.assessor_comment
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    <p className="text-text text-md font-medium w-full">
+                                                        {
+                                                            answers.find(
+                                                                (ans) =>
+                                                                    ans.possibility ===
+                                                                    possibility.id
+                                                            )?.assessor_comment
+                                                        }
+                                                    </p>
                                                 </div>
                                                 <div className="flex flex-wrap w-full h-auto gap-3">
                                                     <p className="text-text text-md font-medium w-full">
                                                         Evidence
                                                     </p>
-                                                    {assessment.status !==
-                                                        "completed" && (
-                                                        <input
-                                                            type="file"
-                                                            accept="*"
-                                                            onChange={(e) => {
-                                                                setAnswerImgPreview(
-                                                                    []
-                                                                );
-                                                                for (
-                                                                    let i = 0;
-                                                                    i <
-                                                                    Object.keys(
-                                                                        e.target
-                                                                            .files
-                                                                    ).length;
-                                                                    i++
-                                                                ) {
-                                                                    setAnswerImgPreview(
-                                                                        (
-                                                                            old
-                                                                        ) => [
-                                                                            ...old,
-                                                                            URL.createObjectURL(
-                                                                                e
-                                                                                    .target
-                                                                                    .files[
-                                                                                    i
-                                                                                ]
-                                                                            ),
-                                                                        ]
-                                                                    );
-                                                                }
-
-                                                                setAnswers(
-                                                                    answers.map(
-                                                                        (
-                                                                            ans
-                                                                        ) => {
-                                                                            if (
-                                                                                ans.possibility ===
-                                                                                possibility.id
-                                                                            ) {
-                                                                                return {
-                                                                                    ...ans,
-                                                                                    new_evidence:
-                                                                                        e
-                                                                                            .target
-                                                                                            .files,
-                                                                                };
-                                                                            } else {
-                                                                                return ans;
-                                                                            }
-                                                                        }
-                                                                    )
-                                                                );
-                                                            }}
-                                                            multiple
-                                                            className="border border-gray-200 rounded-md p-2 w-full"
-                                                        />
-                                                    )}
                                                 </div>
                                                 <div className="flex flex-wrap w-full h-auto gap-3">
                                                     {answers
@@ -2003,7 +1289,7 @@ export const Assessment = () => {
                                                                         </a>
                                                                     ) : file.includes(
                                                                           ".docx"
-                                                                      ) ||
+                                                                      ) |
                                                                       file.includes(
                                                                           ".doc"
                                                                       ) ? (
@@ -2154,70 +1440,9 @@ export const Assessment = () => {
                                                                             </svg>
                                                                         </a>
                                                                     )}
-
-                                                                    <div
-                                                                        onClick={() => {
-                                                                            setAnswers(
-                                                                                answers.map(
-                                                                                    (
-                                                                                        ans
-                                                                                    ) => {
-                                                                                        if (
-                                                                                            ans.possibility ===
-                                                                                            possibility.id
-                                                                                        ) {
-                                                                                            return {
-                                                                                                ...ans,
-                                                                                                evidence:
-                                                                                                    ans.evidence.filter(
-                                                                                                        (
-                                                                                                            e
-                                                                                                        ) =>
-                                                                                                            e !==
-                                                                                                            file
-                                                                                                    ),
-                                                                                            };
-                                                                                        } else {
-                                                                                            return ans;
-                                                                                        }
-                                                                                    }
-                                                                                )
-                                                                            );
-                                                                        }}
-                                                                        className="absolute top-[-10px] right-[-8px] rounded-full px-2 bg-red-500 text-white text-md font-semibold cursor-pointer z-10"
-                                                                    >
-                                                                        X
-                                                                    </div>
                                                                 </div>
                                                             )
                                                         )}
-                                                    {answerImgPreview.map(
-                                                        (img, index) => (
-                                                            <div className="relative">
-                                                                <img
-                                                                    src={img}
-                                                                    alt="evidence"
-                                                                    className="w-20 h-20"
-                                                                />
-                                                                <div
-                                                                    onClick={() => {
-                                                                        setAnswerImgPreview(
-                                                                            answerImgPreview.filter(
-                                                                                (
-                                                                                    imgL
-                                                                                ) =>
-                                                                                    imgL !==
-                                                                                    img
-                                                                            )
-                                                                        );
-                                                                    }}
-                                                                    className="absolute top-[-10px] right-[-8px] rounded-full px-2 bg-red-500 text-white text-md font-semibold z-10"
-                                                                >
-                                                                    X
-                                                                </div>
-                                                            </div>
-                                                        )
-                                                    )}
                                                 </div>
                                             </div>
                                         )}
@@ -2227,252 +1452,6 @@ export const Assessment = () => {
                         )}
                     </div>
                 )}
-
-            {completeDialog && (
-                <Dialog
-                    header="Complete Assessment"
-                    className="bg-white border-2 border-text rounded-md w-4/5 md:w-2/3 lg:w-1/3"
-                    headerClassName="bg-text text-white font-semibold h-12 px-2"
-                    contentClassName="p-4"
-                    visible={completeDialog}
-                    onHide={() => setCompleteDialog(false)}
-                >
-                    <div className="flex flex-wrap w-full h-auto gap-3">
-                        <p className="text-text text-md font-medium w-full text-center">
-                            Are you sure you want to complete this assessment?
-                        </p>
-                        <div className="flex flex-wrap w-full h-auto gap-3 justify-evenly">
-                            <div
-                                onClick={() => {
-                                    cuAssessment({
-                                        ...assessment,
-                                        status: "completed",
-                                    }).then((res) => {
-                                        if (res.status === 201) {
-                                            setUpdate(!update);
-                                            setCompleteDialog(false);
-                                            setAssessment(undefined);
-                                            setAnswers(undefined);
-                                        }
-                                    });
-                                }}
-                                className="flex flex-wrap justify-center content-center w-full h-20 min-h-20 border-2 border-text rounded-md capitalize text-mx text-text font-semibold hover:bg-primary hover:text-white transition-all duration-500 ease-in-out scale-95 cursor-pointer"
-                            >
-                                Confirm
-                            </div>
-                            <div
-                                onClick={() => {
-                                    setCompleteDialog(false);
-                                }}
-                                className="flex flex-wrap justify-center content-center w-full h-20 min-h-20 border-2 border-text rounded-md capitalize text-mx text-text font-semibold hover:bg-text hover:text-white transition-all duration-500 ease-in-out scale-95 cursor-pointer"
-                            >
-                                Cancel
-                            </div>
-                        </div>
-                    </div>
-                </Dialog>
-            )}
-
-            {showAdditional && (
-                <Dialog
-                    header="Additional Comments"
-                    className="bg-white border-2 border-text rounded-md w-4/5 md:w-2/3 lg:w-1/3"
-                    headerClassName="bg-text text-white font-semibold h-10 px-2"
-                    contentClassName="p-4"
-                    visible={showAdditional}
-                    onHide={() => {
-                        setShowAdditional(false);
-                        setCriteriaAdditional(undefined);
-                    }}
-                >
-                    <div className="flex flex-wrap w-full h-auto gap-3">
-                        <Formik
-                            initialValues={criteriaAdditional}
-                            onSubmit={(values) => {
-                                cuAdditional({
-                                    id: values.id,
-                                    additionals: values.additional,
-                                    criteria: values.criteria,
-                                    assessment: values.assessment,
-                                }).then((res) => {
-                                    if (res.status === 201) {
-                                        setUpdateAssessment(!updateAssessment);
-                                        setShowAdditional(false);
-                                        setCriteriaAdditional(undefined);
-                                    }
-                                });
-                                // console.log(values);
-                            }}
-                        >
-                            {(values, errors) => (
-                                <Form className="flex flex-wrap w-full h-auto gap-3">
-                                    <div className="flex flex-wrap w-full gap-2 justify-between">
-                                        <p className="text-text text-md font-medium w-auto">
-                                            Additional People
-                                        </p>
-                                        <svg
-                                            onClick={(event) => {
-                                                if (
-                                                    values.values.additional[
-                                                        values.values.additional
-                                                            .length - 1
-                                                    ] !== ""
-                                                ) {
-                                                    values.setFieldValue(
-                                                        "additional",
-                                                        [
-                                                            ...values.values
-                                                                .additional,
-                                                            "",
-                                                        ]
-                                                    );
-                                                }
-
-                                                event.stopPropagation();
-                                            }}
-                                            width="50"
-                                            height="50"
-                                            viewBox="0 0 1024 1024"
-                                            className="h-8 w-8 cursor-pointer hover:scale-110 z-50 border-2 rounded-full"
-                                        >
-                                            <rect
-                                                width="24px"
-                                                height="24px"
-                                                x="0"
-                                                y="0"
-                                                rx="30"
-                                                fill="transparent"
-                                                stroke="transparent"
-                                                strokeWidth="0"
-                                                strokeOpacity="100%"
-                                                paintOrder="stroke"
-                                            ></rect>
-                                            <svg
-                                                width="512px"
-                                                height="512px"
-                                                viewBox="0 0 21 21"
-                                                fill="currentColor"
-                                                x="200px"
-                                                y="180px"
-                                                role="img"
-                                                className="inline-block cursor-pointer hover:scale-110"
-                                            >
-                                                <g fill="currentColor">
-                                                    <path
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeLinecap="round"
-                                                        strokeWidth="2"
-                                                        d="M12 20v-8m0 0V4m0 8h8m-8 0H4"
-                                                    />
-                                                </g>
-                                            </svg>
-                                        </svg>
-                                    </div>
-                                    {values.values.additional.map(
-                                        (additional, index) => (
-                                            <div
-                                                key={index}
-                                                className="flex flex-wrap w-full gap-0"
-                                            >
-                                                <select
-                                                    value={additional.id}
-                                                    onChange={(e) => {
-                                                        values.setFieldValue(
-                                                            `additional[${index}]`,
-                                                            e.target.value
-                                                        );
-                                                    }}
-                                                    className="text-sm border border-gray-200 rounded-md p-1 w-[85%]"
-                                                >
-                                                    <option value="">
-                                                        Select
-                                                    </option>
-                                                    {users.map(
-                                                        (user, index) => (
-                                                            <option
-                                                                key={index}
-                                                                value={user.id}
-                                                                selected={
-                                                                    user.id ===
-                                                                        additional &&
-                                                                    true
-                                                                }
-                                                            >
-                                                                {user.name +
-                                                                    " " +
-                                                                    user.surname}
-                                                            </option>
-                                                        )
-                                                    )}
-                                                </select>
-
-                                                <svg
-                                                    width="21"
-                                                    height="21"
-                                                    viewBox="0 0 512 512"
-                                                    class="h-8 w-[12%] min-w-[12%] min-h-8 cursor-pointer hover:scale-110"
-                                                    onClick={() => {
-                                                        values.setFieldValue(
-                                                            "additional",
-                                                            values.values.additional.filter(
-                                                                (add, i) =>
-                                                                    i !== index
-                                                            )
-                                                        );
-                                                    }}
-                                                >
-                                                    <rect
-                                                        width="512"
-                                                        height="512"
-                                                        x="0"
-                                                        y="0"
-                                                        rx="30"
-                                                        fill="transparent"
-                                                        stroke="transparent"
-                                                        stroke-width="0"
-                                                        stroke-opacity="100%"
-                                                        paint-order="stroke"
-                                                    ></rect>
-                                                    <svg
-                                                        width="512px"
-                                                        height="512px"
-                                                        viewBox="0 0 24 24"
-                                                        fill="currentColor"
-                                                        x="80"
-                                                        y="0"
-                                                        role="img"
-                                                        className="inline-block"
-                                                    >
-                                                        <g fill="currentColor">
-                                                            <path
-                                                                fill="none"
-                                                                stroke="currentColor"
-                                                                strokeLinecap="round"
-                                                                strokeWidth="1.5"
-                                                                d="m8.464 15.535l7.072-7.07m-7.072 0l7.072 7.07"
-                                                            />
-                                                        </g>
-                                                    </svg>
-                                                </svg>
-                                            </div>
-                                        )
-                                    )}
-
-                                    <div className="flex flex-wrap w-full h-auto gap-3 justify-center">
-                                        <button
-                                            type="submit"
-                                            className="flex flex-wrap justify-center content-center w-1/2 h-10 min-h-10 border-2 border-text rounded-md capitalize text-mx text-text font-semibold hover:bg-primary hover:text-white transition-all duration-500 ease-in-out scale-95 cursor-pointer"
-                                        >
-                                            Submit
-                                        </button>
-                                    </div>
-                                </Form>
-                            )}
-                        </Formik>
-                    </div>
-                </Dialog>
-            )}
         </div>
     );
 };

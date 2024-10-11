@@ -26,9 +26,9 @@ export const Accessess = () => {
 
     return (
         <div className="flex flex-col h-full w-full overflow-x-hidden">
-            <div className="flex flex-wrap w-full h-max max-h-full p-4 overflow-y-auto no-scrollbar pb-20 gap-x-7 gap-y-3 justify-center">
+            <div className="flex flex-wrap w-full h-max max-h-full p-4 overflow-y-auto no-scrollbar pb-20 gap-x-3 gap-y-3">
                 <div
-                    className="flex flex-col group w-full sm:w-56 h-32 justify-center items-center border-2 border-gray-400 rounded-md px-3 py-2 md:py-4 transition-all ease-in-out duration-300 hover:border-text md:hover:scale-110 hover:cursor-pointer"
+                    className="flex flex-col group w-full sm:w-52 h-32 justify-center items-center shadow shadow-gray-400 rounded-md px-3 py-2 md:py-4 transition-all ease-in-out duration-500 hover:shadow-text hover:scale-105 hover:cursor-pointer"
                     onClick={() => setShowDialogRoleCU(true)}
                 >
                     <svg width="64" height="64" viewBox="0 0 512 512">
@@ -67,14 +67,14 @@ export const Accessess = () => {
                         </svg>
                     </svg>
 
-                    <p className="text-lg text-center font-semibold text-gray-400 group-hover:text-text transition-all ease-in-out duration-500">
-                        Add new
+                    <p className="text-lg text-center font-semibold text-gray-400 group-hover:text-text transition-all ease-in-out duration-500 w-full">
+                        New access level
                     </p>
                 </div>
                 {roles.map((role, index) => (
                     <div
                         key={index}
-                        className="flex flex-col group w-full sm:w-56 h-32 justify-center items-center border-2 border-text shadow-md rounded-md px-3 py-2 md:py-4 transition-all ease-in-out duration-300 hover:bg-text md:hover:scale-110 hover:scale-105 hover:cursor-pointer"
+                        className="flex flex-col group w-full sm:w-52 h-32 justify-center items-center shadow shadow-text rounded-md px-3 py-2 md:py-4 transition-all ease-in-out duration-500 hover:scale-105 hover:cursor-pointer"
                         onClick={() => {
                             setRole({
                                 id: role.id,
@@ -85,7 +85,7 @@ export const Accessess = () => {
                             setShowDialogRoleCU(true);
                         }}
                     >
-                        <p className="text-lg text-center font-semibold text-text group-hover:text-white transition-all ease-in-out duration-500">
+                        <p className="text-lg text-center font-semibold text-text transition-all ease-in-out duration-500">
                             {role.name}
                         </p>
                     </div>
@@ -94,9 +94,9 @@ export const Accessess = () => {
 
             {/* CREATE & UPDATE & DELETE */}
             <Dialog
-                className="lg:w-2/5 sm:w-4/5 w-10/12 bg-white border-gray-200 border-2"
+                className="lg:w-2/5 sm:w-4/5 w-10/12 bg-white shadow shadow-gray-400 rounded-md"
                 header={role ? "Update/Delete" : "Delete"}
-                headerClassName="text-lg font-bold h-10 bg-text text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
+                headerClassName="text-lg font-bold h-10 bg-main text-white flex flex-wrap justify-between content-center py-0 px-3 m-0"
                 contentClassName="p-2"
                 visible={showDialogRoleCU}
                 onHide={() => {
@@ -131,7 +131,7 @@ export const Accessess = () => {
                     >
                         {({ values, errors, touched }) => (
                             <Form className="flex flex-wrap w-full">
-                                <div className="w-full flex flex-wrap justify-between">
+                                <div className="w-full flex flex-wrap justify-between gap-y-3">
                                     <div className="px-2 w-full flex flex-wrap">
                                         <label
                                             htmlFor="name"
@@ -149,7 +149,7 @@ export const Accessess = () => {
                                             id="name"
                                             name="name"
                                             value={values.name}
-                                            className="w-full p-2 text-md border-2 border-text rounded-md"
+                                            className="w-full p-2 text-md shadow shadow-gray-400 rounded-md"
                                         />
                                     </div>
                                     <div className="px-2 w-full flex flex-wrap">
@@ -169,7 +169,7 @@ export const Accessess = () => {
                                             id="accessLevel"
                                             name="accessLevel"
                                             value={values.accessLevel}
-                                            className="w-full p-2 text-md border-2 border-text rounded-md"
+                                            className="w-full p-2 text-md shadow shadow-gray-400 rounded-md"
                                         />
                                     </div>
                                     <div className="px-2 w-full flex flex-wrap">
@@ -189,7 +189,7 @@ export const Accessess = () => {
                                             id="description"
                                             name="description"
                                             value={values.description}
-                                            className="w-full p-2 text-md border-2 border-text rounded-md"
+                                            className="w-full p-2 text-md shadow shadow-gray-400 rounded-md"
                                         />
                                     </div>
                                 </div>

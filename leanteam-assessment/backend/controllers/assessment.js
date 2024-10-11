@@ -23,13 +23,18 @@ router.get(
     [checkForLogged, checkForAccess({ access_level: process.env.LEAN_USER })],
     async (req, res) => {
         try {
-            const user = jwt.verify(req.cookies.token, process.env.JSONSECRET);
+            const user = jwt.verify(req.cookies.token, process.env.JSONSECRET, {
+                algorithms: "HS512",
+            });
 
             let assessments = [];
             let assessorAssessment = [];
 
             if (user.roles["Superadmin"] || user.roles["Admin"]) {
                 let assessments = await Assessment.selectAll({
+                    where: {
+                        status: "in progress",
+                    },
                     exclude: ["timestamps"],
                 });
 
@@ -37,7 +42,7 @@ router.get(
                     const r = await surreal_assessment.query(
                         `SELECT id, questionaire, assessor FROM ${
                             assessment.id.tb + ":" + assessment.id.id
-                        } FETCH 
+                        } WHERE status = "in progress" FETCH 
                         questionaire.types,
                         questionaire.types.criterias, 
                         questionaire.types.criterias.questions,
@@ -305,69 +310,6 @@ router.get(
 
 router.get("/assessment", [checkForLogged], async (req, res) => {
     try {
-        // let assessment = await Assessment.findByPk({
-        //     id: req.query.id,
-        // });
-
-        // const types = await Type.selectAll({
-        //     exclude: ["timestamps", "questionaire"],
-        //     where: {
-        //         questionaire:
-        //             assessment[0].questionaire.tb +
-        //             ":" +
-        //             assessment[0].questionaire.id,
-        //     },
-        // });
-
-        // for (let type of types[0]) {
-        //     const criterias = await Criteria.selectAll({
-        //         exclude: ["timestamps", "questionaire"],
-        //         where: {
-        //             type: type.id.tb + ":" + type.id.id,
-        //         },
-        //     });
-
-        //     if (assessment[0]["criterias"] == undefined) {
-        //         assessment[0]["criterias"] = criterias[0];
-        //     } else {
-        //         assessment[0]["criterias"] = assessment[0][
-        //             "criterias"
-        //         ].concat(criterias[0]);
-        //     }
-
-        //     for (let i = 0; i < criterias[0].length; i++) {
-        //         const questions = await Question.selectAll({
-        //             exclude: ["timestamps", "criteria"],
-        //             where: {
-        //                 criteria:
-        //                     criterias[0][i].id.tb +
-        //                     ":" +
-        //                     criterias[0][i].id.id,
-        //             },
-        //         });
-
-        //         let sortedQuestions = questions[0].sort((a, b) => {
-        //             return a.number - b.number;
-        //         });
-
-        //         criterias[0][i]["questions"] = sortedQuestions;
-
-        //         for (let j = 0; j < questions[0].length; j++) {
-        //             const possibilities = await Possibilities.selectAll({
-        //                 exclude: ["timestamps", "question"],
-        //                 where: {
-        //                     question:
-        //                         questions[0][j].id.tb +
-        //                         ":" +
-        //                         questions[0][j].id.id,
-        //                 },
-        //             });
-
-        //             questions[0][j]["possibilities"] = possibilities[0];
-        //         }
-        //     }
-        // }
-
         const assessment = await surreal_assessment.query(
             `SELECT id, questionaire, assessor, leader, type FROM ${req.query.id} FETCH 
                     questionaire.types,
@@ -651,7 +593,7 @@ router.post(
                     questionaire: questionaire,
                     year: year,
                     type: type,
-                    status: status,
+                    status: "in progress",
                     assessor: {
                         data: assessor,
                         as: DataTypes.STRING,
@@ -827,6 +769,100 @@ router.post(
                 message: "Reference added successfully",
             });
         } catch (error) {
+            return res.status(500).json({
+                errors: {
+                    status: 500,
+                    statusText: false,
+                    message: error.message,
+                },
+            });
+        }
+    }
+);
+
+router.post(
+    "/assessment/complete",
+    [checkForLogged, checkForAccess({ access_level: process.env.LEAN_USER })],
+    async (req, res) => {
+        try {
+            const { id } = req.body;
+
+            await Assessment.update(id, {
+                status: "completed",
+            });
+
+            return res.status(201).json({
+                status: 201,
+                message: "Assessment completed successfully",
+            });
+        } catch (error) {
+            return res.status(500).json({
+                errors: {
+                    status: 500,
+                    statusText: false,
+                    message: error.message,
+                },
+            });
+        }
+    }
+);
+
+router.get(
+    "/assessments/review",
+    // [checkForLogged, checkForAccess({ access_level: process.env.LEAN_USER })],
+    async (req, res) => {
+        try {
+            const assessment = await surreal_assessment.query(
+                `SELECT id, questionaire, assessor, leader, type FROM assessment WHERE year = <number>${req.query.year} AND factory = <string>${req.query.factory} AND status = "completed" FETCH 
+                    questionaire.types,
+                    questionaire.types.criterias, 
+                    questionaire.types.criterias.questions,
+                    questionaire.types.criterias.questions.possibilities,
+                    questionaire.types.criterias.questions.possibilities.*;`
+            );
+
+            if (assessment[0].length === 0) {
+                return res.status(404).json({
+                    status: 404,
+                    message: "No assessment found",
+                });
+            }
+
+            let assessmentData = assessment[0][0];
+
+            let assessmentsCriterias = [];
+
+            assessmentData.questionaire.types.map((type) => {
+                return type.criterias.map((criteria) => {
+                    assessmentsCriterias.push({
+                        id: criteria.id,
+                        name: criteria.name,
+                        type: type.name,
+                        questions: criteria.questions,
+                        calculationType: criteria.calculationType,
+                        formula: criteria.formula,
+                    });
+                });
+            });
+
+            assessmentData["criterias"] = assessmentsCriterias;
+            assessmentData["questionaire"] = undefined;
+
+            const answers = await Answers.selectAll({
+                exclude: ["timestamps"],
+                where: {
+                    assessment:
+                        assessmentData.id.tb + ":" + assessmentData.id.id,
+                },
+            });
+
+            return res.status(200).json({
+                status: 200,
+                assessment: assessmentData,
+                answers: answers[0],
+            });
+        } catch (error) {
+            console.log(error.message);
             return res.status(500).json({
                 errors: {
                     status: 500,

@@ -89,11 +89,11 @@ export const Scores = () => {
                                     name="year"
                                     value={values.year}
                                     placeholder="Year"
-                                    className="w-full h-10 p-2 border-2 border-gray-200 rounded-lg"
+                                    className="w-full h-10 p-2 shadow shadow-gray-400 rounded-lg"
                                 />
                                 <button
                                     type="submit"
-                                    className="w-full h-10 p-2 bg-primary hover:bg-primary-light transition-all duration-500 ease-in-out text-white rounded-lg"
+                                    className="w-full h-10 p-2 bg-primary hover:bg-primary-light shadow shadow-primary hover:shadow-primary-light transition-all duration-500 ease-in-out text-white rounded-lg"
                                 >
                                     Submit
                                 </button>

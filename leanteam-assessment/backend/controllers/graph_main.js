@@ -1,22 +1,23 @@
 import { Router } from "express";
-import { RecordId, StringRecordId } from "surrealdb";
+import { StringRecordId } from "surrealdb";
 
 import { checkForAccess, checkForLogged } from "../../../middleware.js";
 import { Answers } from "../../../database/Models/Assessment/Answers.js";
 import { Factory } from "../../../database/Models/General/Factory.js";
 import { surreal_assessment } from "../../../database/Connections/assessment_db.js";
+import jwt from "jsonwebtoken";
 
 export const router = Router();
 
 router.get(
-    "/assessmentScore",
-    [checkForLogged, checkForAccess({ access_level: process.env.LEAN_USER })],
+    "/top/five",
+    [checkForLogged, checkForAccess({ access_level: process.env.ANY })],
     async (req, res) => {
         try {
-            const { year } = req.query;
+            const year = new Date().getFullYear();
 
             let assessmentsReq =
-                await surreal_assessment.query(`SELECT * FROM assessment WHERE year = ${year} AND type = "end-of-year" FETCH 
+                await surreal_assessment.query(`SELECT * FROM assessment WHERE year = ${year} AND type = "end-of-year" AND status = "completed" FETCH 
                 questionaire.types,
                 questionaire.types.criterias, 
                 questionaire.types.criterias.questions,
@@ -48,6 +49,7 @@ router.get(
                 const factoryReq = await Factory.findByPk({
                     id: new StringRecordId(assessment.factory),
                     fields: ["name", "businessUnit"],
+                    exclude: ["timestamps"],
                 });
 
                 const answersReq = await Answers.selectAll({
@@ -408,16 +410,125 @@ router.get(
                 }
             }
 
-            let sorted_by_bu = assessments.sort((a, b) => {
-                return a.factory_bu - b.factory_bu;
-            });
+            // return res.status(200).json({ status: 200, data: assessments });
 
-            for (let assessment of sorted_by_bu) {
-                assessment["types"] = assessment.questionaire.types;
-                delete assessment["questionaire"];
+            let topFive = [];
+            while (true) {
+                let max = -1;
+                let assessment_id = "";
+
+                for (let assessment of assessments) {
+                    for (let type of assessment.questionaire.types) {
+                        if (type.answer > max && type.name == "LFOS") {
+                            max = type.answer;
+                            assessment_id =
+                                assessment.id.tb + ":" + assessment.id.id;
+                        }
+                    }
+                }
+
+                if (assessment_id !== "") {
+                    let assessmentMax = assessments.find((assessment) => {
+                        return (
+                            assessment.id.tb + ":" + assessment.id.id ===
+                            assessment_id
+                        );
+                    });
+
+                    topFive.push(assessmentMax);
+                    assessments = assessments.filter((assessment) => {
+                        return (
+                            assessment.id.tb + ":" + assessment.id.id !==
+                            assessmentMax.id.tb + ":" + assessmentMax.id.id
+                        );
+                    });
+                }
+
+                if (topFive.length === 5 || assessments.length === 0) {
+                    break;
+                }
             }
 
-            return res.status(200).json({ status: 200, data: assessments });
+            const convertedTF = topFive.map((t) => {
+                return {
+                    name: t.factory_name,
+                    score: t.questionaire.types.find((type) => {
+                        return type.name === "LFOS";
+                    }).answer,
+                    factory: t.factory,
+                    year: t.year,
+                };
+            });
+
+            return res.status(200).json({ status: 200, data: convertedTF });
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
+);
+
+router.get(
+    "/completed/percentages",
+    [checkForLogged, checkForAccess({ access_level: process.env.ANY })],
+    async (req, res) => {
+        try {
+            const user = jwt.verify(req.cookies.token, process.env.JSONSECRET, {
+                algorithms: "HS512",
+            });
+
+            const year = new Date().getFullYear();
+
+            const assessment = await surreal_assessment.query(
+                `SELECT * FROM assessment WHERE year = ${year} AND factory = s'${user.factory}' AND type = "end-of-year" FETCH 
+                questionaire.types,
+                questionaire.types.criterias, 
+                questionaire.types.criterias.questions,
+                questionaire.types.criterias.questions.possibilities,
+                questionaire.types.criterias.questions.possibilities.*;`
+            );
+
+            const answers = await Answers.selectAll({
+                where: {
+                    assessment:
+                        assessment[0][0].id.tb + ":" + assessment[0][0].id.id,
+                },
+                exclude: ["evidence", "comment", "assessment", "timestamps"],
+            });
+
+            const count_possibilities = assessment[0][0].questionaire.types.map(
+                (type) => {
+                    return {
+                        typeName: type.name,
+                        data: type.criterias.map((criteria) => {
+                            return {
+                                name: criteria.name,
+                                overall: criteria.questions.length,
+                                answered: criteria.questions.reduce(
+                                    (sumC, question) => {
+                                        const answer = answers[0].find(
+                                            (answer) =>
+                                                answer.question.tb +
+                                                    ":" +
+                                                    answer.question.id ===
+                                                question.id.tb +
+                                                    ":" +
+                                                    question.id.id
+                                        );
+
+                                        return sumC + (answer ? 1 : 0);
+                                    },
+                                    0
+                                ),
+                            };
+                        }, 0),
+                    };
+                }
+            );
+
+            return res.status(200).json({
+                status: 200,
+                data: count_possibilities,
+            });
         } catch (error) {
             return res.status(500).json({ error: error.message });
         }
