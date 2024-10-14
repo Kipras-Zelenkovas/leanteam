@@ -355,6 +355,9 @@ export const Navigation = () => {
                                                     : "text-primary bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white"
                                             }`}
                                             to="/dashboard"
+                                            onClick={() => {
+                                                setMobileMenu(false);
+                                            }}
                                         >
                                             <svg
                                                 className={`w-10 h-10 rounded-md`}
@@ -381,6 +384,7 @@ export const Navigation = () => {
                                                 onClick={() => {
                                                     window.location.href =
                                                         import.meta.env.VITE_MAIN_ASSESSMENT_HREF;
+                                                    setMobileMenu(false);
                                                 }}
                                                 className={`flex flex-wrap sm:hidden items-center text-md font-semibold gap-2 rounded-md transition-all duration-[800ms] ease-in-out cursor-pointer pl-1 ${
                                                     window.location.href ===
@@ -422,6 +426,9 @@ export const Navigation = () => {
                                                         : "text-primary bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white"
                                                 }`}
                                                 to="/administrator/users"
+                                                onClick={() => {
+                                                    setMobileMenu(false);
+                                                }}
                                             >
                                                 <svg
                                                     className={`w-10 h-10 rounded-md `}
@@ -451,6 +458,9 @@ export const Navigation = () => {
                                                         : "text-primary bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white"
                                                 }`}
                                                 to="/administrator/teams"
+                                                onClick={() => {
+                                                    setMobileMenu(false);
+                                                }}
                                             >
                                                 <svg
                                                     className={`w-10 h-10 rounded-md `}
@@ -481,6 +491,9 @@ export const Navigation = () => {
                                                         : "text-primary bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white"
                                                 }`}
                                                 to="/administrator/accesses"
+                                                onClick={() => {
+                                                    setMobileMenu(false);
+                                                }}
                                             >
                                                 <svg
                                                     className={`w-10 h-10 rounded-md `}
@@ -513,6 +526,9 @@ export const Navigation = () => {
                                                         : "text-primary bg-white hover:bg-gradient-to-br hover:from-primary hover:to-text hover:text-white"
                                                 }`}
                                                 to="/administrator/factories"
+                                                onClick={() => {
+                                                    setMobileMenu(false);
+                                                }}
                                             >
                                                 <svg
                                                     className="w-10 h-10 rounded-md "
@@ -545,6 +561,9 @@ export const Navigation = () => {
                                                         ) {
                                                             window.location.href =
                                                                 import.meta.env.VITE_MAIN_LOGIN_HREF;
+                                                            setMobileMenu(
+                                                                false
+                                                            );
                                                         } else {
                                                             console.error(
                                                                 "Error logging out"
@@ -576,6 +595,7 @@ export const Navigation = () => {
                                                 onClick={() => {
                                                     window.location.href =
                                                         import.meta.env.VITE_MAIN_LOGIN_HREF;
+                                                    setMobileMenu(false);
                                                 }}
                                                 className={`flex flex-wrap sm:hidden items-center text-md font-semibold gap-2 rounded-md transition-all duration-[800ms] ease-in-out cursor-pointer pl-1 ${
                                                     window.location.href ===

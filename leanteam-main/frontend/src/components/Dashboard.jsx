@@ -2,11 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Loader } from "./Loader";
 import { checkAccessLevel } from "../../../../auth";
-import {
-    getCarousel,
-    getPercentageCompleted,
-    getTop,
-} from "../controllers/dashboard";
+import { getCarousel, getScores, getTop } from "../controllers/dashboard";
 import {
     BarChart,
     Bar,
@@ -27,7 +23,7 @@ import {
 
 export const Dashboard = () => {
     const [top, setTop] = useState(null);
-    const [percentageCompleted, setPercentageCompleted] = useState(null);
+    const [assessmentScores, setAssessmentScores] = useState(null);
     const [carousel, setCarousel] = useState(null);
 
     const [index, setIndex] = useState(0);
@@ -60,29 +56,11 @@ export const Dashboard = () => {
             }
         });
 
-        getPercentageCompleted().then((res) => {
+        getScores().then((res) => {
             if (res.status === 200) {
-                const normalizedData = res.data.map((item) => {
-                    return {
-                        typeName: item.typeName,
-                        data: item.data.map((subItem) => {
-                            return {
-                                name: subItem.name,
-                                value: isNaN(subItem.answered / subItem.overall)
-                                    ? 0
-                                    : parseFloat(
-                                          (
-                                              subItem.answered / subItem.overall
-                                          ).toFixed(2)
-                                      ) * 100,
-                            };
-                        }),
-                    };
-                });
-
-                setPercentageCompleted(normalizedData);
+                setAssessmentScores(res.data);
             } else {
-                setPercentageCompleted([]);
+                setAssessmentScores([]);
             }
         });
     }, []);
@@ -159,7 +137,7 @@ export const Dashboard = () => {
     if (
         accessLevel === null ||
         top === null ||
-        percentageCompleted === null ||
+        assessmentScores === null ||
         carousel === null
     ) {
         return <Loader />;
@@ -213,20 +191,20 @@ export const Dashboard = () => {
                 </div>
             </div>
             <div className="grid w-full h-auto lg:h-[40%] grid-cols-1 md:grid-cols-4 p-3 lg:p-6 gap-3 lg:gap-6">
-                {percentageCompleted.map((item, index) => (
+                {assessmentScores.types.map((item, index) => (
                     <div
                         key={index}
                         className="flex flex-col items-center w-full h-full"
                     >
                         <p className="text-text text-lg font-semibold">
-                            {item.typeName}
+                            {item.name}
                         </p>
                         <div className="flex items-center justify-center w-full h-full shadow-md shadow-gray-300 shadow-500 rounded-md text-text text-semibold text-xl">
                             <RadarChart
                                 outerRadius={160}
                                 width={600}
                                 height={300}
-                                data={item.data}
+                                data={item.criterias}
                             >
                                 <PolarGrid />
                                 <PolarAngleAxis
@@ -235,9 +213,13 @@ export const Dashboard = () => {
                                     width={30}
                                     className="text-sm"
                                 />
-                                <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                                <PolarRadiusAxis
+                                    angle={30}
+                                    domain={[0, 10]}
+                                    tick={1}
+                                />
                                 <Radar
-                                    dataKey="value"
+                                    dataKey="answer"
                                     stroke="#8884d8"
                                     fill="#8884d8"
                                     fillOpacity={0.6}

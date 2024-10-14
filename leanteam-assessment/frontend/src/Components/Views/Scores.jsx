@@ -103,15 +103,15 @@ export const Scores = () => {
                 </div>
             )}
             {assessments !== null && assessment === null && (
-                <div className="w-full h-full flex flex-wrap p-4 bg-white rounded-lg shadow-md">
+                <div className="w-full h-full flex flex-wrap p-2 md:p-4 bg-white rounded-lg shadow-md pb-12 md:pb-4">
                     {assessments.length === 0 && (
                         <div className="w-full h-full flex flex-wrap p-4 bg-white rounded-lg shadow-md justify-center content-center">
                             <p>No assessments found</p>
                         </div>
                     )}
                     {assessments.length > 0 && (
-                        <div className="relative w-auto h-full flex flex-wrap flex-row p-1 bg-white gap-1 overflow-y-auto overflow-x-hidden no-scrollbar max-w-full">
-                            <div className="flex flex-col w-60 h-full gap-1">
+                        <div className="relative w-full h-full max-w-full flex flex-row p-1 bg-white gap-1 overflow-y-auto overflow-x-auto no-scrollbar">
+                            <div className="flex flex-col w-auto md:w-60 h-full gap-1">
                                 <div className="flex flex-wrap w-auto h-auto absolute">
                                     <svg
                                         onClick={() => {
@@ -154,125 +154,119 @@ export const Scores = () => {
                                         </svg>
                                     </svg>
                                 </div>
-                                <div className="w-60 h-20 min-h-20 max-h-20 text-center text-text text-sm font-medium p-4 bg-white rounded-lg shadow-md"></div>
+                                <div className="w-auto md:w-60 h-20 min-h-20 max-h-20 text-center text-text text-sm font-medium p-4 bg-white rounded-lg shadow-md"></div>
                                 {assessments[0].types.map((type) => {
                                     return type.criterias.map((criteria) => {
                                         return (
-                                            <div className="flex flex-wrap content-center justify-center text-center w-60 h-6 max-h-6 min-h-6 overflow-hidden text-text text-xs font-medium p-4 bg-white rounded-lg shadow-md">
+                                            <div className="flex flex-wrap content-center justify-center text-center md:w-60 h-12 md:h-6 min-h-12 md:max-h-6 ma-h-12 md:min-h-6 overflow-hidden text-text text-xs font-medium p-4 bg-white rounded-lg shadow-md">
                                                 <p>{criteria.name}</p>
                                             </div>
                                         );
                                     });
                                 })}
                             </div>
-                            <div className="flex flex-wrap w-auto h-full gap-1 ">
-                                <div className="flex flex-wrap w-full h-6 min-h-6 max-h-6 shadow-md rounded-lg bg-white gap-1">
-                                    {assessments.map((assessment) => {
-                                        return (
-                                            <div className="flex flex-col w-20 h-full gap-1">
-                                                <div
-                                                    onClick={() => {
-                                                        let assessmentData = [];
+                            <div className="flex flex-nowrap flex-row max-w-full w-full h-full gap-1 ">
+                                {assessments.map((assessment) => {
+                                    return (
+                                        <div className="flex flex-col w-20 h-full gap-1">
+                                            <div
+                                                onClick={() => {
+                                                    let assessmentData = [];
 
-                                                        let typesData =
-                                                            assessment.types.map(
-                                                                (type) => {
-                                                                    return {
-                                                                        name: type.name,
-                                                                        answer: type.answer,
-                                                                    };
-                                                                }
-                                                            );
-
+                                                    let typesData =
                                                         assessment.types.map(
                                                             (type) => {
-                                                                type.criterias.map(
-                                                                    (
-                                                                        criteria
-                                                                    ) => {
-                                                                        assessmentData.push(
-                                                                            {
-                                                                                name: criteria.name,
-                                                                                answer: criteria.answer,
-                                                                            }
-                                                                        );
-                                                                    }
-                                                                );
+                                                                return {
+                                                                    name: type.name,
+                                                                    answer: type.answer,
+                                                                };
                                                             }
                                                         );
 
-                                                        setAssessment({
-                                                            ...assessment,
-                                                            criterias:
-                                                                assessmentData,
-                                                            types: typesData,
-                                                        });
-                                                    }}
-                                                    className="flex flex-wrap justify-center content-center w-20 h-20 min-h-20 max-h-20 text-center text-wrap p-4 bg-white hover:bg-text rounded-lg shadow-md hover:text-white text-text text-lg font-medium transition-all duration-500 ease-in-out cursor-pointer"
-                                                >
-                                                    <p className=" origin-center -rotate-90 ">
-                                                        {assessment.factory_name.includes(
-                                                            "plant"
-                                                        )
-                                                            ? assessment.factory_name.replace(
-                                                                  "plant",
-                                                                  ""
-                                                              )
-                                                            : assessment.factory_name}
-                                                    </p>
-                                                </div>
-                                                {assessment.types.map(
-                                                    (type) => {
-                                                        return type.criterias.map(
-                                                            (criteria) => {
-                                                                return (
-                                                                    <div
-                                                                        className={`flex flex-wrap content-center justify-center text-center w-20 h-6 max-h-6 min-h-6 overflow-hidden text-text text-xs font-bold p-4 ${
-                                                                            criteria.answer <=
-                                                                            1
-                                                                                ? "bg-red-400"
-                                                                                : criteria.answer <=
-                                                                                  2
-                                                                                ? "bg-red-200"
-                                                                                : criteria.answer <=
-                                                                                  3
-                                                                                ? "bg-orange-500"
-                                                                                : criteria.answer <=
-                                                                                  4
-                                                                                ? "bg-orange-300"
-                                                                                : criteria.answer <=
-                                                                                  5
-                                                                                ? "bg-yellow-400"
-                                                                                : criteria.answer <=
-                                                                                  6
-                                                                                ? "bg-lime-300"
-                                                                                : criteria.answer <=
-                                                                                  7
-                                                                                ? "bg-lime-500"
-                                                                                : criteria.answer <=
-                                                                                  8
-                                                                                ? "bg-green-400"
-                                                                                : criteria.answer <=
-                                                                                  9
-                                                                                ? "bg-green-600 text-white"
-                                                                                : "bg-primary text-white"
-                                                                        } rounded-lg shadow-md`}
-                                                                    >
-                                                                        <p>
-                                                                            {
-                                                                                criteria.answer
-                                                                            }
-                                                                        </p>
-                                                                    </div>
-                                                                );
-                                                            }
+                                                    assessment.types.map(
+                                                        (type) => {
+                                                            type.criterias.map(
+                                                                (criteria) => {
+                                                                    assessmentData.push(
+                                                                        {
+                                                                            name: criteria.name,
+                                                                            answer: criteria.answer,
+                                                                        }
+                                                                    );
+                                                                }
+                                                            );
+                                                        }
+                                                    );
+
+                                                    setAssessment({
+                                                        ...assessment,
+                                                        criterias:
+                                                            assessmentData,
+                                                        types: typesData,
+                                                    });
+                                                }}
+                                                className="flex flex-wrap justify-center content-center w-20 h-20 min-h-20 max-h-20 text-center text-wrap p-4 bg-white hover:bg-text rounded-lg shadow-md hover:text-white text-text text-lg font-medium transition-all duration-500 ease-in-out cursor-pointer"
+                                            >
+                                                <p className=" origin-center -rotate-90 ">
+                                                    {assessment.factory_name.includes(
+                                                        "plant"
+                                                    )
+                                                        ? assessment.factory_name.replace(
+                                                              "plant",
+                                                              ""
+                                                          )
+                                                        : assessment.factory_name}
+                                                </p>
+                                            </div>
+                                            {assessment.types.map((type) => {
+                                                return type.criterias.map(
+                                                    (criteria) => {
+                                                        return (
+                                                            <div
+                                                                className={`flex flex-wrap content-center justify-center text-center w-20 h-12 md:h-6 min-h-12 md:max-h-6 ma-h-12 md:min-h-6 overflow-hidden text-text text-xs font-bold p-4 ${
+                                                                    criteria.answer <=
+                                                                    1
+                                                                        ? "bg-red-400"
+                                                                        : criteria.answer <=
+                                                                          2
+                                                                        ? "bg-red-200"
+                                                                        : criteria.answer <=
+                                                                          3
+                                                                        ? "bg-orange-500"
+                                                                        : criteria.answer <=
+                                                                          4
+                                                                        ? "bg-orange-300"
+                                                                        : criteria.answer <=
+                                                                          5
+                                                                        ? "bg-yellow-400"
+                                                                        : criteria.answer <=
+                                                                          6
+                                                                        ? "bg-lime-300"
+                                                                        : criteria.answer <=
+                                                                          7
+                                                                        ? "bg-lime-500"
+                                                                        : criteria.answer <=
+                                                                          8
+                                                                        ? "bg-green-400"
+                                                                        : criteria.answer <=
+                                                                          9
+                                                                        ? "bg-green-600 text-white"
+                                                                        : "bg-primary text-white"
+                                                                } rounded-lg shadow-md`}
+                                                            >
+                                                                <p>
+                                                                    {
+                                                                        criteria.answer
+                                                                    }
+                                                                </p>
+                                                            </div>
                                                         );
                                                     }
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
+                                                );
+                                            })}
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     )}
@@ -355,7 +349,7 @@ export const Scores = () => {
                             <YAxis domain={[0, 10]} />
                             <Tooltip />
                             <Bar dataKey="answer">
-                                {assessment.types.map((entry, index) => (
+                                {assessment.criterias.map((entry, index) => (
                                     <Cell
                                         key={`cell-${index}`}
                                         fill={colors[index]}

@@ -348,7 +348,8 @@ router.get(
                                 avgRegex,
                                 avgSum / avg.length
                             );
-                        } else if (typeFormula.includes("SUM")) {
+                        }
+                        if (typeFormula.includes("SUM")) {
                             const sumElements = typeFormula
                                 .split("(")[1]
                                 .split(")")[0]
@@ -394,13 +395,12 @@ router.get(
                     }
 
                     let typeAnswer = parseFloat(eval(typeFormula));
-
                     typeAnswer =
                         typeAnswer === NaN
                             ? 0
                             : parseFloat(typeAnswer.toFixed(2));
 
-                    typeOverall += typeAnswer * type.weight;
+                    typeOverall += typeAnswer;
 
                     type["answer"] = typeOverall;
                     delete type["formula"];
