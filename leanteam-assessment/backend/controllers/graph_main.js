@@ -873,3 +873,349 @@ router.get(
         }
     }
 );
+
+router.get("/baseline", async (req, res) => {
+    try {
+        const user = jwt.verify(req.cookies.token, process.env.JSONSECRET, {
+            algorithms: "HS512",
+        });
+
+        const year = new Date().getFullYear();
+
+        let assessmentMidReq =
+            await surreal_assessment.query(`SELECT * FROM assessment WHERE year = ${year} AND factory = <string>${user.factory} AND type = "mid-year" FETCH 
+            questionaire.types,
+            questionaire.types.criterias, 
+            questionaire.types.criterias.questions,
+            questionaire.types.criterias.questions.possibilities,
+            questionaire.types.criterias.questions.possibilities.*;`);
+
+        let asssessmentEndReq =
+            await surreal_assessment.query(`SELECT * FROM assessment WHERE year = ${year} AND factory = <string>${user.factory} AND type = "end-of-year" FETCH
+            questionaire.types,
+            questionaire.types.criterias,
+            questionaire.types.criterias.questions,
+            questionaire.types.criterias.questions.possibilities,
+            questionaire.types.criterias.questions.possibilities.*;`);
+
+        let baseline = [];
+
+        let assessments = [];
+
+        if (assessmentMidReq[0].length !== 0) {
+            assessments.push(assessmentMidReq[0][0]);
+        }
+
+        if (asssessmentEndReq[0].length !== 0) {
+            assessments.push(asssessmentEndReq[0][0]);
+        }
+
+        for (let assessment of assessments) {
+            const answersReq = await Answers.selectAll({
+                where: {
+                    assessment: assessment.id.tb + ":" + assessment.id.id,
+                },
+                exclude: ["evidence", "comment", "assessment", "timestamps"],
+            });
+
+            const answers = answersReq[0];
+
+            for (let type of assessment.questionaire.types) {
+                for (let criteria of type.criterias) {
+                    let criteriaOverall = 0;
+                    for (let question of criteria.questions) {
+                        let questionOverall = 0;
+                        if (question.calculationType === "AVG") {
+                            for (let possibility of question.possibilities) {
+                                const answer = answers.find(
+                                    (answer) =>
+                                        answer.possibility.tb +
+                                            ":" +
+                                            answer.possibility.id ===
+                                        possibility.id.tb +
+                                            ":" +
+                                            possibility.id.id
+                                );
+
+                                if (answer) {
+                                    questionOverall += answer.answer;
+                                }
+                            }
+
+                            if (
+                                question.possibilities.length === 0 ||
+                                isNaN(question.possibilities.length) ||
+                                questionOverall === undefined ||
+                                isNaN(questionOverall)
+                            ) {
+                                question["answer"] = 0;
+                            } else {
+                                question["answer"] =
+                                    questionOverall /
+                                    question.possibilities.length;
+                            }
+                        } else if (question.calculationType === "MIN") {
+                            let min = 11;
+                            for (let possibility of question.possibilities) {
+                                const answer = answers.find(
+                                    (answer) =>
+                                        answer.possibility.tb +
+                                            ":" +
+                                            answer.possibility.id ===
+                                        possibility.id.tb +
+                                            ":" +
+                                            possibility.id.id
+                                );
+
+                                if (answer) {
+                                    if (answer.answer < min) {
+                                        min = answer.answer;
+                                    }
+                                }
+                            }
+
+                            question["answer"] = min === 11 ? 0 : min;
+                        } else if (question.calculationType === "MAX") {
+                            let max = 0;
+                            for (let possibility of question.possibilities) {
+                                const answer = answers.find(
+                                    (answer) =>
+                                        answer.possibility.tb +
+                                            ":" +
+                                            answer.possibility.id ===
+                                        possibility.id.tb +
+                                            ":" +
+                                            possibility.id.id
+                                );
+
+                                if (answer) {
+                                    if (answer.answer > max) {
+                                        max = answer.answer;
+                                    }
+                                }
+                            }
+
+                            question["answer"] = max;
+                        }
+
+                        delete question["comment"];
+                        delete question["question"];
+                        delete question["possibilities"];
+                    }
+
+                    if (criteria.calculationType === "AVG") {
+                        for (let question of criteria.questions) {
+                            criteriaOverall +=
+                                question.answer * question.weight;
+                        }
+
+                        if (
+                            criteriaOverall === 0 &&
+                            (criteria.questions === undefined ||
+                                criteria.questions.length === 0 ||
+                                isNaN(criteria.questions.length))
+                        ) {
+                            criteria["answer"] = 0;
+                        } else {
+                            criteria["answer"] = parseFloat(
+                                (
+                                    criteriaOverall / criteria.questions.length
+                                ).toFixed(2)
+                            );
+                        }
+                    } else if (criteria.calculationType === "MIN") {
+                        let min = 11;
+                        for (let question of criteria.questions) {
+                            if (question.answer < min) {
+                                min = question.answer * question.weight;
+                            }
+                        }
+                        criteria["answer"] = parseFloat(min.parseFloat(2));
+                    } else if (criteria.calculationType === "MAX") {
+                        let max = 0;
+                        for (let question of criteria.questions) {
+                            if (question.answer > max) {
+                                max = question.answer * question.weight;
+                            }
+                        }
+                        criteria["answer"] = parseFloat(max.toFixed(2));
+                    } else if (criteria.calculationType === "SUM") {
+                        let sum = 0;
+                        for (let question of criteria.questions) {
+                            sum += question.answer * question.weight;
+                        }
+                        criteria["answer"] = parseFloat(sum.toFixed(2));
+                    } else if (criteria.calculationType === "FORMULA") {
+                        let formula = criteria.formula.replace(/ /g, "");
+                        let seperatedFormula = formula.split("+");
+
+                        let sum = 0;
+
+                        seperatedFormula.forEach(async (element) => {
+                            if (element.includes("AVG")) {
+                                let avg = element
+                                    .split("(")[1]
+                                    .split(")")[0]
+                                    .split(",");
+                                let avgSum = avg.reduce((a, b) => {
+                                    let question = criteria.questions.find(
+                                        (question) =>
+                                            question.id.tb +
+                                                ":" +
+                                                question.id.id ===
+                                            b
+                                    );
+
+                                    return (
+                                        parseFloat(a) +
+                                        parseFloat(
+                                            question.answer * question.weight
+                                        )
+                                    );
+                                }, 0);
+
+                                sum += avgSum / avg.length;
+                            } else if (element.includes("SUM")) {
+                                let sumElements = element
+                                    .split("(")[1]
+                                    .split(")")[0]
+                                    .split(",");
+
+                                let sumSum = 0;
+
+                                sumElements.forEach((element) => {
+                                    let question = criteria.questions.find(
+                                        (question) =>
+                                            question.id.tb +
+                                                ":" +
+                                                question.id.id ===
+                                            element
+                                    );
+
+                                    sumSum += question.answer * question.weight;
+                                });
+
+                                sum += sumSum;
+                            } else {
+                                let question = criteria.questions.find(
+                                    (question) =>
+                                        question.id.tb +
+                                            ":" +
+                                            question.id.id ===
+                                        element
+                                );
+                                sum += question.answer * question.weight;
+                            }
+                        });
+
+                        criteria["answer"] = parseFloat(sum.toFixed(2));
+                    }
+
+                    delete criteria["criteria"];
+                    delete criteria["icon"];
+                    delete criteria["description"];
+                    delete criteria["questions"];
+                    delete criteria["calculationType"];
+                    delete criteria["formula"];
+                    delete criteria["timestamps"];
+                }
+
+                delete type["formula"];
+            }
+            assessment["types"] = assessment.questionaire.types;
+            delete assessment["questionaire"];
+            delete assessment["factory"];
+            delete assessment["year"];
+            delete assessment["status"];
+            delete assessment["factory_bu"];
+            delete assessment["factory_name"];
+            delete assessment["leader"];
+            delete assessment["assessor"];
+            delete assessment["id"];
+        }
+
+        for (let assessment of assessments) {
+            if (assessment.type === "end-of-year") {
+                for (let type of assessment.types) {
+                    for (let criteria of type.criterias) {
+                        let b = parseFloat(
+                            (
+                                criteria.answer +
+                                (criteria.answer < 7
+                                    ? 0.25
+                                    : 613.07 *
+                                      Math.exp(-1.119 * criteria.answer)) *
+                                    (10 - criteria.answer)
+                            ).toFixed(2)
+                        );
+
+                        baseline.push({
+                            assessment: assessment.type,
+                            type: type.name,
+                            criteria: criteria.name,
+                            baseline: b,
+                        });
+                    }
+                }
+            }
+        }
+
+        const groupedData = baseline.reduce((result, currentItem) => {
+            const { type, assessment, criteria, baseline } = currentItem;
+
+            // Check if this type already exists in result
+            let typeGroup = result.find((group) => group.type === type);
+            if (!typeGroup) {
+                // If type group does not exist, create it
+                typeGroup = { type, criterias: [] };
+                result.push(typeGroup);
+            }
+
+            // Find or create a criteria object for this criteria
+            let criteriaGroup = typeGroup.criterias.find(
+                (c) => c.criteria === criteria
+            );
+            if (!criteriaGroup) {
+                // If the criteria group does not exist, create it
+                criteriaGroup = {
+                    criteria,
+                    mid: 0,
+                    end: 0,
+                    baseline: 0,
+                };
+                typeGroup.criterias.push(criteriaGroup);
+            }
+
+            // Assign values based on assessment type
+            for (let assessment of assessments) {
+                if (assessment.type === "mid-year") {
+                    for (let types of assessment.types) {
+                        for (let criterias of types.criterias) {
+                            if (criterias.name === criteria) {
+                                criteriaGroup.mid = criterias.answer;
+                            }
+                        }
+                    }
+                }
+                if (assessment.type === "end-of-year") {
+                    for (let types of assessment.types) {
+                        for (let criterias of types.criterias) {
+                            if (criterias.name === criteria) {
+                                criteriaGroup.end = criterias.answer;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Always assign baseline
+            criteriaGroup.baseline = baseline;
+
+            return result;
+        }, []);
+
+        return res.status(200).json({ status: 200, data: groupedData });
+    } catch (error) {
+        console.log(error);
+    }
+});

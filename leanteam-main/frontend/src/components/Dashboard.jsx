@@ -2,8 +2,14 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Loader } from "./Loader";
 import { checkAccessLevel } from "../../../../auth";
-import { getCarousel, getScores, getTop } from "../controllers/dashboard";
 import {
+    getBaseline,
+    getCarousel,
+    getScores,
+    getTop,
+} from "../controllers/dashboard";
+import {
+    Dot,
     BarChart,
     Bar,
     XAxis,
@@ -17,7 +23,6 @@ import {
     PolarAngleAxis,
     PolarRadiusAxis,
     Radar,
-    Cell,
     Rectangle,
 } from "recharts";
 
@@ -25,6 +30,7 @@ export const Dashboard = () => {
     const [top, setTop] = useState(null);
     const [assessmentScores, setAssessmentScores] = useState(null);
     const [carousel, setCarousel] = useState(null);
+    const [baseline, setBaseline] = useState(null);
 
     const [index, setIndex] = useState(0);
 
@@ -61,6 +67,14 @@ export const Dashboard = () => {
                 setAssessmentScores(res.data);
             } else {
                 setAssessmentScores([]);
+            }
+        });
+
+        getBaseline().then((res) => {
+            if (res.status === 200) {
+                setBaseline(res.data);
+            } else {
+                setBaseline([]);
             }
         });
     }, []);
@@ -107,7 +121,6 @@ export const Dashboard = () => {
 
         return (
             <g>
-                {/* Draw the actual bar */}
                 <Rectangle
                     x={x}
                     y={y}
@@ -117,28 +130,37 @@ export const Dashboard = () => {
                     className="z-10"
                 />
 
-                {/* Create an overlay that spans the entire bar container */}
                 <Rectangle
                     x={x}
-                    y={40} // Extend from the top of the chart
+                    y={40}
                     width={width}
-                    height={458} // Total height of the chart container
+                    height={458}
                     className="hover:fill-gray-300 cursor-pointer fill-transparent opacity-60 z-0"
                     onClick={() => {
                         window.location.href =
                             import.meta.env.VITE_MAIN_ASSESSMENT_HREF +
                             `assessments/review/?year=${barData.year}&factory=${barData.factory}`;
-                    }} // Handle click on entire area
+                    }}
                 />
             </g>
         );
+    };
+
+    const polarToCartesian = (centerX, centerY, radius, angleInDegrees) => {
+        const angleInRadians = (angleInDegrees - 90) * (Math.PI / 180.0);
+
+        return {
+            x: centerX + radius * Math.cos(angleInRadians),
+            y: centerY + radius * Math.sin(angleInRadians),
+        };
     };
 
     if (
         accessLevel === null ||
         top === null ||
         assessmentScores === null ||
-        carousel === null
+        carousel === null ||
+        baseline === null
     ) {
         return <Loader />;
     }
@@ -216,7 +238,7 @@ export const Dashboard = () => {
                                 <PolarRadiusAxis
                                     angle={30}
                                     domain={[0, 10]}
-                                    tick={1}
+                                    tickCount={11}
                                 />
                                 <Radar
                                     dataKey="answer"
@@ -224,6 +246,90 @@ export const Dashboard = () => {
                                     fill="#8884d8"
                                     fillOpacity={0.6}
                                 />
+                            </RadarChart>
+                        </div>
+                    </div>
+                ))}
+                {baseline.map((item, index) => (
+                    <div
+                        key={index}
+                        className="flex flex-col items-center w-full h-full"
+                    >
+                        <p className="text-text text-lg font-semibold">
+                            Baseline of {item.type}
+                        </p>
+                        <div className="flex items-center justify-center w-full h-full shadow-md shadow-gray-300 shadow-500 rounded-md text-text text-semibold text-xl">
+                            <RadarChart
+                                outerRadius={160}
+                                width={600}
+                                height={300}
+                                data={item.criterias}
+                            >
+                                {/* Polar Grid */}
+                                <PolarGrid />
+
+                                {/* Polar Angle Axis for each criteria */}
+                                <PolarAngleAxis dataKey="criteria" />
+
+                                {/* Mid-year radar */}
+                                <Radar
+                                    name="Mid-Year"
+                                    dataKey="mid"
+                                    stroke="#8884d8"
+                                    fill="#8884d8"
+                                    fillOpacity={0.6}
+                                />
+
+                                {/* End-year radar */}
+                                <Radar
+                                    name="End-Year"
+                                    dataKey="end"
+                                    stroke="#82ca9d"
+                                    fill="#82ca9d"
+                                    fillOpacity={0.6}
+                                />
+
+                                <Radar
+                                    name="Baseline"
+                                    dataKey="baseline"
+                                    stroke="red"
+                                    fill="red"
+                                    fillOpacity={0}
+                                    strokeOpacity={0}
+                                />
+
+                                {/* Tooltip for hover effect */}
+                                <Tooltip />
+
+                                {/* Polar Radius Axis */}
+                                <PolarRadiusAxis angle={30} domain={[0, 10]} />
+
+                                {/* Baseline Red Dot */}
+                                {item.criterias.map((criteria, idx) => {
+                                    if (criteria.baseline !== null) {
+                                        // Calculate cx and cy for the red dot based on baseline value
+                                        const { x, y } = polarToCartesian(
+                                            300, // centerX - half of chart width
+                                            150, // centerY - half of chart height
+                                            (criteria.baseline / 10) * 160, // radius scaled to baseline value
+                                            idx * (360 / item.criterias.length) // angle based on criteria index
+                                        );
+
+                                        console.log(x, y);
+
+                                        return (
+                                            <circle
+                                                cx={x} // Fixed center of the chart
+                                                cy={y} // Fixed center of the chart
+                                                r={5} // Size of the dot
+                                                fill="red"
+                                                stroke="red"
+                                                strokeWidth={2}
+                                            />
+                                        );
+                                    }
+                                    return null;
+                                })}
                             </RadarChart>
                         </div>
                     </div>

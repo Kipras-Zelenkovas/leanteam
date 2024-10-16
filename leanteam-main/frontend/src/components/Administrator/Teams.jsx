@@ -30,10 +30,10 @@ export const Teams = () => {
     }
 
     return (
-        <div className="w-full h-full flex flex-wrap gap-3 px-3 py-3">
+        <div className="w-full h-full flex flex-col md:flex-row md:flex-wrap  gap-3 px-3 py-3">
             <div
                 onClick={() => setShowDialog(true)}
-                className="group flex flex-wrap h-28 w-52 p-5 justify-center rounded-md content-center bg-white shadow-gray-400 hover:shadow-text shadow cursor-pointer hover:scale-105 transition-all duration-500 ease-in-out"
+                className="group flex flex-wrap h-28 w-full md:w-52 p-5 justify-center rounded-md content-center bg-white shadow-gray-400 hover:shadow-text shadow cursor-pointer hover:scale-105 transition-all duration-500 ease-in-out"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -64,7 +64,7 @@ export const Teams = () => {
                     teamL.length != 0 && (
                         <div
                             key={teamL.id}
-                            className="group flex flex-wrap justify-center content-center h-28 w-52 rounded-md p-5 shadow shadow-gray-400 hover:shadow-text cursor-pointer hover:scale-105 transition-all ease-in-out duration-500"
+                            className="group flex flex-wrap justify-center content-center h-28 w-full md:w-52 rounded-md p-5 shadow shadow-gray-400 hover:shadow-text cursor-pointer hover:scale-105 transition-all ease-in-out duration-500"
                             onClick={() => {
                                 setTeam(teamL);
                                 setShowDialog(true);

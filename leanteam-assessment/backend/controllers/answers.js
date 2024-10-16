@@ -177,7 +177,6 @@ router.get(
                         value: factory,
                         as: DataTypes.STRING,
                     },
-                    status: "completed",
                 },
             });
 

@@ -26,3 +26,12 @@ export const getScores = async () => {
         console.error(error);
     }
 };
+
+export const getBaseline = async () => {
+    try {
+        const response = await assessmentHttp.get(`/baseline`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+    }
+};

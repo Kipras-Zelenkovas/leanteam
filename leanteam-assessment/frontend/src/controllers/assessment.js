@@ -107,3 +107,17 @@ export const getAssessmentsToReview = async (data) => {
         return error.response;
     }
 };
+
+export const downloadAssessmentReview = async (data) => {
+    try {
+        const res = await http.get("/assessment/review/download", {
+            params: {
+                id: data,
+            },
+        });
+
+        return res.data;
+    } catch (error) {
+        return error.response;
+    }
+};
