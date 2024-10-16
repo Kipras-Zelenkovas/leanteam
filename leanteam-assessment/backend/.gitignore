@@ -26,3 +26,4 @@ certificates
 *.sln
 *.sw?
 .env
+public/uploads
