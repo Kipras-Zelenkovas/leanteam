@@ -375,12 +375,13 @@ export const Scores = () => {
                                 domain={[0, 10]}
                                 dataKey="answer"
                                 type="number"
-                                className="text-md font-semibold"
+                                className="text-sm font-semibold"
                             />
                             <YAxis
                                 orientation="left"
                                 type="category"
                                 dataKey="name"
+                                className="text-sm"
                             />
                             <Tooltip />
                             <Bar dataKey="answer">

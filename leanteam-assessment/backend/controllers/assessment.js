@@ -661,7 +661,8 @@ router.post(
                     questionaire.types,
                     questionaire.types.criterias, 
                     questionaire.types.criterias.questions,
-                    questionaire.types.criterias.questions.*;`
+                    questionaire.types.criterias.questions.possibilities,
+                    questionaire.types.criterias.questions.possibilities.*;`
             );
 
             const assessmentReference = await surreal_assessment.query(
@@ -673,7 +674,8 @@ router.post(
                     questionaire.types,
                     questionaire.types.criterias, 
                     questionaire.types.criterias.questions,
-                    questionaire.types.criterias.questions.*;`
+                    questionaire.types.criterias.questions.possibilities,
+                    questionaire.types.criterias.questions.possibilities.*;`
             );
 
             const answers = await Answers.selectAll({
@@ -720,59 +722,85 @@ router.post(
 
             for (let i = 0; i < assessmentTR.length; i++) {
                 for (let j = 0; j < assessmentTR[i].questions.length; j++) {
-                    let question = assessmentR[i].questions.find((q) => {
-                        return (
-                            q?.question.trim() ===
-                            assessmentTR[i].questions[j]?.question.trim()
-                        );
-                    });
-                    if (
-                        question !== undefined &&
-                        question !== null &&
-                        question !== ""
+                    if (assessmentR[i].questions[j] === undefined) {
+                        continue;
+                    }
+                    for (
+                        let x = 0;
+                        x < assessmentTR[i].questions[j].possibilities.length;
+                        x++
                     ) {
-                        const answerR = answers[0].filter((a) => {
-                            return (
-                                a.question.tb + ":" + a.question.id ===
-                                assessmentR[i].questions[j].id.tb +
-                                    ":" +
-                                    assessmentR[i].questions[j].id.id
-                            );
-                        });
-
-                        for (let a of answerR) {
-                            await Answers.create({
-                                answer: a.answer,
-                                question: {
-                                    data:
-                                        assessmentTR[i].questions[j].id.tb +
-                                        ":" +
-                                        assessmentTR[i].questions[j].id.id,
-                                    as: DataTypes.RECORD,
-                                },
-                                criteria: {
-                                    data:
-                                        assessmentTR[i].id.tb +
-                                        ":" +
-                                        assessmentTR[i].id.id,
-                                    as: DataTypes.RECORD,
-                                },
-                                assessment: {
-                                    data: id,
-                                    as: DataTypes.RECORD,
-                                },
-                                possibility: {
-                                    data:
+                        if (
+                            assessmentR[i].questions[j].possibilities.length > 0
+                        ) {
+                            if (
+                                assessmentR[i].questions[j]?.possibilities[x] !=
+                                    undefined &&
+                                assessmentR[i].questions[j]?.possibilities[x] !=
+                                    null &&
+                                assessmentR[i].questions[j]?.possibilities[x] !=
+                                    ""
+                            ) {
+                                const answerR = answers[0].filter((a) => {
+                                    return (
                                         a.possibility.tb +
-                                        ":" +
-                                        a.possibility.id,
-                                    as: DataTypes.RECORD,
-                                },
-                                evidence: a.evidence,
-                                comment: a.comment,
-                                assessor_comment: a.assessor_comment,
-                                assessor_answer: a.assessor_answer,
-                            });
+                                            ":" +
+                                            a.possibility.id ===
+                                        assessmentR[i].questions[j]
+                                            .possibilities[x].id.tb +
+                                            ":" +
+                                            assessmentR[i].questions[j]
+                                                .possibilities[x].id.id
+                                    );
+                                });
+
+                                if (
+                                    answerR !== undefined &&
+                                    answerR !== null &&
+                                    answerR !== ""
+                                ) {
+                                    for (let a of answerR) {
+                                        await Answers.create({
+                                            answer: a.answer,
+                                            question: {
+                                                data:
+                                                    assessmentTR[i].questions[j]
+                                                        .id.tb +
+                                                    ":" +
+                                                    assessmentTR[i].questions[j]
+                                                        .id.id,
+                                                as: DataTypes.RECORD,
+                                            },
+                                            criteria: {
+                                                data:
+                                                    assessmentTR[i].id.tb +
+                                                    ":" +
+                                                    assessmentTR[i].id.id,
+                                                as: DataTypes.RECORD,
+                                            },
+                                            assessment: {
+                                                data: id,
+                                                as: DataTypes.RECORD,
+                                            },
+                                            possibility: {
+                                                data:
+                                                    assessmentTR[i].questions[j]
+                                                        .possibilities[x].id
+                                                        .tb +
+                                                    ":" +
+                                                    assessmentTR[i].questions[j]
+                                                        .possibilities[x].id.id,
+                                                as: DataTypes.RECORD,
+                                            },
+                                            evidence: a.evidence,
+                                            comment: a.comment,
+                                            assessor_comment:
+                                                a.assessor_comment,
+                                            assessor_answer: a.assessor_answer,
+                                        });
+                                    }
+                                }
+                            }
                         }
                     }
                 }

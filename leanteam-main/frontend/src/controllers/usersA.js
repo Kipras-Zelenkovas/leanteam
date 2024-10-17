@@ -16,7 +16,7 @@ export const getUsers = async () => {
 
 export const getUsersAny = async () => {
     try {
-        const res = await defaultHttp.get("/users_any");
+        const res = await defaultHttp.get("/users/any");
 
         return res.data;
     } catch (error) {

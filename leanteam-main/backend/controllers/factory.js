@@ -131,34 +131,13 @@ router.post(
                         data: lean,
                         as: DataTypes.RECORD,
                     },
-                    quality: {
-                        data: quality,
-                        as: DataTypes.RECORD,
-                    },
-                    safety: {
-                        data: safety,
-                        as: DataTypes.RECORD,
-                    },
-                    environment: {
-                        data: environment,
-                        as: DataTypes.RECORD,
-                    },
-                    production: {
-                        data: production,
-                        as: DataTypes.RECORD,
-                    },
-                    maintenance: {
-                        data: maintenance,
-                        as: DataTypes.RECORD,
-                    },
-                    logistics: {
-                        data: logistics,
-                        as: DataTypes.RECORD,
-                    },
-                    hr: {
-                        data: hr,
-                        as: DataTypes.RECORD,
-                    },
+                    quality: quality,
+                    safety: safety,
+                    environment: environment,
+                    production: production,
+                    maintenance: maintenance,
+                    logistics: logistics,
+                    hr: hr,
                 });
             } else {
                 await Factory.create({
@@ -177,34 +156,13 @@ router.post(
                         data: lean,
                         as: DataTypes.RECORD,
                     },
-                    quality: {
-                        data: quality,
-                        as: DataTypes.RECORD,
-                    },
-                    safety: {
-                        data: safety,
-                        as: DataTypes.RECORD,
-                    },
-                    environment: {
-                        data: environment,
-                        as: DataTypes.RECORD,
-                    },
-                    production: {
-                        data: production,
-                        as: DataTypes.RECORD,
-                    },
-                    maintenance: {
-                        data: maintenance,
-                        as: DataTypes.RECORD,
-                    },
-                    logistics: {
-                        data: logistics,
-                        as: DataTypes.RECORD,
-                    },
-                    hr: {
-                        data: hr,
-                        as: DataTypes.RECORD,
-                    },
+                    quality: quality,
+                    safety: safety,
+                    environment: environment,
+                    production: production,
+                    maintenance: maintenance,
+                    logistics: logistics,
+                    hr: hr,
                 });
             }
 

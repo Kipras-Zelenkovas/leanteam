@@ -9,14 +9,12 @@ import {
     getTop,
 } from "../controllers/dashboard";
 import {
-    Dot,
     BarChart,
     Bar,
     XAxis,
     YAxis,
     CartesianGrid,
     RadarChart,
-    Tooltip,
     LabelList,
     ResponsiveContainer,
     PolarGrid,
@@ -24,6 +22,9 @@ import {
     PolarRadiusAxis,
     Radar,
     Rectangle,
+    ReferenceLine,
+    Line,
+    Tooltip,
 } from "recharts";
 
 export const Dashboard = () => {
@@ -36,6 +37,10 @@ export const Dashboard = () => {
 
     const [accessLevel, setAccessLevel] = useState(null);
     const navigate = useNavigate();
+
+    const [w, setW] = useState(window.innerWidth);
+
+    const chartHeight = 400;
 
     useEffect(() => {
         checkAccessLevel().then((res) => {
@@ -93,6 +98,15 @@ export const Dashboard = () => {
         return () => clearInterval(interval);
     }, [carousel]);
 
+    useEffect(() => {
+        const handleResize = () => {
+            setW(window.innerWidth);
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     const renderCustomizedLabel = (props) => {
         const { x, y, width, height, value } = props;
         const radius = 10;
@@ -101,7 +115,7 @@ export const Dashboard = () => {
                 <text
                     x={x + width / 2}
                     y={y - radius}
-                    className="fill-text"
+                    className="fill-text text-sm w-max h-max"
                     textAnchor="middle"
                     dominantBaseline="middle"
                 >
@@ -109,10 +123,6 @@ export const Dashboard = () => {
                 </text>
             </g>
         );
-    };
-
-    const handleBarClick = (data) => {
-        console.log("Clicked bar:", data);
     };
 
     const renderCustomizedBar = (props) => {
@@ -146,13 +156,38 @@ export const Dashboard = () => {
         );
     };
 
-    const polarToCartesian = (centerX, centerY, radius, angleInDegrees) => {
-        const angleInRadians = (angleInDegrees - 90) * (Math.PI / 180.0);
+    const CustomTargetLine = ({ x, y, width }) => {
+        return (
+            <line
+                x1={x} // starting x-coordinate of the line
+                x2={x + width} // ending x-coordinate of the line
+                y1={y} // calculated y position
+                y2={y} // same y for a straight horizontal line
+                stroke="red"
+                strokeWidth={1}
+            >
+                <title>Target</title>
+            </line>
+        );
+    };
 
-        return {
-            x: centerX + radius * Math.cos(angleInRadians),
-            y: centerY + radius * Math.sin(angleInRadians),
-        };
+    const getYPosition = (chartHeight, value, domain, target) => {
+        const [minDomain, maxDomain] = domain;
+        const scaledY =
+            ((maxDomain - value) / (maxDomain - minDomain)) * chartHeight; // Adjusted to scale from the top
+
+        if (target < 3) {
+            return scaledY - 15;
+        } else if (target > 5 && target < 7) {
+            return scaledY + 8;
+        } else if (target === 10) {
+            return scaledY + 40;
+        } else if (target > 9.5) {
+            return scaledY + 33;
+        } else if (target > 7) {
+            return scaledY + 28;
+        }
+        return scaledY;
     };
 
     if (
@@ -167,174 +202,227 @@ export const Dashboard = () => {
 
     return (
         <div className="flex flex-wrap gap-4 md:gap-2 w-full h-full max-h-full overflow-y-auto no-scrollbar bg-white pb-16 md:pb-0 md:overflow-hidden">
-            <div className="grid w-full h-auto md:h-[60%] md:max-h-[60%] grid-cols-1 md:grid-cols-2 md:grid-rows-1 p-3 lg:p-6 md:pb-0 pb-0 gap-3 lg:gap-6">
-                <div className="flex items-center justify-center w-full md:h-full h-96 shadow-md shadow-gray-300 rounded-md text-text text-semibold text-xl">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
-                            width={500}
-                            height={300}
-                            data={top}
-                            margin={{
-                                top: 40,
-                                right: 30,
-                                left: 0,
-                                bottom: 5,
-                            }}
-                            domain={[0, 10]}
-                        >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis domain={[0, 10]} />
-                            <Bar
-                                dataKey="score"
-                                fill="#8884d8"
-                                minPointSize={5}
-                                shape={renderCustomizedBar}
+            <div className="grid w-full h-auto md:h-[50%] md:max-h-[50%] grid-cols-1 md:grid-cols-2 md:grid-rows-1 p-3 lg:p-6 md:pb-0 pb-0 gap-4 lg:gap-2">
+                <div className="w-full h-full grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <div className="flex items-center justify-center w-full md:h-full h-96 shadow-md shadow-gray-300 rounded-md text-text text-semibold text-xl">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                                width={500}
+                                height={300}
+                                data={top}
+                                margin={{
+                                    top: 40,
+                                    right: 30,
+                                    left: 0,
+                                    bottom: 5,
+                                }}
+                                domain={[0, 10]}
                             >
-                                <LabelList
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="name" />
+                                <YAxis domain={[0, 10]} />
+                                <Bar
                                     dataKey="score"
-                                    content={renderCustomizedLabel}
-                                />
-                            </Bar>
-                        </BarChart>
-                    </ResponsiveContainer>
+                                    fill="#8884d8"
+                                    minPointSize={5}
+                                    shape={renderCustomizedBar}
+                                >
+                                    <LabelList
+                                        dataKey="score"
+                                        content={renderCustomizedLabel}
+                                    />
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                    <div className="flex flex-col items-center justify-between w-full h-full max-h-full shadow-md shadow-gray-300 rounded-md text-text text-semibold text-xl p-2 gap-2">
+                        <p className="text-text text-lg text-center font-semibold w-full">
+                            {carousel[index]?.criteria}
+                        </p>
+                        <img
+                            src={
+                                import.meta.env.VITE_ASSESSMENT_BACKEND_IMAGES +
+                                carousel[index]?.image
+                            }
+                            className="w-full md:h-auto md:max-h-[85%] h-64 max-h-64 object-contain rounded-md overflow-hidden"
+                        />
+                    </div>
                 </div>
-                <div className="flex flex-col items-center justify-between w-full h-full max-h-full shadow shadow-gray-300 rounded-md text-text text-semibold text-xl p-2 gap-2">
-                    <p className="text-text text-lg text-center font-semibold w-full">
-                        {carousel[index]?.criteria}
-                    </p>
-                    <img
-                        src={
-                            import.meta.env.VITE_ASSESSMENT_BACKEND_IMAGES +
-                            carousel[index]?.image
-                        }
-                        className="w-full md:h-auto md:max-h-[85%] h-64 max-h-64 object-contain rounded-md overflow-hidden"
-                    />
+                <div className=" items-center justify-center w-full md:h-full h-auto grid grid-cols-1 md:grid-cols-2 gap-2 rounded-md text-text text-semibold text-xl">
+                    {assessmentScores.types.map((item, index) => (
+                        <div
+                            key={index}
+                            className="flex flex-col items-center w-full h-full shadow-md shadow-gray-300 rounded-md"
+                        >
+                            <p className="text-text text-lg font-semibold">
+                                {item.name}
+                            </p>
+                            <div className="flex items-center justify-center w-full h-full text-text text-semibold text-xl">
+                                <RadarChart
+                                    outerRadius={160}
+                                    width={w < 768 ? 800 : 500}
+                                    height={w < 768 ? 330 : 400}
+                                    data={item.criterias}
+                                >
+                                    <PolarGrid />
+                                    <PolarAngleAxis
+                                        dataKey="name"
+                                        tick={{ fill: "#000" }}
+                                        width={30}
+                                        className="text-sm"
+                                    />
+                                    <PolarRadiusAxis
+                                        angle={30}
+                                        domain={[0, 10]}
+                                        tickCount={11}
+                                    />
+                                    <Radar
+                                        dataKey="answer"
+                                        stroke="#8884d8"
+                                        fill="#8884d8"
+                                        fillOpacity={0.6}
+                                    />
+                                </RadarChart>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
-            <div className="grid w-full h-auto lg:h-[40%] grid-cols-1 md:grid-cols-4 p-3 lg:p-6 gap-3 lg:gap-6">
-                {assessmentScores.types.map((item, index) => (
-                    <div
-                        key={index}
-                        className="flex flex-col items-center w-full h-full"
+            <div className="grid w-full h-auto lg:h-[50%] grid-cols-1 p-3 gap-3 lg:gap-6">
+                <ResponsiveContainer width="100%" height={400}>
+                    <BarChart
+                        data={baseline}
+                        margin={{
+                            top: 40,
+                            right: 30,
+                            left: 0,
+                            bottom: 5,
+                        }}
                     >
-                        <p className="text-text text-lg font-semibold">
-                            {item.name}
-                        </p>
-                        <div className="flex items-center justify-center w-full h-full shadow-md shadow-gray-300 shadow-500 rounded-md text-text text-semibold text-xl">
-                            <RadarChart
-                                outerRadius={160}
-                                width={600}
-                                height={300}
-                                data={item.criterias}
-                            >
-                                <PolarGrid />
-                                <PolarAngleAxis
-                                    dataKey="name"
-                                    tick={{ fill: "#000" }}
-                                    width={30}
-                                    className="text-sm"
-                                />
-                                <PolarRadiusAxis
-                                    angle={30}
-                                    domain={[0, 10]}
-                                    tickCount={11}
-                                />
-                                <Radar
-                                    dataKey="answer"
-                                    stroke="#8884d8"
-                                    fill="#8884d8"
-                                    fillOpacity={0.6}
-                                />
-                            </RadarChart>
-                        </div>
-                    </div>
-                ))}
-                {baseline.map((item, index) => (
-                    <div
-                        key={index}
-                        className="flex flex-col items-center w-full h-full"
-                    >
-                        <p className="text-text text-lg font-semibold">
-                            Baseline of {item.type}
-                        </p>
-                        <div className="flex items-center justify-center w-full h-full shadow-md shadow-gray-300 shadow-500 rounded-md text-text text-semibold text-xl">
-                            <RadarChart
-                                outerRadius={160}
-                                width={600}
-                                height={300}
-                                data={item.criterias}
-                            >
-                                {/* Polar Grid */}
-                                <PolarGrid />
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="criteria" />
+                        <YAxis domain={[0, 10]} tickCount={11} />
 
-                                {/* Polar Angle Axis for each criteria */}
-                                <PolarAngleAxis dataKey="criteria" />
+                        {/* Bars */}
+                        <Bar dataKey="base" fill="#B1DBFF" minPointSize={5}>
+                            <LabelList dataKey="base" position="top" />
+                        </Bar>
 
-                                {/* Mid-year radar */}
-                                <Radar
-                                    name="Mid-Year"
-                                    dataKey="mid"
-                                    stroke="#8884d8"
-                                    fill="#8884d8"
-                                    fillOpacity={0.6}
-                                />
+                        <Bar dataKey="mid" fill="#BDF6FF" minPointSize={5}>
+                            <LabelList dataKey="mid" position="top" />
+                        </Bar>
 
-                                {/* End-year radar */}
-                                <Radar
-                                    name="End-Year"
-                                    dataKey="end"
-                                    stroke="#82ca9d"
-                                    fill="#82ca9d"
-                                    fillOpacity={0.6}
-                                />
+                        <Bar dataKey="end" fill="#B3F5BC" minPointSize={5}>
+                            <LabelList dataKey="end" position="top" />
+                        </Bar>
+                        <Tooltip />
 
-                                <Radar
-                                    name="Baseline"
-                                    dataKey="baseline"
-                                    stroke="red"
-                                    fill="red"
-                                    fillOpacity={0}
-                                    strokeOpacity={0}
-                                />
+                        {/* Custom Target Lines for Each Bar */}
+                        {baseline.map((entry, index) => {
+                            const baseX = index * 58 + 60; // Adjust the base X position
+                            const targetY = getYPosition(
+                                chartHeight,
+                                entry.target,
+                                [0, 10],
+                                entry.target
+                            );
 
-                                {/* Tooltip for hover effect */}
-                                <Tooltip />
-
-                                {/* Polar Radius Axis */}
-                                <PolarRadiusAxis angle={30} domain={[0, 10]} />
-
-                                {/* Baseline Red Dot */}
-                                {item.criterias.map((criteria, idx) => {
-                                    if (criteria.baseline !== null) {
-                                        // Calculate cx and cy for the red dot based on baseline value
-                                        const { x, y } = polarToCartesian(
-                                            300, // centerX - half of chart width
-                                            150, // centerY - half of chart height
-                                            (criteria.baseline / 10) * 160, // radius scaled to baseline value
-                                            idx * (360 / item.criterias.length) // angle based on criteria index
-                                        );
-
-                                        console.log(x, y);
-
-                                        return (
-                                            <circle
-                                                cx={x} // Fixed center of the chart
-                                                cy={y} // Fixed center of the chart
-                                                r={5} // Size of the dot
-                                                fill="red"
-                                                stroke="red"
-                                                strokeWidth={2}
-                                            />
-                                        );
-                                    }
-                                    return null;
-                                })}
-                            </RadarChart>
-                        </div>
-                    </div>
-                ))}
+                            return (
+                                <g key={`target-line-${index}`}>
+                                    {/* Base bar target line */}
+                                    <CustomTargetLine
+                                        x={baseX}
+                                        y={targetY}
+                                        width={10}
+                                    />
+                                    {/* Mid bar target line */}
+                                    <CustomTargetLine
+                                        x={baseX + 10}
+                                        y={targetY}
+                                        width={10}
+                                    />
+                                    {/* End bar target line */}
+                                    <CustomTargetLine
+                                        x={baseX + 20}
+                                        y={targetY}
+                                        width={31}
+                                    />
+                                </g>
+                            );
+                        })}
+                    </BarChart>
+                </ResponsiveContainer>
             </div>
         </div>
     );
 };
+{
+    /* <BarChart
+                        data={baseline}
+                        margin={{
+                            top: 40,
+                            right: 30,
+                            left: 0,
+                            bottom: 5,
+                        }}
+                        domain={[0, 10]}
+                        className="w-full h-full"
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="criteria" />
+                        <YAxis domain={[0, 10]} />
+
+                        {baseline.map((entry, index) => (
+                            <ReferenceLine
+                                key={index}
+                                y={
+                                    entry.base +
+                                    (entry.base < 7
+                                        ? 0.25
+                                        : 613.07 *
+                                          Math.exp(-1.119 * entry.base)) *
+                                        (10 - entry.base)
+                                }
+                                x={600}
+                                label="Target"
+                                stroke="red"
+                                strokeDasharray="3 3"
+                                ifOverflow="extendDomain"
+                            />
+                        ))}
+
+                        <Bar
+                            dataKey="base"
+                            fill="#B1DBFF"
+                            minPointSize={5}
+                            shape={renderCustomizedBar}
+                        >
+                            <LabelList
+                                dataKey="base"
+                                content={renderCustomizedLabel}
+                            />
+                        </Bar>
+                        <Bar
+                            dataKey="mid"
+                            fill="#BDF6FF"
+                            minPointSize={5}
+                            shape={renderCustomizedBar}
+                        >
+                            <LabelList
+                                dataKey="mid"
+                                content={renderCustomizedLabel}
+                            />
+                        </Bar>
+                        <Bar
+                            dataKey="end"
+                            fill="#B3F5BC"
+                            minPointSize={5}
+                            shape={renderCustomizedBar}
+                        >
+                            <LabelList
+                                dataKey="end"
+                                content={renderCustomizedLabel}
+                            />
+                        </Bar>
+                    </BarChart> */
+}

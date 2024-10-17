@@ -478,6 +478,13 @@ router.get(
                 algorithms: "HS512",
             });
 
+            // let checkEndYear = await surreal_assessment.query(
+            //     `SELECT * FROM assessment WHERE year = ${year} AND factory = <string>${user.factory} AND type = "end-of-year"`
+            // );
+
+            // let typeFetch =
+            //     checkEndYear[0].length !== 0 ? "end-of-year" : "mid-year";
+
             let assessmentsReq =
                 await surreal_assessment.query(`SELECT * FROM assessment WHERE year = ${year} AND factory = <string>${user.factory} AND type = "end-of-year" FETCH 
                 questionaire.types,
@@ -898,7 +905,15 @@ router.get("/baseline", async (req, res) => {
             questionaire.types.criterias.questions.possibilities,
             questionaire.types.criterias.questions.possibilities.*;`);
 
-        let baseline = [];
+        let asssessmentBaseReq =
+            await surreal_assessment.query(`SELECT * FROM assessment WHERE year = ${
+                year + 1
+            } AND factory = <string>${user.factory} AND type = "baseline" FETCH
+            questionaire.types,
+            questionaire.types.criterias,
+            questionaire.types.criterias.questions,
+            questionaire.types.criterias.questions.possibilities,
+            questionaire.types.criterias.questions.possibilities.*;`);
 
         let assessments = [];
 
@@ -908,6 +923,10 @@ router.get("/baseline", async (req, res) => {
 
         if (asssessmentEndReq[0].length !== 0) {
             assessments.push(asssessmentEndReq[0][0]);
+        }
+
+        if (asssessmentBaseReq[0].length !== 0) {
+            assessments.push(asssessmentBaseReq[0][0]);
         }
 
         for (let assessment of assessments) {
@@ -1069,7 +1088,10 @@ router.get("/baseline", async (req, res) => {
                                     return (
                                         parseFloat(a) +
                                         parseFloat(
-                                            question.answer * question.weight
+                                            question
+                                                ? question.answer *
+                                                      question.weight
+                                                : 0
                                         )
                                     );
                                 }, 0);
@@ -1104,7 +1126,9 @@ router.get("/baseline", async (req, res) => {
                                             question.id.id ===
                                         element
                                 );
-                                sum += question.answer * question.weight;
+                                sum += question
+                                    ? question.answer * question.weight
+                                    : 0;
                             }
                         });
 
@@ -1134,87 +1158,89 @@ router.get("/baseline", async (req, res) => {
             delete assessment["id"];
         }
 
+        // group data by type and each type criterias
+        let groupedData = [];
         for (let assessment of assessments) {
-            if (assessment.type === "end-of-year") {
-                for (let type of assessment.types) {
-                    for (let criteria of type.criterias) {
-                        let b = parseFloat(
-                            (
-                                criteria.answer +
-                                (criteria.answer < 7
-                                    ? 0.25
-                                    : 613.07 *
-                                      Math.exp(-1.119 * criteria.answer)) *
-                                    (10 - criteria.answer)
-                            ).toFixed(2)
-                        );
+            for (let type of assessment.types) {
+                let typeData = groupedData.find((data) => {
+                    return data.type === type.name;
+                });
 
-                        baseline.push({
-                            assessment: assessment.type,
-                            type: type.name,
+                if (typeData) {
+                    for (let criteria of type.criterias) {
+                        let criteriaData = typeData.criterias.find((data) => {
+                            return data.criteria === criteria.name;
+                        });
+
+                        if (assessment.type === "mid-year") {
+                            criteriaData.mid = criteria.answer;
+                        }
+
+                        if (assessment.type === "end-of-year") {
+                            criteriaData.end = criteria.answer;
+                        }
+
+                        if (assessment.type === "baseline") {
+                            criteriaData.base = criteria.answer;
+                        }
+                    }
+                } else {
+                    let criterias = [];
+                    for (let criteria of type.criterias) {
+                        criterias.push({
                             criteria: criteria.name,
-                            baseline: b,
+                            mid:
+                                assessment.type === "mid-year"
+                                    ? criteria.answer
+                                    : 0,
+                            end:
+                                assessment.type === "end-of-year"
+                                    ? criteria.answer
+                                    : 0,
+                            base:
+                                assessment.type === "baseline"
+                                    ? criteria.answer
+                                    : 0,
                         });
                     }
+
+                    groupedData.push({
+                        type: type.name,
+                        criterias: criterias,
+                    });
                 }
             }
         }
 
-        const groupedData = baseline.reduce((result, currentItem) => {
-            const { type, assessment, criteria, baseline } = currentItem;
+        groupedData = groupedData.map((data) => {
+            return {
+                type: data.type,
+                criterias: data.criterias.map((criteria) => {
+                    return {
+                        criteria: criteria.criteria,
+                        mid: criteria.mid,
+                        end: criteria.end,
+                        base: criteria.base,
+                        target: parseFloat(
+                            (
+                                criteria.base +
+                                (criteria.base < 7
+                                    ? 0.25
+                                    : 613.07 *
+                                      Math.exp(-1.119 * criteria.base)) *
+                                    (10 - criteria.base)
+                            ).toFixed(2)
+                        ),
+                    };
+                }),
+            };
+        });
 
-            // Check if this type already exists in result
-            let typeGroup = result.find((group) => group.type === type);
-            if (!typeGroup) {
-                // If type group does not exist, create it
-                typeGroup = { type, criterias: [] };
-                result.push(typeGroup);
-            }
-
-            // Find or create a criteria object for this criteria
-            let criteriaGroup = typeGroup.criterias.find(
-                (c) => c.criteria === criteria
-            );
-            if (!criteriaGroup) {
-                // If the criteria group does not exist, create it
-                criteriaGroup = {
-                    criteria,
-                    mid: 0,
-                    end: 0,
-                    baseline: 0,
-                };
-                typeGroup.criterias.push(criteriaGroup);
-            }
-
-            // Assign values based on assessment type
-            for (let assessment of assessments) {
-                if (assessment.type === "mid-year") {
-                    for (let types of assessment.types) {
-                        for (let criterias of types.criterias) {
-                            if (criterias.name === criteria) {
-                                criteriaGroup.mid = criterias.answer;
-                            }
-                        }
-                    }
-                }
-                if (assessment.type === "end-of-year") {
-                    for (let types of assessment.types) {
-                        for (let criterias of types.criterias) {
-                            if (criterias.name === criteria) {
-                                criteriaGroup.end = criterias.answer;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Always assign baseline
-            criteriaGroup.baseline = baseline;
-
-            return result;
+        let concated = groupedData.reduce((a, b) => {
+            return a.concat(b.criterias);
         }, []);
 
-        return res.status(200).json({ status: 200, data: groupedData });
+        return res.status(200).json({ status: 200, data: concated });
     } catch (error) {
         console.log(error);
     }

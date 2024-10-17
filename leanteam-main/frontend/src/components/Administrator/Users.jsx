@@ -341,9 +341,13 @@ export const Users = () => {
                                             value={values.team}
                                             className="w-full p-2 text-md border-2 border-text rounded-md"
                                         >
-                                            {values.team === "" && (
-                                                <option value="">None</option>
-                                            )}
+                                            <option
+                                                value=""
+                                                selected={values.team == ""}
+                                                disabled
+                                            >
+                                                None
+                                            </option>
                                             {teams.map((team, index) => (
                                                 <option
                                                     key={index}

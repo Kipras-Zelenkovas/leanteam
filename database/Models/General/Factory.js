@@ -33,47 +33,47 @@ Factory.defineTable("SCHEMALESS", {
         optional: true,
     },
     manager: {
-        type: DataTypes.STRING,
+        type: DataTypes.RECORD,
         optional: true,
     },
     lean: {
-        type: DataTypes.STRING,
+        type: DataTypes.RECORD,
         optional: true,
     },
     quality: {
-        type: DataTypes.STRING,
+        type: DataTypes.RECORD,
         optional: true,
     },
     safety: {
-        type: DataTypes.STRING,
+        type: DataTypes.RECORD,
         optional: true,
     },
     environment: {
-        type: DataTypes.STRING,
+        type: DataTypes.RECORD,
         optional: true,
     },
     production: {
-        type: DataTypes.STRING,
+        type: DataTypes.RECORD,
         optional: true,
     },
     maintenance: {
-        type: DataTypes.STRING,
+        type: DataTypes.RECORD,
         optional: true,
     },
     logistics: {
-        type: DataTypes.STRING,
+        type: DataTypes.RECORD,
         optional: true,
     },
     hr: {
-        type: DataTypes.STRING,
+        type: DataTypes.RECORD,
         optional: true,
     },
     finance: {
-        type: DataTypes.STRING,
+        type: DataTypes.RECORD,
         optional: true,
     },
     it: {
-        type: DataTypes.STRING,
+        type: DataTypes.RECORD,
         optional: true,
     },
 });
