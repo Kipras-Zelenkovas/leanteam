@@ -39,8 +39,10 @@ export const Dashboard = () => {
     const navigate = useNavigate();
 
     const [w, setW] = useState(window.innerWidth);
+    const [width, setWidth] = useState(window.outerWidth);
 
     const chartHeight = 400;
+    const chartWidth = 400;
 
     useEffect(() => {
         checkAccessLevel().then((res) => {
@@ -101,6 +103,7 @@ export const Dashboard = () => {
     useEffect(() => {
         const handleResize = () => {
             setW(window.innerWidth);
+            setWidth(window.outerWidth);
         };
 
         window.addEventListener("resize", handleResize);
@@ -171,23 +174,83 @@ export const Dashboard = () => {
         );
     };
 
+    const CustomTooltip = ({ active, payload, label }) => {
+        if (active) {
+            return (
+                <div className="bg-white shadow-md p-2 rounded-md">
+                    <p className="text-text text-sm font-semibold">
+                        {payload[0].payload.criteria}
+                    </p>
+                    <p className="text-text text-sm font-semibold">
+                        Target: {payload[0].payload.target}
+                    </p>
+                    <p className="text-text text-sm font-semibold">
+                        Baseline: {payload[0].payload.base}
+                    </p>
+                    <p className="text-text text-sm font-semibold">
+                        Mid year: {payload[0].payload.mid}
+                    </p>
+                    <p className="text-text text-sm font-semibold">
+                        End of year: {payload[0].payload.end}
+                    </p>
+                </div>
+            );
+        }
+    };
+
     const getYPosition = (chartHeight, value, domain, target) => {
         const [minDomain, maxDomain] = domain;
         const scaledY =
             ((maxDomain - value) / (maxDomain - minDomain)) * chartHeight; // Adjusted to scale from the top
 
         if (target < 3) {
-            return scaledY - 15;
+            return scaledY + 27;
         } else if (target > 5 && target < 7) {
-            return scaledY + 8;
+            return scaledY + 37;
         } else if (target === 10) {
             return scaledY + 40;
         } else if (target > 9.5) {
-            return scaledY + 33;
+            return scaledY + 38;
         } else if (target > 7) {
-            return scaledY + 28;
+            return scaledY + 38;
         }
-        return scaledY;
+        return scaledY + 35;
+    };
+
+    const CustomHorizontalTargetLine = ({ x, y, height, target }) => {
+        return (
+            <line
+                x1={x} // Starting X coordinate for the target line (left side of the chart)
+                x2={x} // Ending X coordinate (aligned with the bar width)
+                y1={y - height / 2} // Starting Y position based on the target
+                y2={y + height / 2} // Ending Y position (top and bottom aligned with the bar)
+                stroke="red"
+                strokeWidth={2}
+            />
+        );
+    };
+
+    // Function to get the target line X position for the vertical bar chart
+    const getXPosition = (chartWidth, value, domain, target) => {
+        const [minDomain, maxDomain] = domain;
+        const scaleX =
+            ((value - minDomain) / (maxDomain - minDomain)) * chartWidth;
+        if (target < 3) {
+            return scaleX + 30;
+        } else if (target > 5 && target < 7) {
+            return scaleX + 20;
+        } else if (target === 10) {
+            return scaleX - 30;
+        } else if (target > 9.55) {
+            return scaleX - 28;
+        } else if (target > 9.5) {
+            return scaleX - 22;
+        } else if (target > 9) {
+            return scaleX - 20;
+        } else if (target > 7) {
+            return scaleX - 12;
+        }
+        return scaleX + 40;
     };
 
     if (
@@ -288,8 +351,12 @@ export const Dashboard = () => {
                     ))}
                 </div>
             </div>
-            <div className="grid w-full h-auto lg:h-[50%] grid-cols-1 p-3 gap-3 lg:gap-6">
-                <ResponsiveContainer width="100%" height={400}>
+            <div className="grid w-full h-max lg:h-[50%] grid-cols-1 p-3 gap-3 lg:gap-6">
+                <ResponsiveContainer
+                    className="md:block hidden"
+                    width="100%"
+                    height="100%"
+                >
                     <BarChart
                         data={baseline}
                         margin={{
@@ -315,11 +382,11 @@ export const Dashboard = () => {
                         <Bar dataKey="end" fill="#B3F5BC" minPointSize={5}>
                             <LabelList dataKey="end" position="top" />
                         </Bar>
-                        <Tooltip />
+                        <Tooltip content={CustomTooltip} />
 
                         {/* Custom Target Lines for Each Bar */}
                         {baseline.map((entry, index) => {
-                            const baseX = index * 58 + 60; // Adjust the base X position
+                            const baseX = index * 58 + 60;
                             const targetY = getYPosition(
                                 chartHeight,
                                 entry.target,
@@ -346,6 +413,77 @@ export const Dashboard = () => {
                                         x={baseX + 20}
                                         y={targetY}
                                         width={31}
+                                    />
+                                </g>
+                            );
+                        })}
+                    </BarChart>
+                </ResponsiveContainer>
+
+                <ResponsiveContainer
+                    width={400}
+                    height={1700}
+                    className="block md:hidden"
+                >
+                    <BarChart
+                        data={baseline}
+                        layout="vertical"
+                        margin={{
+                            top: 40,
+                            right: 30,
+                            left: 30,
+                            bottom: 5,
+                        }}
+                    >
+                        {/* Cartesian Grid for layout */}
+                        <CartesianGrid strokeDasharray="3 3" />
+
+                        {/* X-Axis: Shows the numeric values */}
+                        <XAxis
+                            type="number"
+                            domain={[0, 10]}
+                            tickCount={11}
+                            orientation="top"
+                        />
+
+                        {/* Y-Axis: Shows the categories */}
+                        <YAxis dataKey="criteria" type="category" />
+
+                        {/* Tooltip for showing value details on hover */}
+                        <Tooltip content={CustomTooltip} />
+
+                        {/* Bars for different data keys */}
+                        <Bar dataKey="base" fill="#B1DBFF" minPointSize={5}>
+                            <LabelList dataKey="base" position="insideRight" />
+                        </Bar>
+
+                        <Bar dataKey="mid" fill="#BDF6FF" minPointSize={5}>
+                            <LabelList dataKey="mid" position="insideRight" />
+                        </Bar>
+
+                        <Bar dataKey="end" fill="#B3F5BC" minPointSize={5}>
+                            <LabelList dataKey="end" position="insideRight" />
+                        </Bar>
+
+                        {/* Custom Horizontal Target Lines for each bar */}
+                        {baseline.map((entry, index) => {
+                            const chartWidth = 400; // Assuming chart width; adjust accordingly
+                            const targetX = getXPosition(
+                                chartWidth,
+                                entry.target,
+                                [0, 10],
+                                entry.target
+                            );
+                            const barHeight = 50; // Adjust height of bars
+
+                            return (
+                                <g key={`target-line-${index}`}>
+                                    {/* Custom Horizontal Line for Target */}
+                                    <CustomHorizontalTargetLine
+                                        x={targetX}
+                                        y={index * 54 + 97} // Adjust Y position
+                                        height={barHeight}
+                                        target={entry.target}
                                     />
                                 </g>
                             );
